@@ -1,0 +1,151 @@
+name: Fluxx
+description: Aplicativo focado na gestão e dívidas.
+
+publish_to: 'none' 
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.1.5 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  get_it: ^7.2.0
+  flutter_bloc: ^8.1.2
+  equatable: ^2.0.5
+  intl: 0.18.0
+  sqflite: ^2.3.2
+  uuid: ^4.2.2
+  another_flushbar: ^1.12.30
+  crystal_navigation_bar: ^1.0.0
+  dropdown_button2: ^2.3.9
+  carousel_slider_plus: ^7.0.1
+
+  cupertino_icons: ^1.0.2
+  iconly: ^1.0.1
+  percent_indicator: ^4.2.3
+  image_picker: ^0.8.7+4
+  flutter_native_splash: ^2.4.3
+  flutter_launcher_icons: ^0.14.1
+
+
+flutter_native_splash:
+  color: "#FFFFFF"
+  image: "assets/app/splash.png"
+  android: true
+  ios: true
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^2.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+
+  # The following line ensures that the Material Icons font is
+  # included with your application, so that you can use the icons in
+  # the material Icons class.
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets\images\default_user.jpeg
+    - assets/app/
+    # - images/a_dot_burr.jpeg
+    # - images/a_dot_ham.jpeg
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/assets-and-images/#from-packages
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+  - family: Mulish
+    fonts:
+      - asset: assets/fonts/Mulish-ExtraLight.ttf
+        weight: 200
+      - asset: assets/fonts/Mulish-ExtraLightItalic.ttf
+        weight: 200
+        style: italic
+      - asset: assets/fonts/Mulish-Light.ttf
+        weight: 300
+      - asset: assets/fonts/Mulish-LightItalic.ttf
+        weight: 300
+        style: italic
+      - asset: assets/fonts/Mulish-Regular.ttf
+        weight: 400
+      - asset: assets/fonts/Mulish-Italic.ttf
+        weight: 400
+        style: italic
+      - asset: assets/fonts/Mulish-Medium.ttf
+        weight: 500
+      - asset: assets/fonts/Mulish-MediumItalic.ttf
+        weight: 500
+        style: italic
+      - asset: assets/fonts/Mulish-SemiBold.ttf
+        weight: 600
+      - asset: assets/fonts/Mulish-SemiBoldItalic.ttf
+        weight: 600
+        style: italic
+      - asset: assets/fonts/Mulish-Bold.ttf
+        weight: 700
+      - asset: assets/fonts/Mulish-BoldItalic.ttf
+        weight: 700
+        style: italic
+      - asset: assets/fonts/Mulish-ExtraBold.ttf
+        weight: 800
+      - asset: assets/fonts/Mulish-ExtraBoldItalic.ttf
+        weight: 800
+        style: italic
+      - asset: assets/fonts/Mulish-Black.ttf
+        weight: 900
+      - asset: assets/fonts/Mulish-BlackItalic.ttf
+        weight: 900
+        style: italic
+  - family: Inter
+    fonts:
+      - asset: assets/fonts/Inter-ExtraLight.ttf
+        weight: 200
+        style: italic
+      - asset: assets/fonts/Inter-Light.ttf
+        weight: 300
+        style: italic
+      - asset: assets/fonts/Inter-Regular.ttf
+        weight: 400
+        style: italic
+      - asset: assets/fonts/Inter-Medium.ttf
+        weight: 500
+        style: italic
+      - asset: assets/fonts/Inter-SemiBold.ttf
+        weight: 600
+        style: italic
+      - asset: assets/fonts/Inter-Bold.ttf
+        weight: 700
+        style: italic
+      - asset: assets/fonts/Inter-ExtraBold.ttf
+        weight: 800
+        style: italic
+      - asset: assets/fonts/Inter-Black.ttf
+        weight: 900
+        style: italic
+  # For details regarding fonts from package dependencies,
+  # see https://flutter.dev/custom-fonts/#from-packages
