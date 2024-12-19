@@ -3,6 +3,7 @@ import 'package:Fluxx/pages/detail_page.dart';
 import 'package:Fluxx/pages/edit_bill_page.dart';
 import 'package:Fluxx/pages/main_page.dart';
 import 'package:Fluxx/pages/profile_page.dart';
+import 'package:Fluxx/pages/resume_page.dart';
 import 'package:Fluxx/pages/stats_page.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/setup_dependences.dart';
@@ -36,7 +37,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
       routes: {
-        AppRoutes.home: (ctx) => const MainPage(),
+        AppRoutes.home: (ctx) => const ResumePage(),
         AppRoutes.detailPage: (ctx) => const DetailPage(),
         AppRoutes.statsPage: (ctx) => const StatsPage(),
         AppRoutes.addBillPage: (ctx) => const AddBillPage(),

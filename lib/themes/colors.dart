@@ -3,6 +3,8 @@ part of 'app_theme.dart';
 abstract class ColorsInterface {
   Gradient get backgroundColor;
   Gradient get primaryColor;
+  Color get appBackgroundColor;
+  Color get accentColor;
   Color get darkPurple;
   Color get transparent;
   Color get grayD4;
@@ -37,6 +39,10 @@ class _DefaultColors implements ColorsInterface {
         ],
       );
 
+  @override
+  Color get appBackgroundColor => const Color(0xFFE1E1E1);
+  @override
+  Color get accentColor => const Color(0xFF202020);
   @override
   Color get darkPurple => const Color(0xFF4B1E8A);
   @override

@@ -6,6 +6,7 @@ abstract class TextStylesInterface {
   TextStyle get bodyTextStyle;
   TextStyle get tileTextStyle;
   TextStyle get subTileTextStyle;
+  TextStyle get accentTextStyle;
   TextStyle get descTextStyle;
 }
 
@@ -20,46 +21,54 @@ class _DefaultTextStyles implements TextStylesInterface {
 
   @override
   TextStyle get defaultTextStyle =>
-      TextStyle(fontSize: AppTheme.fontSizes.medium, fontFamily: 'Inter');
+      TextStyle(fontSize: AppTheme.fontSizes.medium, fontFamily: 'Mulish');
 
   @override
   TextStyle get titleTextStyle => TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: AppTheme.fontSizes.large,
-      color: Colors.white,
+      fontWeight: FontWeight.w700,
+      fontSize: AppTheme.fontSizes.xlarge,
+      color: Colors.black,
       overflow: TextOverflow.ellipsis,
-      fontFamily: 'Inter');
+      fontFamily: 'Mulish');
 
   @override
   TextStyle get bodyTextStyle => TextStyle(
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w700,
         fontSize: AppTheme.fontSizes.medium,
         color: Colors.white,
         overflow: TextOverflow.ellipsis,
-        fontFamily: 'Inter',
+        fontFamily: 'Mulish',
       );
   @override
   TextStyle get tileTextStyle => TextStyle(
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w700,
         fontSize: AppTheme.fontSizes.large,
         color: Colors.black,
         overflow: TextOverflow.ellipsis,
-        fontFamily: 'Inter',
+        fontFamily: 'Mulish',
       );
   @override
   TextStyle get subTileTextStyle => TextStyle(
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w700,
         fontSize: AppTheme.fontSizes.medium,
         color: Colors.black,
         overflow: TextOverflow.ellipsis,
-        fontFamily: 'Inter',
+        fontFamily: 'Mulish',
+      );
+  @override
+  TextStyle get accentTextStyle => TextStyle(
+        fontWeight: FontWeight.w700,
+        fontSize: AppTheme.fontSizes.small,
+        color: Colors.black,
+        overflow: TextOverflow.ellipsis,
+        fontFamily: 'Mulish',
       );
   @override
   TextStyle get descTextStyle => TextStyle(
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w700,
         fontSize: AppTheme.fontSizes.medium,
         color: Colors.grey,
         overflow: TextOverflow.ellipsis,
-        fontFamily: 'Inter',
+        fontFamily: 'Mulish',
       );
 }
