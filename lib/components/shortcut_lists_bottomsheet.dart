@@ -1,4 +1,5 @@
 import 'package:Fluxx/themes/app_theme.dart';
+import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/material.dart';
 
 class ShortcutListsBottomsheet extends StatelessWidget {
@@ -27,9 +28,8 @@ class ShortcutListsBottomsheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
             child: ListTile(
-              onTap: () {
-                debugPrint('Lista de Meses');
-              },
+              onTap: () =>
+                  Navigator.pushNamed(context, AppRoutes.monthListPage),
               title: Text(
                 'Lista de Meses',
                 style: AppTheme.textStyles.bodyTextStyle,

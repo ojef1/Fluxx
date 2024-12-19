@@ -20,18 +20,31 @@ class Month extends StatelessWidget {
       },
       child: Container(
         margin: EdgeInsets.symmetric(
-          vertical: mediaQuery.height * .03,
-          horizontal: mediaQuery.width * .1,
+          vertical: mediaQuery.height * .01,
+          horizontal: mediaQuery.width * .05,
         ),
         padding: EdgeInsets.symmetric(
-          vertical: mediaQuery.height * .03,
-          horizontal: mediaQuery.width * .08,
+          vertical: mediaQuery.height * .01,
+          horizontal: mediaQuery.width * .05,
         ),
         width: mediaQuery.width * .7,
-        height: mediaQuery.height * .15,
+        height: mediaQuery.height * .2,
         decoration: BoxDecoration(
-          gradient: AppTheme.colors.primaryColor,
-          borderRadius: BorderRadius.circular(20),
+          color: AppTheme.colors.appBackgroundColor,
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black,
+              blurRadius: 2,
+              offset: Offset(3, 3)
+            )
+          ],
+          border: const Border(
+            left: BorderSide(
+              color: Colors.red, // trocar pela cor de acordo com o gasto no mês
+              width: 10,
+            ),
+          ), 
+          borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,31 +53,50 @@ class Month extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.today,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                    SizedBox(
-                      width: mediaQuery.width * .02,
-                    ),
-                    Text(month.name ?? '', style: AppTheme.textStyles.titleTextStyle),
-                  ],
-                ),
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.arrow_forward_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ],
+                Text(month.name ?? '',
+                    style: AppTheme.textStyles.titleTextStyle),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: Colors.black,
+                  size: 17,
                 ),
               ],
             ),
-            Text('R\$ ${formatPrice(month.total ?? 0)}', style: AppTheme.textStyles.titleTextStyle)
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Total gasto',
+                        style: AppTheme.textStyles.accentTextStyle),
+                    Text('R\$ ${formatPrice(month.total ?? 0)}',
+                        style: AppTheme.textStyles.accentTextStyle),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Categoria com maior despesa',
+                        style: AppTheme.textStyles.accentTextStyle),
+                    Text('R\$ ${formatPrice(month.total ?? 0)}',
+                        style: AppTheme.textStyles.accentTextStyle),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Receita mais usada',
+                        style: AppTheme.textStyles.accentTextStyle),
+                    Text('R\$ ${formatPrice(month.total ?? 0)}',
+                        style: AppTheme.textStyles.accentTextStyle),
+                  ],
+                ),
+                const SizedBox(height: 5),
+              ],
+            ),
           ],
         ),
       ),
