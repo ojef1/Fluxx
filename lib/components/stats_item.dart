@@ -17,82 +17,52 @@ class StatsItem extends StatelessWidget {
     double percentage = (totalSpent > 0) ? statsItem.price! / totalSpent : 0;
     return Container(
       margin: EdgeInsets.symmetric(
-        vertical: mediaQuery.height * .03,
-        horizontal: mediaQuery.width * .05,
+        vertical: mediaQuery.height * .01,
+        horizontal: mediaQuery.width * .02,
       ),
-      padding: EdgeInsets.only(
-        top: mediaQuery.height * .01,
-        bottom: mediaQuery.height * .03,
-        left: mediaQuery.width * .05,
-        right: mediaQuery.width * .08,
-      ),
-      // width: mediaQuery.width * .5,
-      height: mediaQuery.height * .15,
+      width: mediaQuery.width * .28,
+      height: mediaQuery.height * .2,
       decoration: BoxDecoration(
-        gradient: AppTheme.colors.primaryColor,
-        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Icon(
-                Constants.categoriesIcons[statsItem.categoryName],
-                color: Colors.white,
-                size: 22,
-              ),
-            ],
+          Text(
+            statsItem.categoryName ?? '',
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: AppTheme.textStyles.subTileTextStyle,
           ),
-          Expanded(
-            child: Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(right: 20),
-                  width: 100,
-                  height: 100,
-                  child: FittedBox(
-                    child: CircularPercentIndicator(
-                      radius: 60.0,
-                      lineWidth: 13.0,
-                      animation: true,
-                      percent: percentage.clamp(0.0, 1),
-                      circularStrokeCap: CircularStrokeCap.round,
-                      progressColor: Colors.purple,
-                      backgroundColor: Colors.white,
-                      center: Text(
-                        '${(percentage * 100).toStringAsFixed(1)}%',
-                        style: const TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
+          SizedBox(
+            width:  80,
+            height:        80,
+            child: FittedBox(
+              child: CircularPercentIndicator(
+                radius: 60.0,
+                lineWidth: 13.0,
+                animation: true,
+                percent: percentage.clamp(0.0, 1),
+                circularStrokeCap: CircularStrokeCap.round,
+                progressColor: Colors.purple,
+                backgroundColor: Colors.black,
+                center: Text(
+                  '${(percentage * 100).toStringAsFixed(1)}%',
+                  style: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Center(
-                      child: Text(
-                        statsItem.categoryName ?? '',
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTheme.textStyles.titleTextStyle,
-                      ),
-                    ),
-                    Text(
-                      'R\$ ${formatPrice(statsItem.price ?? 0)}',
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTheme.textStyles.titleTextStyle,
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
+          ),
+          Text(
+            'R\$ ${formatPrice(statsItem.price ?? 0)}',
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: AppTheme.textStyles.subTileTextStyle,
           ),
         ],
       ),

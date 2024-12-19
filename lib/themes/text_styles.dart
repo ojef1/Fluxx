@@ -49,7 +49,7 @@ class _DefaultTextStyles implements TextStylesInterface {
       );
   @override
   TextStyle get subTileTextStyle => TextStyle(
-        fontWeight: FontWeight.w700,
+        fontWeight: FontWeight.w800,
         fontSize: AppTheme.fontSizes.medium,
         color: Colors.black,
         overflow: TextOverflow.ellipsis,

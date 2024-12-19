@@ -1,6 +1,7 @@
 import 'package:Fluxx/components/shortcut_add_bottomsheet.dart';
 import 'package:Fluxx/components/shortcut_lists_bottomsheet.dart';
 import 'package:Fluxx/themes/app_theme.dart';
+import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -148,7 +149,7 @@ class _ResumePageState extends State<ResumePage> {
                       'Acesso Rápido',
                       style: AppTheme.textStyles.titleTextStyle,
                     ),
-                    // SizedBox(height: mediaQuery.height * .01),
+                    SizedBox(height: mediaQuery.height * .01),
                     Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -190,7 +191,8 @@ class _ResumePageState extends State<ResumePage> {
                                   icon: const Icon(Icons.menu_rounded),
                                   color: Colors.white,
                                   iconSize: 30,
-                                  onPressed: () => _showListsBottomSheet(context),
+                                  onPressed: () =>
+                                      _showListsBottomSheet(context),
                                 ),
                               ),
                               Text(
@@ -213,7 +215,8 @@ class _ResumePageState extends State<ResumePage> {
                                   icon: const Icon(Icons.bar_chart_rounded),
                                   color: Colors.white,
                                   iconSize: 30,
-                                  onPressed: () {},
+                                  onPressed: () => Navigator.pushNamed(
+                                      context, AppRoutes.statsPage),
                                 ),
                               ),
                               Text(
@@ -317,7 +320,7 @@ class _ResumePageState extends State<ResumePage> {
                           ),
                         ),
                       ),
-                    ),
+                    ),                 
                   ],
                 ),
               ),
