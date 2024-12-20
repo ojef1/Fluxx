@@ -20,45 +20,91 @@ class BillItem extends StatelessWidget {
       ),
       child: Container(
         margin: EdgeInsets.symmetric(
-          horizontal: mediaQuery.width * .01,
+          horizontal: mediaQuery.width * .05,
           vertical: mediaQuery.width * .01,
         ),
-        padding: EdgeInsets.symmetric(horizontal: mediaQuery.height * .01),
+        padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppTheme.colors.accentColor,
           borderRadius: BorderRadius.circular(20),
         ),
-        height: mediaQuery.height * .09,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        height: mediaQuery.height * .2,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(
-                  Icons.attach_money_rounded,
-                  size: 30,
-                  color: Colors.black,
+                Expanded(
+                  child: Text(
+                    bill.name ?? '',
+                    style: AppTheme.textStyles.bodyTextStyle,
+                  ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      formatPrice(bill.price ?? 0.0),
-                      style: AppTheme.textStyles.tileTextStyle,
-                    ),
-                    Text(
-                      bill.name ?? '',
-                      style: AppTheme.textStyles.subTileTextStyle,
-                    ),
-                  ],
+                Icon(
+                  bill.isPayed == 1
+                      ? Icons.check_circle_outline_rounded
+                      : Icons.cancel_outlined,
+                  color: bill.isPayed == 1 ? Colors.green : Colors.red,
                 ),
               ],
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Status(isPayed: bill.isPayed ?? 0),
-                const Icon(Icons.navigate_next_rounded),
+                Text(
+                  'Categoria: ',
+                  style: AppTheme.textStyles.bodyTextStyle,
+                ),
+                Expanded(
+                  child: Text(
+                    textAlign: TextAlign.end,
+                    '{categoria da conta} ',
+                    style: AppTheme.textStyles.bodyTextStyle,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Renda Usada: ',
+                  style: AppTheme.textStyles.bodyTextStyle,
+                ),
+                Expanded(
+                  child: Text(
+                    textAlign: TextAlign.end,
+                    '{renda usada} ',
+                    style: AppTheme.textStyles.bodyTextStyle,
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              margin: EdgeInsets.only(
+                top: mediaQuery.width * .02,
+                bottom: mediaQuery.width * .02,
+              ),
+              height: 1,
+              color: AppTheme.colors.grayD4,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    '{data da conta}',
+                    style: AppTheme.textStyles.bodyTextStyle,
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    textAlign: TextAlign.end,
+                    formatPrice(bill.price ?? 0.0),
+                    style: AppTheme.textStyles.bodyTextStyle,
+                  ),
+                ),
               ],
             ),
           ],

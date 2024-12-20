@@ -32,18 +32,14 @@ class Month extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppTheme.colors.appBackgroundColor,
           boxShadow: const [
-            BoxShadow(
-              color: Colors.black,
-              blurRadius: 2,
-              offset: Offset(3, 3)
-            )
+            BoxShadow(color: Colors.black, blurRadius: 2, offset: Offset(3, 3))
           ],
           border: const Border(
             left: BorderSide(
               color: Colors.red, // trocar pela cor de acordo com o gasto no mês
               width: 10,
             ),
-          ), 
+          ),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -68,30 +64,48 @@ class Month extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Total gasto',
+                    Text('Total gasto:  ',
                         style: AppTheme.textStyles.accentTextStyle),
-                    Text('R\$ ${formatPrice(month.total ?? 0)}',
-                        style: AppTheme.textStyles.accentTextStyle),
+                    Expanded(
+                      child: Text(
+                          textAlign: TextAlign.end,
+                          'R\$ ${formatPrice(
+                            month.total ?? 0,
+                          )}',
+                          style: AppTheme.textStyles.accentTextStyle),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Categoria com maior despesa',
+                    Text('Categoria com maior despesa:  ',
                         style: AppTheme.textStyles.accentTextStyle),
-                    Text('R\$ ${formatPrice(month.total ?? 0)}',
-                        style: AppTheme.textStyles.accentTextStyle),
+                    Expanded(
+                      child: Text(
+                          textAlign: TextAlign.end,
+                          'R\$ ${formatPrice(
+                            month.total ?? 0,
+                          )}',
+                          style: AppTheme.textStyles.accentTextStyle),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Receita mais usada',
+                    Text('Receita mais usada:  ',
                         style: AppTheme.textStyles.accentTextStyle),
-                    Text('R\$ ${formatPrice(month.total ?? 0)}',
-                        style: AppTheme.textStyles.accentTextStyle),
+                    Expanded(
+                      child: Text(
+                          textAlign: TextAlign.end,
+                          'R\$ ${formatPrice(
+                            month.total ?? 0,
+                          )}',
+                          style: AppTheme.textStyles.accentTextStyle),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 5),

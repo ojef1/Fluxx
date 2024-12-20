@@ -1,5 +1,5 @@
 import 'package:Fluxx/pages/add_bill_page.dart';
-import 'package:Fluxx/pages/detail_page.dart';
+import 'package:Fluxx/pages/bill_list_page.dart';
 import 'package:Fluxx/pages/edit_bill_page.dart';
 import 'package:Fluxx/pages/month_list_page.dart';
 import 'package:Fluxx/pages/profile_page.dart';
@@ -39,7 +39,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         AppRoutes.home: (ctx) => const ResumePage(),
         AppRoutes.monthListPage: (ctx) => const MonthListPage(),
-        AppRoutes.detailPage: (ctx) => const DetailPage(),
+        AppRoutes.detailPage: (ctx) => const BillListPage(),
         AppRoutes.statsPage: (ctx) => const StatsPage(),
         AppRoutes.addBillPage: (ctx) => const AddBillPage(),
         AppRoutes.editBillPage: (ctx) => const EditBillPage(),
