@@ -29,3 +29,13 @@ void showFlushbar(BuildContext context, String message, bool isError) {
         color: AppTheme.colors.darkPurple);
   }
 }
+
+String? formatDate(String? dateTime) {
+  if (dateTime != null) {
+    DateTime date = DateTime.parse(dateTime);
+    final DateFormat formatter = DateFormat('dd/MM/yyyy', 'pt_BR');
+
+    return formatter.format(date);
+  }
+  return null;
+}

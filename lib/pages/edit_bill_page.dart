@@ -51,7 +51,7 @@ class _EditBillPageState extends State<EditBillPage> {
         ModalRoute.of(context)!.settings.arguments as BillModel;
     nameController.text = bill.name ?? '';
     priceController.text = bill.price.toString();
-     if (count == 0) {
+    if (count == 0) {
       GetIt.I<BillCubit>().updateEditCategoryInFocus(bill.categoryId!);
       GetIt.I<BillCubit>().updateBillStatus(bill.isPayed!);
       count = count = 1;
@@ -121,6 +121,7 @@ class _EditBillPageState extends State<EditBillPage> {
                                   style: AppTheme.textStyles.subTileTextStyle,
                                 ),
                                 CustomTextField(
+                                  hint: '',
                                   controller: nameController,
                                   icon: Icons.text_fields_sharp,
                                 ),
@@ -130,6 +131,7 @@ class _EditBillPageState extends State<EditBillPage> {
                                   style: AppTheme.textStyles.subTileTextStyle,
                                 ),
                                 CustomTextField(
+                                  hint: '',
                                   controller: priceController,
                                   icon: Icons.attach_money_rounded,
                                   keyboardType: TextInputType.number,

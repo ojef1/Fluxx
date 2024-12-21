@@ -222,6 +222,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 CustomTextField(
+                  hint: '',
                   controller: nameController,
                   icon: Icons.text_fields_sharp,
                 ),
@@ -272,6 +273,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 CustomTextField(
+                  hint: '',
                   controller: priceController,
                   icon: Icons.attach_money_rounded,
                   keyboardType: TextInputType.number,
