@@ -52,131 +52,161 @@ class _ProfilePageState extends State<ProfilePage> {
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
+        extendBody: true,
         resizeToAvoidBottomInset: true,
-        body: Container(
-          decoration: BoxDecoration(gradient: AppTheme.colors.backgroundColor),
-          height: mediaQuery.height,
+        backgroundColor: AppTheme.colors.appBackgroundColor,
+        body: SafeArea(
           child: BlocBuilder<UserCubit, UserState>(
-            bloc: GetIt.I(),
-            builder: (context, state) {
-              if (state.getUserResponse == GetUserResponse.loaging) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state.getUserResponse == GetUserResponse.error) {
+              bloc: GetIt.I(),
+              builder: (context, state) {
+                // if (state.getUserResponse == GetUserResponse.loaging) {
+                //   return const Center(child: CircularProgressIndicator());
+                // } else if (state.getUserResponse == GetUserResponse.error) {
+                //   return Column(
+                //     children: [
+                //       CustomAppBar(
+                //         title: 'Estatísticas',
+                //         firstIcon: Icons.arrow_back_rounded,
+                //         firstIconSize: 25,
+                //         functionIcon: Icons.warning_rounded,
+                //         firstFunction: () => Navigator.pushReplacementNamed(
+                //             context, AppRoutes.home),
+                //         secondFunction: () {},
+                //       ),
+                //       const Expanded(
+                //           child: Center(
+                //               child: Text('Erro ao carregar suas informações.'))),
+                //     ],
+                //   );
+                // } else {
                 return Column(
                   children: [
-                    CustomAppBar(
-                      title: 'Estatísticas',
-                      firstIcon: Icons.arrow_back_rounded,
-                      firstIconSize: 25,
-                      functionIcon: Icons.warning_rounded,
-                      firstFunction: () => Navigator.pushReplacementNamed(
-                          context, AppRoutes.home),
-                      secondFunction: () {},
-                    ),
-                    const Expanded(
-                        child: Center(
-                            child: Text('Erro ao carregar suas informações.'))),
-                  ],
-                );
-              } else {
-                return Container(
-                  margin: EdgeInsets.only(
-                    top: mediaQuery.height * .06,
-                    bottom: mediaQuery.height * .02,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: screenPadding,
-                        child: CustomAppBar(
-                          title: 'Perfil',
-                          firstIcon: Icons.arrow_back_rounded,
-                          firstIconSize: 25,
-                          functionIcon: Icons.check,
-                          firstFunction: () => Navigator.pushReplacementNamed(
-                              context, AppRoutes.home),
-                          secondFunction: () => _saveEdits(context),
-                        ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: Constants.topMargin),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: mediaQuery.width * .05,
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 100),
-                        padding: screenPadding,
-                        child: Row(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.only(right: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: AppTheme.colors.grayD4,
+                            child: IconButton(
+                                color: Colors.black,
+                                onPressed: () => Navigator.pop(context),
+                                icon: const Icon(Icons.arrow_back_rounded)),
+                          ),
+                          Text(
+                            'Perfil',
+                            style: AppTheme.textStyles.titleTextStyle,
+                          ),
+                          const CircleAvatar(
+                              backgroundColor: Colors.transparent),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: screenPadding,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap:  _pickImage,
+                            child: Container(
                               width: 150,
                               height: 150,
                               decoration: BoxDecoration(
-                                gradient: AppTheme.colors.primaryColor,
-                                borderRadius: BorderRadius.circular(20),
+                                color: AppTheme.colors.accentColor,
+                                borderRadius: BorderRadius.circular(100),
                               ),
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(100),
                                 child: state.user?.picture ==
                                         Constants.defaultPicture
                                     ? Image.asset(
                                         state.user?.picture ?? '',
                                         fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Container(),
                                       )
                                     : Image.file(
                                         File(state.user?.picture ?? ''),
                                         fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Container(),
                                       ),
                               ),
                             ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          ),
+                          SizedBox(height: mediaQuery.height * .03),
+                          SizedBox(
+                            width: 800,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Center(
-                                  child: Text(
-                                    state.user?.name ?? '',
-                                    textAlign: TextAlign.center,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppTheme.textStyles.titleTextStyle,
-                                  ),
-                                ),
+                                const CircleAvatar(
+                                    backgroundColor: Colors.transparent),
                                 Text(
-                                  'R\$ ${formatPrice(state.user?.salary ?? 0)}',
+                                  state.user?.name ?? 'Mayara',
                                   textAlign: TextAlign.center,
                                   overflow: TextOverflow.ellipsis,
                                   style: AppTheme.textStyles.titleTextStyle,
                                 ),
+                                SizedBox(
+                                  height: mediaQuery.width * .03,
+                                ),
+                                IconButton(
+                                    onPressed: () {},
+                                    icon: const Icon(
+                                        Icons.mode_edit_outline_rounded))
                               ],
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.symmetric(
+                        vertical: mediaQuery.width * .05,
+                      ),
+                      height: 2,
+                      decoration:
+                          BoxDecoration(color: AppTheme.colors.accentColor),
+                    ),
+                    Expanded(
+                        child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          'Versão : {versão}',
+                          style: AppTheme.textStyles.accentTextStyle,
                         ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(
-                          vertical: mediaQuery.width * .05,
-                        ),
-                        height: 2,
-                        decoration: BoxDecoration(
-                            gradient: AppTheme.colors.primaryColor),
-                      ),
-                      ProfileItem(
-                        icon: Icons.cameraswitch_rounded,
-                        label: 'Editar Foto',
-                        function: _pickImage,
-                      ),
-                      ProfileItem(
-                        icon: Icons.edit,
-                        label: 'Editar Nome',
-                        function: () => _editName(context),
-                      ),
-                      ProfileItem(
-                        icon: Icons.attach_money_rounded,
-                        label: 'Editar Salário',
-                        function: () => _editSalary(context),
-                      ),
-                    ],
-                  ),
+                        SizedBox(height: mediaQuery.height * .03),
+                      ],
+                    ))
+                    // ProfileItem(
+                    //   icon: Icons.cameraswitch_rounded,
+                    //   label: 'Editar Foto',
+                    //   function: _pickImage,
+                    // ),
+                    // ProfileItem(
+                    //   icon: Icons.edit,
+                    //   label: 'Editar Nome',
+                    //   function: () => _editName(context),
+                    // ),
+                    // ProfileItem(
+                    //   icon: Icons.attach_money_rounded,
+                    //   label: 'Editar Salário',
+                    //   function: () => _editSalary(context),
+                    // ),
+                  ],
                 );
               }
-            },
-          ),
+              // },
+              ),
         ),
       ),
     );

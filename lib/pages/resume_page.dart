@@ -45,9 +45,13 @@ class _ResumePageState extends State<ResumePage> {
                 ),
                 child: Row(
                   children: [
-                    const CircleAvatar(
-                      //FIXME usar a imagem escolhida do próprio usuário
-                      backgroundImage: NetworkImage(url),
+                    GestureDetector(
+                      onTap: () => Navigator.pushNamed(
+                          context, AppRoutes.profilePage),
+                      child: const CircleAvatar(
+                        //FIXME usar a imagem escolhida do próprio usuário
+                        backgroundImage: NetworkImage(url),
+                      ),
                     ),
                     SizedBox(width: mediaQuery.width * .07),
                     Text(
@@ -320,7 +324,7 @@ class _ResumePageState extends State<ResumePage> {
                           ),
                         ),
                       ),
-                    ),                 
+                    ),
                   ],
                 ),
               ),
