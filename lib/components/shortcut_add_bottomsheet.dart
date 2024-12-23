@@ -1,4 +1,3 @@
-import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -50,9 +49,7 @@ class ShortcutAddBottomsheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
             child: ListTile(
-              onTap: () {
-                debugPrint('Adicionar Renda');
-              },
+              onTap: () => Navigator.pushNamed(context, AppRoutes.addRevenuePage) ,
               title: Text(
                 'Adicionar Renda',
                 style: AppTheme.textStyles.bodyTextStyle,
@@ -70,9 +67,7 @@ class ShortcutAddBottomsheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
             child: ListTile(
-              onTap: () {
-                debugPrint('Adicionar Categoria');
-              },
+              onTap: () => Navigator.pushNamed(context, AppRoutes.addCategoryPage) ,
               title: Text(
                 'Adicionar Categoria',
                 style: AppTheme.textStyles.bodyTextStyle,
