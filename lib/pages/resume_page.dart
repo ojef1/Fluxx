@@ -1,6 +1,5 @@
-import 'package:Fluxx/blocs/revenue_bloc/revenue_bloc.dart';
-import 'package:Fluxx/blocs/revenue_bloc/revenue_state.dart';
-import 'package:Fluxx/components/resumePage/available_revenues.dart';
+import 'package:Fluxx/blocs/resume_bloc/resume_cubit.dart';
+import 'package:Fluxx/blocs/resume_bloc/resume_state.dart';
 import 'package:Fluxx/components/shortcut_add_bottomsheet.dart';
 import 'package:Fluxx/components/shortcut_lists_bottomsheet.dart';
 import 'package:Fluxx/themes/app_theme.dart';
@@ -20,9 +19,12 @@ class ResumePage extends StatefulWidget {
 
 class _ResumePageState extends State<ResumePage> {
   late final ScrollController _pageScrollController;
+  late final String greeting;
 
   @override
   void initState() {
+    greeting = GetIt.I<ResumeCubit>().getGreeting();
+    GetIt.I<ResumeCubit>().getActualMonth();
     _pageScrollController = ScrollController();
     GetIt.I<RevenueCubit>().getPublicRevenue();
     super.initState();
@@ -61,8 +63,8 @@ class _ResumePageState extends State<ResumePage> {
                     ),
                     SizedBox(width: mediaQuery.width * .07),
                     Text(
-                      //FIXME colocar o nome do usuário de acordo com o back e o comprimento de acordo com a hora do dia
-                      'Bom dia, \${username}',
+                      //FIXME colocar o nome do usuário de acordo com o back
+                      '$greeting \${username}',
                       style: AppTheme.textStyles.titleTextStyle,
                     ),
                   ],
@@ -78,10 +80,12 @@ class _ResumePageState extends State<ResumePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      //FIXME colocar o nome do mês atual
-                      'Resumo de \${mesAtual}',
-                      style: AppTheme.textStyles.titleTextStyle,
+                    BlocBuilder<ResumeCubit, ResumeState>(
+                      bloc: GetIt.I(),
+                      builder: (context, state) => Text(
+                        'Resumo de ${state.currentMonthName}',
+                        style: AppTheme.textStyles.titleTextStyle,
+                      ),
                     ),
                     SizedBox(height: mediaQuery.height * .02),
                     Container(
