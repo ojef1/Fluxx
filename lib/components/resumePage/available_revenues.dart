@@ -1,12 +1,13 @@
+import 'package:Fluxx/blocs/resume_bloc/resume_cubit.dart';
 import 'package:Fluxx/blocs/revenue_bloc/revenue_bloc.dart';
 import 'package:Fluxx/blocs/revenue_bloc/revenue_state.dart';
 import 'package:Fluxx/components/revenue_item.dart';
+import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
-import 'package:flutter/gestures.dart';
+import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:shimmer/shimmer.dart';
 
 class AvailableRevenues extends StatefulWidget {
@@ -134,24 +135,60 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                 );
               } else if (state.getRevenueResponse ==
                   GetRevenueResponse.success) {
-                return SizedBox(
-                  height: mediaQuery.height * .3,
-                  child: Center(
-                    child: GridView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: state.revenuesList.length,
-                      shrinkWrap: true,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisExtent: mediaQuery.width * .5,
-                      ),
-                      itemBuilder: (context, index) => RevenueItem(
-                        item: state.revenuesList[index],
+                if (state.revenuesList.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.all( 28.0),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Text(
+                            maxLines: 3,
+                            textAlign: TextAlign.center,
+                            'Você ainda não possui Receitas Cadastradas!',
+                            style: AppTheme.textStyles.subTileTextStyle,
+                          ),
+                          const SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: () {
+                              var currentMonthId =
+                                  GetIt.I<ResumeCubit>().state.currentMonthId;
+                              RevenueModel revenue =
+                                  RevenueModel(monthId: currentMonthId);
+                              Navigator.pushReplacementNamed(
+                                  context, AppRoutes.addRevenuePage,
+                                  arguments: revenue);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.colors.accentColor,
+                              minimumSize: const Size(50, 50),
+                            ),
+                            child: Text('Adicionar Nova Receita',
+                                style: AppTheme.textStyles.bodyTextStyle),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                );
+                  );
+                } else {
+                  return SizedBox(
+                    height: mediaQuery.height * .3,
+                    child: Center(
+                      child: GridView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: state.revenuesList.length,
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisExtent: mediaQuery.width * .5,
+                        ),
+                        itemBuilder: (context, index) => RevenueItem(
+                          item: state.revenuesList[index],
+                        ),
+                      ),
+                    ),
+                  );
+                }
               } else {
                 return Container();
               }

@@ -33,11 +33,13 @@ class RevenueItem extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${item.name}',
-                  style: AppTheme.textStyles.subTileTextStyle,
+                Expanded(
+                  child: Text(
+                    '${item.name}',
+                    style: AppTheme.textStyles.subTileTextStyle,
+                  ),
                 ),
-                //FIXME colocar o icone de acordo com o tipo de receita (fixa ou específica)
+                
                 Icon(
                   item.isPublic == 1
                       ? Icons.public_rounded

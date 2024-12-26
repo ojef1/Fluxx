@@ -24,6 +24,7 @@ class AddRevenuePage extends StatefulWidget {
 class _AddRevenuePageState extends State<AddRevenuePage> {
   late TextEditingController nameController;
   late TextEditingController valueController;
+  late final RevenueModel? revenueModel;
   bool isPublic = false;
   bool isEditing = false;
 
@@ -35,6 +36,13 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    revenueModel = ModalRoute.of(context)!.settings.arguments as RevenueModel?;
+    _hasData(revenueModel);
+  }
+
+  @override
   void dispose() {
     nameController.dispose();
     valueController.dispose();
@@ -43,7 +51,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
   }
 
   void _hasData(RevenueModel? revenueModel) {
-    if (revenueModel != null) {
+    if (revenueModel!.name != null) {
       bool _isPublic = revenueModel.isPublic == 1;
       setState(() {
         nameController.text = revenueModel.name ?? '';
@@ -57,9 +65,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
-    final RevenueModel? revenueModel =
-        ModalRoute.of(context)!.settings.arguments as RevenueModel?;
-    _hasData(revenueModel);
+
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
@@ -86,9 +92,8 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                                 context, AppRoutes.home),
                             icon: const Icon(Icons.arrow_back_rounded)),
                       ),
-                      // SizedBox(width: mediaQuery.width * .1),
                       Text(
-                        isEditing ? 'Editar Renda' :'Adicionar Renda',
+                        isEditing ? 'Editar Renda' : 'Adicionar Renda',
                         style: AppTheme.textStyles.titleTextStyle,
                       ),
                       CircleAvatar(
@@ -157,36 +162,63 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                             ),
                           ],
                         ),
-                        BlocBuilder<RevenueCubit, RevenueState>(
-                          bloc: GetIt.I(),
-                          buildWhen: (previous, current) =>
-                              previous.addRevenueResponse !=
-                              current.addRevenueResponse,
-                          builder: (context, state) {
-                            bool isLoading = state.addRevenueResponse ==
-                                AddRevenueResponse.loading;
-                            return Container(
-                              decoration: BoxDecoration(
-                                  color: AppTheme.colors.accentColor,
-                                  borderRadius: BorderRadius.circular(10)),
-                              padding: const EdgeInsets.all(3),
-                              width: mediaQuery.width * .85,
-                              child: ElevatedButton(
-                                onPressed: isLoading
-                                    ? null
-                                    : () => _verifyData(revenueModel!.monthId, revenueModel.id!),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppTheme.colors.accentColor,
-                                  minimumSize: const Size(50, 50),
+                        Column(
+                          children: [
+                            if (isEditing)
+                              Container(
+                                margin: const EdgeInsets.only(bottom: 15),
+                                decoration: BoxDecoration(
+                                    color: Colors.redAccent,
+                                    borderRadius: BorderRadius.circular(10)),
+                                padding: const EdgeInsets.all(3),
+                                width: mediaQuery.width * .85,
+                                child: ElevatedButton(
+                                  onPressed: () => _showDeleteDialog(
+                                      context, revenueModel!.id!),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.redAccent,
+                                    minimumSize: const Size(50, 50),
+                                  ),
+                                  child: Text('Excluir',
+                                      style: AppTheme.textStyles.bodyTextStyle),
                                 ),
-                                child: isLoading
-                                    ? const CircularProgressIndicator()
-                                    : Text(isEditing ? 'Editar' :'Adicionar',
-                                        style:
-                                            AppTheme.textStyles.bodyTextStyle),
                               ),
-                            );
-                          },
+                            BlocBuilder<RevenueCubit, RevenueState>(
+                              bloc: GetIt.I(),
+                              buildWhen: (previous, current) =>
+                                  previous.addRevenueResponse !=
+                                  current.addRevenueResponse,
+                              builder: (context, state) {
+                                bool isLoading = state.addRevenueResponse ==
+                                    AddRevenueResponse.loading;
+                                return Container(
+                                  decoration: BoxDecoration(
+                                      color: AppTheme.colors.accentColor,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  padding: const EdgeInsets.all(3),
+                                  width: mediaQuery.width * .85,
+                                  child: ElevatedButton(
+                                    onPressed: isLoading
+                                        ? null
+                                        : () => _verifyData(
+                                            revenueModel!.monthId,
+                                            revenueId: revenueModel?.id),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor:
+                                          AppTheme.colors.accentColor,
+                                      minimumSize: const Size(50, 50),
+                                    ),
+                                    child: isLoading
+                                        ? const CircularProgressIndicator()
+                                        : Text(
+                                            isEditing ? 'Editar' : 'Adicionar',
+                                            style: AppTheme
+                                                .textStyles.bodyTextStyle),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -269,8 +301,57 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     );
   }
 
-  Future<void> _verifyData(int? monthId,
-    String revenueId,) async {
+  void _showDeleteDialog(BuildContext context, String revenueId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          backgroundColor: Colors.white,
+          contentPadding: const EdgeInsets.all(16.0),
+          title: Text(
+            maxLines: 4,
+            textAlign: TextAlign.center,
+            'Tem certeza de que deseja excluir este item?',
+            style: AppTheme.textStyles.tileTextStyle,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Cancelar',
+                style: AppTheme.textStyles.accentTextStyle.copyWith(
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteRevenue(revenueId);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              child: Text(
+                'Excluir',
+                style: AppTheme.textStyles.bodyTextStyle,
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _verifyData(int? monthId, {String? revenueId}) async {
     if (nameController.text.isEmpty) {
       showFlushbar(context, 'preencha o campo do nome', true);
       return;
@@ -281,7 +362,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     }
     if (nameController.text.isNotEmpty && valueController.text.isNotEmpty) {
       if (isEditing) {
-        _editRevenue(monthId, revenueId);
+        _editRevenue(monthId, revenueId!);
       } else {
         _addNewRevenue(monthId);
       }
@@ -299,7 +380,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
         name: nameController.text,
         monthId: monthId,
         value: double.parse(value),
-        isPublic: isPublic ? 0 : 1);
+        isPublic: isPublic ? 1 : 0);
     var result = await GetIt.I<RevenueCubit>().editRevenue(newRevenue);
     var state = GetIt.I<RevenueCubit>().state;
     if (result != -1) {
@@ -319,12 +400,23 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
         name: nameController.text,
         monthId: monthId,
         value: double.parse(value),
-        isPublic: isPublic ? 0 : 1);
+        isPublic: isPublic ? 1 : 0);
     var result = await GetIt.I<RevenueCubit>().addNewRevenue(newRevenue);
     var state = GetIt.I<RevenueCubit>().state;
     if (result != -1) {
       showFlushbar(context, state.successMessage, false);
       _clearInputs();
+    } else {
+      showFlushbar(context, state.errorMessage, true);
+    }
+  }
+
+  Future<void> _deleteRevenue(String revenueId) async {
+    var result = await GetIt.I<RevenueCubit>().removeRevenue(revenueId);
+    var state = GetIt.I<RevenueCubit>().state;
+    if (result > 0) {
+      await showFlushbar(context, state.successMessage, false);
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
     } else {
       showFlushbar(context, state.errorMessage, true);
     }

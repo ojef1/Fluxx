@@ -1,5 +1,7 @@
 import 'package:Fluxx/blocs/resume_bloc/resume_cubit.dart';
 import 'package:Fluxx/blocs/resume_bloc/resume_state.dart';
+import 'package:Fluxx/blocs/revenue_bloc/revenue_bloc.dart';
+import 'package:Fluxx/components/resumePage/available_revenues.dart';
 import 'package:Fluxx/components/shortcut_add_bottomsheet.dart';
 import 'package:Fluxx/components/shortcut_lists_bottomsheet.dart';
 import 'package:Fluxx/themes/app_theme.dart';

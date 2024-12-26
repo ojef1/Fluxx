@@ -1,6 +1,9 @@
+import 'package:Fluxx/blocs/resume_bloc/resume_cubit.dart';
+import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class ShortcutAddBottomsheet extends StatelessWidget {
   const ShortcutAddBottomsheet({super.key});
@@ -49,7 +52,14 @@ class ShortcutAddBottomsheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
             child: ListTile(
-              onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.addRevenuePage, arguments: null) ,
+              onTap: () {
+                var currentMonthId =
+                    GetIt.I<ResumeCubit>().state.currentMonthId;
+                RevenueModel revenue = RevenueModel(monthId: currentMonthId);
+                Navigator.pushReplacementNamed(
+                    context, AppRoutes.addRevenuePage,
+                    arguments: revenue);
+              },
               title: Text(
                 'Adicionar Renda',
                 style: AppTheme.textStyles.bodyTextStyle,
@@ -67,7 +77,8 @@ class ShortcutAddBottomsheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
             child: ListTile(
-              onTap: () => Navigator.pushNamed(context, AppRoutes.addCategoryPage) ,
+              onTap: () =>
+                  Navigator.pushNamed(context, AppRoutes.addCategoryPage),
               title: Text(
                 'Adicionar Categoria',
                 style: AppTheme.textStyles.bodyTextStyle,

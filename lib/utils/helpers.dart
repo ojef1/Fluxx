@@ -15,15 +15,15 @@ bool intToBool(int value) {
   return value != 0;
 }
 
-void showFlushbar(BuildContext context, String message, bool isError) {
+Future<void> showFlushbar(BuildContext context, String message, bool isError) async {
   if (isError) {
-    CustomSnackBar.show(
+    await CustomSnackBar.show(
         context: context,
         message: message,
         icon: Icons.warning_rounded,
         color: Colors.red);
   } else {
-    CustomSnackBar.show(
+    await CustomSnackBar.show(
         context: context,
         message: message,
         icon: Icons.check,
