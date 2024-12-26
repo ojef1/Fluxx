@@ -1,5 +1,6 @@
 import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/bill_model.dart';
+import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -9,16 +10,14 @@ import 'package:sqflite/sql.dart';
 class Db {
   static Future<sql.Database> dataBase() async {
     final dbPath = await sql.getDatabasesPath();
+    // await sql.deleteDatabase(path.join(dbPath, 'Fluxx.db'));
+
     return await sql.openDatabase(
       path.join(dbPath, 'Fluxx.db'),
       onCreate: (db, version) async {
         await db.execute(
           // Criar tabela de meses
           'CREATE TABLE ${Tables.months} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)',
-        );
-        await db.execute(
-          // Criar tabela de categorias
-          'CREATE TABLE ${Tables.category} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)',
         );
         // Criar tabela de contas
         await db.execute(
@@ -32,7 +31,7 @@ class Db {
           'FOREIGN KEY (month_id) REFERENCES ${Tables.months} (id), '
           'FOREIGN KEY (category_id) REFERENCES ${Tables.category} (id))',
         );
-        //cria a tabela do usuário
+        //criar a tabela do usuário
         await db.execute(
           'CREATE TABLE ${Tables.user} ('
           'name TEXT, '
@@ -40,9 +39,20 @@ class Db {
           'picture TEXT)',
         );
 
+        //criar  a tabela de receitas
+        await db.execute(
+          'CREATE TABLE ${Tables.revenue} ('
+          'id TEXT PRIMARY KEY, '
+          'name TEXT, '
+          'value REAL, '
+          'month_id INTEGER, '
+          'isPublic INTEGER, '
+          'FOREIGN KEY (month_id) REFERENCES ${Tables.months} (id))',
+        );
+
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      version: 7,
+      version: 9,
     );
   }
 
@@ -61,18 +71,11 @@ class Db {
     await db.insert(Tables.months, {'id': 11, 'name': 'Novembro'});
     await db.insert(Tables.months, {'id': 12, 'name': 'Dezembro'});
 
-    // Inserir as categorias fixas
-    await db.insert(Tables.category, {'id': 1, 'name': 'Casa'});
-    await db.insert(Tables.category, {'id': 2, 'name': 'Transporte'});
-    await db.insert(Tables.category, {'id': 3, 'name': 'Saúde'});
-    await db.insert(Tables.category, {'id': 4, 'name': 'Lazer'});
-    await db.insert(Tables.category, {'id': 5, 'name': 'Alimentação'});
-
     // Caminho da imagem padrão
     String defaultImagePath = 'assets/images/default_user.jpeg';
     // Inserir o as informações iniciais do usuário
-    await db.insert(
-        Tables.user, {'name': 'usuário', 'salary': 0.0, 'picture': defaultImagePath});
+    await db.insert(Tables.user,
+        {'name': 'usuário', 'salary': 0.0, 'picture': defaultImagePath});
   }
 
   static Future<int> insertBill(String table, BillModel data) async {
@@ -141,16 +144,19 @@ class Db {
     final db = await Db.dataBase();
     final updatedUser = user.toJson();
 
-    try{
-      int result = await db.update(Tables.user, updatedUser,
-        conflictAlgorithm: ConflictAlgorithm.replace,);
+    try {
+      int result = await db.update(
+        Tables.user,
+        updatedUser,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
       return result;
-    }catch(e){
+    } catch (e) {
       throw Exception("Erro ao atualizar o perfil : $e");
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getUser()async{
+  static Future<List<Map<String, dynamic>>> getUser() async {
     final db = await Db.dataBase();
     return db.query(Tables.user);
   }
@@ -250,6 +256,68 @@ class Db {
     } catch (e) {
       debugPrint("Erro ao obter totais por categoria: $e");
       return [];
+    }
+  }
+
+  static Future<int> insertRevenue(RevenueModel data) async {
+    final db = await Db.dataBase();
+    final revenueData = data.toJson();
+
+    try {
+      int result = await db.insert(
+        Tables.revenue,
+        revenueData,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      return result;
+    } catch (e) {
+      throw Exception("Erro ao adicionar a renda: $e");
+    }
+  }
+
+  static Future<int> deleteRevenue(String revenueId) async {
+    final db = await Db.dataBase();
+    try {
+      int result = await db.delete(
+        Tables.revenue,
+        where: 'id = ?',
+        whereArgs: [revenueId],
+      );
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao remover a renda: $e');
+    }
+  }
+
+  static Future<int> updateRevenue(
+      String revenueId, RevenueModel newData) async {
+    final db = await Db.dataBase();
+    final updatedData = newData.toJson();
+    try {
+      int result = await db.update(
+        Tables.revenue,
+        updatedData,
+        where: 'id = ?',
+        whereArgs: [revenueId],
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao atualizar a renda: $e');
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getPublicRevenues() async {
+    final db = await Db.dataBase();
+
+    try {
+      final result = await db.query(
+        Tables.revenue,
+        where: 'isPublic = 1',
+      );
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao consultar as receitas : $e');
     }
   }
 }

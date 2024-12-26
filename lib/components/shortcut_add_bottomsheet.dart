@@ -49,7 +49,7 @@ class ShortcutAddBottomsheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
             child: ListTile(
-              onTap: () => Navigator.pushNamed(context, AppRoutes.addRevenuePage) ,
+              onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.addRevenuePage, arguments: null) ,
               title: Text(
                 'Adicionar Renda',
                 style: AppTheme.textStyles.bodyTextStyle,

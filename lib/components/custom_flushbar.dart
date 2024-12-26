@@ -32,7 +32,7 @@ abstract class CustomSnackBar {
               : const SizedBox(),
         ],
       ),
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 40),
       backgroundColor: color,
       duration: const Duration(seconds: 4),
       flushbarStyle: FlushbarStyle.GROUNDED,

@@ -2,6 +2,7 @@ import 'package:Fluxx/components/custom_flushbar.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 String formatPrice(double price) {
   final NumberFormat currencyFormatter =
@@ -10,7 +11,7 @@ String formatPrice(double price) {
 }
 
 //qualquer número diferente de zero será interpretado como true
-bool intToBool(int value) { 
+bool intToBool(int value) {
   return value != 0;
 }
 
@@ -26,7 +27,7 @@ void showFlushbar(BuildContext context, String message, bool isError) {
         context: context,
         message: message,
         icon: Icons.check,
-        color: AppTheme.colors.darkPurple);
+        color: AppTheme.colors.accentColor);
   }
 }
 
@@ -38,4 +39,10 @@ String? formatDate(String? dateTime) {
     return formatter.format(date);
   }
   return null;
+}
+
+String codeGenerate() {
+  var code = const Uuid().v4();
+  var shortCode = code.substring(0, 8);
+  return shortCode;
 }
