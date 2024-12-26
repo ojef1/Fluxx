@@ -1,9 +1,13 @@
+import 'package:Fluxx/blocs/resume_bloc/resume_cubit.dart';
+import 'package:Fluxx/blocs/resume_bloc/resume_state.dart';
 import 'package:Fluxx/components/shortcut_add_bottomsheet.dart';
 import 'package:Fluxx/components/shortcut_lists_bottomsheet.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
 class ResumePage extends StatefulWidget {
@@ -15,9 +19,12 @@ class ResumePage extends StatefulWidget {
 
 class _ResumePageState extends State<ResumePage> {
   late final ScrollController _pageScrollController;
+  late final String greeting;
 
   @override
   void initState() {
+    greeting = GetIt.I<ResumeCubit>().getGreeting();
+    GetIt.I<ResumeCubit>().getActualMonth();
     _pageScrollController = ScrollController();
     super.initState();
   }
@@ -46,8 +53,8 @@ class _ResumePageState extends State<ResumePage> {
                 child: Row(
                   children: [
                     GestureDetector(
-                      onTap: () => Navigator.pushNamed(
-                          context, AppRoutes.profilePage),
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.profilePage),
                       child: const CircleAvatar(
                         //FIXME usar a imagem escolhida do próprio usuário
                         backgroundImage: NetworkImage(url),
@@ -55,8 +62,8 @@ class _ResumePageState extends State<ResumePage> {
                     ),
                     SizedBox(width: mediaQuery.width * .07),
                     Text(
-                      //FIXME colocar o nome do usuário de acordo com o back e o comprimento de acordo com a hora do dia
-                      'Bom dia, \${username}',
+                      //FIXME colocar o nome do usuário de acordo com o back
+                      '$greeting \${username}',
                       style: AppTheme.textStyles.titleTextStyle,
                     ),
                   ],
@@ -72,10 +79,12 @@ class _ResumePageState extends State<ResumePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      //FIXME colocar o nome do mês atual
-                      'Resumo de \${mesAtual}',
-                      style: AppTheme.textStyles.titleTextStyle,
+                    BlocBuilder<ResumeCubit, ResumeState>(
+                      bloc: GetIt.I(),
+                      builder: (context, state) => Text(
+                        'Resumo de ${state.currentMonthName}',
+                        style: AppTheme.textStyles.titleTextStyle,
+                      ),
                     ),
                     SizedBox(height: mediaQuery.height * .02),
                     Container(
