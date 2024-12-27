@@ -317,7 +317,22 @@ class Db {
       );
       return result;
     } catch (e) {
-      throw Exception('Erro ao consultar as receitas : $e');
+      throw Exception('Erro ao consultar as receitas públicas : $e');
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getExclusiveRevenues(int monthId) async {
+    final db = await Db.dataBase();
+
+    try {
+      final result = await db.query(
+        Tables.revenue,
+        where: 'isPublic = 0 AND month_id = ?',
+        whereArgs: [monthId],
+      );
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao consultar as receitas exclusivas : $e');
     }
   }
 }

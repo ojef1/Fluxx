@@ -11,6 +11,12 @@ class RevenueItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
+    double percent = 0.4;
+    Color percentColor = percent <= 0.4
+        ? Colors.green
+        : percent <= 0.7
+            ? Colors.amber
+            : Colors.red;
     return GestureDetector(
       onTap: () => Navigator.pushReplacementNamed(
         context,
@@ -27,46 +33,62 @@ class RevenueItem extends StatelessWidget {
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(10)),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    textAlign: TextAlign.center,
                     '${item.name}',
                     style: AppTheme.textStyles.subTileTextStyle,
                   ),
-                ),
-                
-                Icon(
-                  item.isPublic == 1
-                      ? Icons.public_rounded
-                      : Icons.access_time_rounded,
-                ),
-              ],
+                  Text(
+                    textAlign: TextAlign.center,
+                    'R\$ ${item.value}',
+                    style: AppTheme.textStyles.subTileTextStyle,
+                  ),
+                  LinearPercentIndicator(
+                    padding: EdgeInsets.zero,
+                    barRadius: const Radius.circular(50),
+                    lineHeight: 15,
+                    //FIXME colocar o valor de acordo com o calculo = renda total - total gasto
+                    percent: percent,
+                    //FIXME colocar as cores de acordo com a porcentagem
+                    //TODO definir limiares de porcetagem para mudar de cor
+                    progressColor: percentColor,
+                  ),
+                ],
+              ),
             ),
             Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'R\$ ${item.value}',
-                  style: AppTheme.textStyles.subTileTextStyle,
+                Container(
+                  margin: EdgeInsets.only(
+                    bottom: mediaQuery.width * .01,
+                    top: mediaQuery.width * .01,
+                  ),
+                  height: 1,
+                  color: AppTheme.colors.accentColor,
                 ),
-                SizedBox(height: mediaQuery.height * .01),
-                LinearPercentIndicator(
-                  padding: EdgeInsets.zero,
-                  barRadius: const Radius.circular(50),
-                  lineHeight: 15,
-                  //FIXME colocar o valor de acordo com o calculo = renda total - total gasto
-                  percent: 0.7,
-                  //FIXME colocar as cores de acordo com a porcentagem
-                  //TODO definir limiares de porcetagem para mudar de cor
-                  progressColor: Colors.green,
-                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.isPublic == 1 ? 'Público' : 'Privado',
+                        style: AppTheme.textStyles.subTileTextStyle,
+                      ),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward_ios_rounded,
+                      size: 20,
+                    )
+                  ],
+                )
               ],
-            ),
+            )
           ],
         ),
       ),

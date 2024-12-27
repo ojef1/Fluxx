@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class RevenueCubit extends Cubit<RevenueState> {
   RevenueCubit() : super(const RevenueState());
 
-
   void updateAddRevenueResponse(AddRevenueResponse addRevenueResponse) {
     emit(state.copyWith(addRevenueResponse: addRevenueResponse));
   }
@@ -53,8 +52,30 @@ class RevenueCubit extends Cubit<RevenueState> {
     }
   }
 
-  Future<void> getPublicRevenue() async {
-    updateGetRevenueResponse(GetRevenueResponse.loading);
+  Future<void> getRevenues(int monthId) async {
+  updateGetRevenueResponse(GetRevenueResponse.loading);
+  try {
+    final results = await Future.wait([
+      _getPublicRevenue(),
+      _getExclusiveRevenue(monthId),
+    ]);
+
+    final combinedRevenuesList = [
+      ...results[0],
+      ...results[1],
+    ];
+
+    emit(state.copyWith(revenuesList: combinedRevenuesList));
+    updateGetRevenueResponse(GetRevenueResponse.success);
+  } catch (error) {
+    debugPrint('$error');
+    updateGetRevenueResponse(GetRevenueResponse.error);
+    emit(state.copyWith(revenuesList: state.revenuesList));
+  }
+}
+
+
+  Future<List<RevenueModel>> _getPublicRevenue() async {
     try {
       final revenue = await Db.getPublicRevenues();
 
@@ -67,12 +88,31 @@ class RevenueCubit extends Cubit<RevenueState> {
                 isPublic: item['isPublic'],
               ))
           .toList();
-      emit(state.copyWith(revenuesList: publicRevenuesList));
-      updateGetRevenueResponse(GetRevenueResponse.success);
+      return publicRevenuesList;
     } catch (error) {
       debugPrint('$error');
-      updateGetRevenueResponse(GetRevenueResponse.error);
-      emit(state.copyWith(revenuesList: state.revenuesList));
+
+      return [];
+    }
+  }
+
+  Future<List<RevenueModel>> _getExclusiveRevenue(int monthId) async {
+    try {
+      final revenue = await Db.getExclusiveRevenues(monthId);
+
+      final exclusiveRevenuesList = revenue
+          .map((item) => RevenueModel(
+                id: item['id'],
+                name: item['name'],
+                monthId: item['month_id'],
+                value: item['value'],
+                isPublic: item['isPublic'],
+              ))
+          .toList();
+      return exclusiveRevenuesList;
+    } catch (error) {
+      debugPrint('$error');
+      return [];
     }
   }
 

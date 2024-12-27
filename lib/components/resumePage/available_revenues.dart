@@ -121,7 +121,7 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                         const SizedBox(height: 10),
                         ElevatedButton(
                           onPressed: () =>
-                              GetIt.I<RevenueCubit>().getPublicRevenue(),
+                              GetIt.I<RevenueCubit>().getRevenues(GetIt.I<ResumeCubit>().state.currentMonthId),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.colors.accentColor,
                             minimumSize: const Size(50, 50),
@@ -171,7 +171,7 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                   );
                 } else {
                   return SizedBox(
-                    height: mediaQuery.height * .3,
+                    height: mediaQuery.height * .33,
                     child: Center(
                       child: GridView.builder(
                         scrollDirection: Axis.horizontal,

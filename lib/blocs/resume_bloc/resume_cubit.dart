@@ -19,12 +19,13 @@ class ResumeCubit extends Cubit<ResumeState> {
     }
   }
 
-  Future<void> getActualMonth()async{
+  Future<int> getActualMonth()async{
     var result = await Db.getData(Tables.months);
     final currentMonth = DateTime.now().month;
     final actualMonth = result.firstWhere((month) => month['id'] == currentMonth);
     emit(state.copyWith(currentMonthId: actualMonth['id']));
     emit(state.copyWith(currentMonthName: actualMonth['name']));
+    return actualMonth['id'];
 
   }
 

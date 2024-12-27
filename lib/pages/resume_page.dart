@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:Fluxx/blocs/revenue_bloc/revenue_state.dart';
 
 class ResumePage extends StatefulWidget {
   const ResumePage({super.key});
@@ -26,10 +27,15 @@ class _ResumePageState extends State<ResumePage> {
   @override
   void initState() {
     greeting = GetIt.I<ResumeCubit>().getGreeting();
-    GetIt.I<ResumeCubit>().getActualMonth();
     _pageScrollController = ScrollController();
-    GetIt.I<RevenueCubit>().getPublicRevenue();
+    init();
     super.initState();
+  }
+
+  Future<void> init()async{
+    var actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
+    GetIt.I<RevenueCubit>().getRevenues(actualMonth);
+
   }
 
   @override
@@ -115,12 +121,14 @@ class _ResumePageState extends State<ResumePage> {
                                   Text(
                                     //FIXME colocar o valor de gasto total
                                     'R\$ 00,00',
-                                    style: AppTheme.textStyles.subTileTextStyle,
+                                    style:
+                                        AppTheme.textStyles.subTileTextStyle,
                                   ),
                                   Text(
                                     //FIXME colocar o valor total disponível
                                     'R\$ 00,00',
-                                    style: AppTheme.textStyles.subTileTextStyle,
+                                    style:
+                                        AppTheme.textStyles.subTileTextStyle,
                                   ),
                                 ],
                               ),
@@ -184,7 +192,8 @@ class _ResumePageState extends State<ResumePage> {
                                   icon: const Icon(Icons.add_rounded),
                                   color: Colors.white,
                                   iconSize: 30,
-                                  onPressed: () => _showAddBottomSheet(context),
+                                  onPressed: () =>
+                                      _showAddBottomSheet(context),
                                 ),
                               ),
                               Text(
