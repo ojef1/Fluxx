@@ -29,7 +29,7 @@ class RevenueItem extends StatelessWidget {
           horizontal: mediaQuery.width * .02,
         ),
         height: mediaQuery.height * .12,
-        width: mediaQuery.width * .4,
+        width: mediaQuery.width * .48,
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(10)),
         child: Column(
@@ -38,7 +38,7 @@ class RevenueItem extends StatelessWidget {
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     textAlign: TextAlign.center,
@@ -48,7 +48,7 @@ class RevenueItem extends StatelessWidget {
                   Text(
                     textAlign: TextAlign.center,
                     'R\$ ${item.value}',
-                    style: AppTheme.textStyles.subTileTextStyle,
+                    style: AppTheme.textStyles.descTextStyle,
                   ),
                   LinearPercentIndicator(
                     padding: EdgeInsets.zero,

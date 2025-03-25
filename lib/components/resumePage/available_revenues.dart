@@ -30,9 +30,35 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
             padding: EdgeInsets.symmetric(
               horizontal: mediaQuery.width * .05,
             ),
-            child: Text(
-              'Receitas Disponíveis',
-              style: AppTheme.textStyles.titleTextStyle,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Receitas Disponíveis',
+                  style: AppTheme.textStyles.titleTextStyle,
+                ),
+                BlocBuilder<RevenueCubit, RevenueState>(
+                  bloc: GetIt.I(),
+                  buildWhen: (previous, current) =>
+                      previous.getRevenueResponse != current.getRevenueResponse,
+                  builder: (context, state) {
+                    if (state.getRevenueResponse ==
+                        GetRevenueResponse.loading) {
+                      return const SizedBox.shrink();
+                    } else {
+                      return IconButton(
+                        onPressed: () async {
+                          var actualMonth =
+                              await GetIt.I<ResumeCubit>().getActualMonth();
+                          GetIt.I<RevenueCubit>()
+                              .calculateAvailableValue(actualMonth);
+                        },
+                        icon: const Icon(Icons.refresh_rounded),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
           ),
           SizedBox(height: mediaQuery.height * .02),
@@ -42,67 +68,28 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                 previous.getRevenueResponse != current.getRevenueResponse,
             builder: (context, state) {
               if (state.getRevenueResponse == GetRevenueResponse.loading) {
-                return SizedBox(
-                  height: mediaQuery.height * .3,
-                  child: GridView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 4,
-                    shrinkWrap: true,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisExtent: mediaQuery.width * .5,
-                    ),
-                    itemBuilder: (context, index) => Shimmer.fromColors(
-                      baseColor: Colors.grey[400]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: EdgeInsets.symmetric(
-                          horizontal: mediaQuery.width * .02,
-                        ),
-                        height: mediaQuery.height * .12,
-                        width: mediaQuery.width * .4,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  height: 16,
-                                  width: mediaQuery.width * .2,
-                                  color: Colors.grey[300],
-                                ),
-                                const Icon(Icons.access_time_rounded),
-                              ],
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: mediaQuery.height * .01),
-                                Container(
-                                  height: 16,
-                                  width: mediaQuery.width * .3,
-                                  color: Colors.grey[300],
-                                ),
-                                SizedBox(height: mediaQuery.height * .01),
-                                Container(
-                                  height: 15,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[300],
-                                    borderRadius: BorderRadius.circular(50),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                return Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: SizedBox(
+                    height: mediaQuery.height * .18,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: 2,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) => Shimmer.fromColors(
+                        baseColor: Colors.grey[400]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          margin: EdgeInsets.symmetric(
+                            horizontal: mediaQuery.width * .02,
+                          ),
+                          height: mediaQuery.height * .12,
+                          width: mediaQuery.width * .4,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
                     ),
@@ -120,8 +107,8 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                         ),
                         const SizedBox(height: 10),
                         ElevatedButton(
-                          onPressed: () =>
-                              GetIt.I<RevenueCubit>().getRevenues(GetIt.I<ResumeCubit>().state.currentMonthId),
+                          onPressed: () => GetIt.I<RevenueCubit>().getRevenues(
+                              GetIt.I<ResumeCubit>().state.currentMonthId),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.colors.accentColor,
                             minimumSize: const Size(50, 50),
@@ -137,7 +124,7 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                   GetRevenueResponse.success) {
                 if (state.revenuesList.isEmpty) {
                   return Padding(
-                    padding: const EdgeInsets.all( 28.0),
+                    padding: const EdgeInsets.all(28.0),
                     child: Center(
                       child: Column(
                         children: [
@@ -170,20 +157,18 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                     ),
                   );
                 } else {
-                  return SizedBox(
-                    height: mediaQuery.height * .33,
-                    child: Center(
-                      child: GridView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: state.revenuesList.length,
-                        shrinkWrap: true,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 10,
-                          mainAxisExtent: mediaQuery.width * .5,
-                        ),
-                        itemBuilder: (context, index) => RevenueItem(
-                          item: state.revenuesList[index],
+                  return Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: SizedBox(
+                      height: mediaQuery.height * .18,
+                      child: Center(
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: state.revenuesList.length,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) => RevenueItem(
+                            item: state.revenuesList[index],
+                          ),
                         ),
                       ),
                     ),
