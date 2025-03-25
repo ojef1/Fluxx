@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:Fluxx/blocs/bill_bloc/bill_cubit.dart';
 import 'package:Fluxx/blocs/bill_bloc/bill_state.dart';
-import 'package:Fluxx/blocs/month_detail_bloc/month_detail_cubit.dart';
+import 'package:Fluxx/blocs/bill_list_bloc/bill_list_cubit.dart';
 import 'package:Fluxx/components/categorie_slider.dart';
 import 'package:Fluxx/components/custom_app_bar.dart';
 import 'package:Fluxx/components/custom_text_field.dart';
@@ -52,7 +52,7 @@ class _EditBillPageState extends State<EditBillPage> {
     nameController.text = bill.name ?? '';
     priceController.text = bill.price.toString();
     if (count == 0) {
-      GetIt.I<BillCubit>().updateEditCategoryInFocus(bill.categoryId!);
+      // GetIt.I<BillCubit>().updateEditCategoryInFocus(bill.categoryId!);
       GetIt.I<BillCubit>().updateBillStatus(bill.isPayed!);
       count = count = 1;
     }
@@ -88,22 +88,23 @@ class _EditBillPageState extends State<EditBillPage> {
                           functionIcon:
                               isLoading ? Icons.hourglass_bottom : Icons.check,
                           firstFunction: () => Navigator.pop(context),
-                          secondFunction: () => _editBill(
-                            bill.id ?? '',
-                            bill.monthId!,
-                            state.editCategoryInFocus.index,
-                            bill.categoryId!,
-                          ),
+                          secondFunction: () => null
+                          //  _editBill(
+                          //   bill.id ?? '',
+                          //   bill.monthId!,
+                          //   state.editCategoryInFocus.index,
+                          //   bill.categoryId!,
+                          // ),
                         );
                       },
                     ),
                     const SizedBox(height: 50),
-                    CategorieSlider(
-                      initialPage: bill.categoryId ?? 0,
-                      filters: Constants.categories,
-                      function: (index) =>
-                          GetIt.I<BillCubit>().updateEditCategoryInFocus(index),
-                    ),
+                    // CategorieSlider(
+                    //   initialPage: bill.categoryId ?? 0,
+                    //   filters: Constants.categories,
+                    //   function: (index) =>
+                    //       GetIt.I<BillCubit>().updateEditCategoryInFocus(index),
+                    // ),
                     Padding(
                       padding: EdgeInsets.only(
                           top: MediaQuery.of(context).viewInsets.top),
@@ -211,8 +212,8 @@ class _EditBillPageState extends State<EditBillPage> {
     var state = GetIt.I<BillCubit>().state;
     if (result > 0) {
       Navigator.pop(context);
-      GetIt.I<MonthsDetailCubit>()
-          .getBillsByCategory(bill.monthId!, bill.categoryId!);
+      // GetIt.I<MonthsDetailCubit>()
+      //     .getBillsByCategory(bill.monthId!, bill.categoryId!);
       showFlushbar(context, state.successMessage, false);
     } else {
       showFlushbar(context, state.errorMessage, true);
@@ -235,7 +236,7 @@ class _EditBillPageState extends State<EditBillPage> {
         id: id,
         name: nameController.text,
         monthId: monthId,
-        categoryId: categoryId,
+        // categoryId: categoryId,
         price: double.parse(price),
         isPayed: state.billIsPayed,
       );
@@ -243,7 +244,7 @@ class _EditBillPageState extends State<EditBillPage> {
       var result = await GetIt.I<BillCubit>().editBill(newBill);
       if (result != -1) {
         Navigator.pop(context);
-        GetIt.I<MonthsDetailCubit>()
+        GetIt.I<ListBillCubit>()
             .getBillsByCategory(monthId, initialCategoryId);
         showFlushbar(context, state.successMessage, false);
       } else {

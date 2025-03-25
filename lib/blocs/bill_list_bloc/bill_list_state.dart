@@ -1,6 +1,6 @@
 import 'package:Fluxx/extensions/category_extension.dart';
 import 'package:Fluxx/models/bill_model.dart';
-import 'package:Fluxx/models/chart_category_model.dart';
+import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:equatable/equatable.dart';
 
@@ -9,19 +9,19 @@ import 'package:equatable/equatable.dart';
 enum GetBillsResponse { initial, loaging, success, error }
 enum GetStatsResponse { initial, loaging, success, error }
 
-class MonthsDetailState extends Equatable {
+class ListBillState extends Equatable {
   final double monthTotalSpent;
   final double monthTotalPaid;
   final MonthModel? monthInFocus;
   final Categorys categoryInFocus;
   final List<BillModel> bills;
-  final List<StatsCategoryModel> stats;
+  final List<CategoryModel> stats;
   final GetBillsResponse getBillsResponse;
   final GetStatsResponse getStatsResponse;
   final String successMessage;
   final String errorMessage;
 
-  const MonthsDetailState({
+  const ListBillState({
     this.monthTotalSpent = 0.0,
     this.monthTotalPaid = 0.0,
     this.monthInFocus,
@@ -34,19 +34,19 @@ class MonthsDetailState extends Equatable {
     this.errorMessage = '',
   });
 
-  MonthsDetailState copyWith({
+  ListBillState copyWith({
     double? monthTotalSpent,
     double? monthTotalPaid,
     MonthModel? monthInFocus,
     Categorys? categoryInFocus,
     List<BillModel>? bills,
-    List<StatsCategoryModel>? stats,
+    List<CategoryModel>? stats,
     GetBillsResponse? getBillsResponse,
     GetStatsResponse? getStatsResponse,
     String? successMessage,
     String? errorMessage,
   }) {
-    return MonthsDetailState(
+    return ListBillState(
       monthTotalSpent: monthTotalSpent ?? this.monthTotalSpent,
       monthTotalPaid: monthTotalPaid ?? this.monthTotalPaid,
       monthInFocus: monthInFocus ?? this.monthInFocus,

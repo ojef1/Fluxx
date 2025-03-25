@@ -16,15 +16,19 @@ class RevenueState extends Equatable {
   final EditRevenueResponse editRevenueResponse;
   final GetRevenueResponse getRevenueResponse;
   final List<RevenueModel> revenuesList; 
+  final List<RevenueModel> availableRevenues;
+  final RevenueModel? selectedRevenue;
   final String successMessage;
   final String errorMessage;
 
   const RevenueState({
+    this.selectedRevenue,
     this.addRevenueResponse = AddRevenueResponse.initial,
     this.removeRevenueResponse = RemoveRevenueResponse.initial,
     this.editRevenueResponse = EditRevenueResponse.initial,
     this.getRevenueResponse = GetRevenueResponse.initial,
     this.revenuesList = const [],
+    this.availableRevenues = const [],
     this.successMessage = '',
     this.errorMessage = '',
   });
@@ -37,6 +41,8 @@ class RevenueState extends Equatable {
     EditRevenueResponse? editRevenueResponse,
     GetRevenueResponse? getRevenueResponse,
     List<RevenueModel>? revenuesList,
+    List<RevenueModel>? availableRevenues,
+    RevenueModel? selectedRevenue,
     String? successMessage,
     String? errorMessage,
   }) {
@@ -47,6 +53,8 @@ class RevenueState extends Equatable {
       editRevenueResponse: editRevenueResponse ?? this.editRevenueResponse,
       getRevenueResponse: getRevenueResponse ?? this.getRevenueResponse,
       revenuesList: revenuesList ?? this.revenuesList,
+      availableRevenues: availableRevenues ?? this.availableRevenues,
+      selectedRevenue: selectedRevenue ?? this.selectedRevenue,
       successMessage: successMessage ?? this.successMessage,
       errorMessage: errorMessage ?? this.errorMessage,
     );
@@ -59,6 +67,8 @@ class RevenueState extends Equatable {
         editRevenueResponse,
         getRevenueResponse,
         revenuesList,
+        availableRevenues,
+        selectedRevenue,
         successMessage,
         errorMessage,
       ];

@@ -1,8 +1,8 @@
-import 'package:Fluxx/blocs/month_detail_bloc/month_detail_cubit.dart';
-import 'package:Fluxx/blocs/month_detail_bloc/month_detail_state.dart';
+import 'package:Fluxx/blocs/bill_list_bloc/bill_list_cubit.dart';
+import 'package:Fluxx/blocs/bill_list_bloc/bill_list_state.dart';
 import 'package:Fluxx/components/custom_app_bar.dart';
 import 'package:Fluxx/components/stats_item.dart';
-import 'package:Fluxx/models/chart_category_model.dart';
+import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -170,7 +170,7 @@ class _StatsPageState extends State<StatsPage> {
                                   return StatsItem(
                                     // statsItem: state.stats[index],
                                     // totalSpent: state.monthTotalSpent,
-                                    statsItem: StatsCategoryModel(
+                                    statsItem: CategoryModel(
                                         categoryName: 'casa', price: 20.00),
                                     totalSpent: 20.00,
                                   );

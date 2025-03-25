@@ -1,5 +1,5 @@
-import 'package:Fluxx/blocs/month_detail_bloc/month_detail_cubit.dart';
-import 'package:Fluxx/blocs/month_detail_bloc/month_detail_state.dart';
+import 'package:Fluxx/blocs/bill_list_bloc/bill_list_cubit.dart';
+import 'package:Fluxx/blocs/bill_list_bloc/bill_list_state.dart';
 import 'package:Fluxx/components/bill_item.dart';
 import 'package:Fluxx/components/custom_app_bar.dart';
 import 'package:Fluxx/components/custom_dropdown.dart';
@@ -27,20 +27,20 @@ class BillListPage extends StatefulWidget {
 class _BillListPageState extends State<BillListPage> {
   @override
   void initState() {
-    final state = GetIt.I<MonthsDetailCubit>().state;
+    final state = GetIt.I<ListBillCubit>().state;
     // GetIt.I<MonthsDetailCubit>().getAllBills(state.monthInFocus?.id ?? 0);
-    GetIt.I<MonthsDetailCubit>().getBillsByCategory(
-        state.monthInFocus?.id ?? 0, state.categoryInFocus.index);
-    GetIt.I<MonthsDetailCubit>()
-        .getMonthTotalSpent(state.monthInFocus?.id ?? 0);
-    GetIt.I<MonthsDetailCubit>()
-        .getMonthTotalPayed(state.monthInFocus?.id ?? 0);
+    GetIt.I<ListBillCubit>().getAllBills(
+        state.monthInFocus?.id ?? 0,);
+    // GetIt.I<MonthsDetailCubit>()
+    //     .getMonthTotalSpent(state.monthInFocus?.id ?? 0);
+    // GetIt.I<MonthsDetailCubit>()
+    //     .getMonthTotalPayed(state.monthInFocus?.id ?? 0);
     super.initState();
   }
 
   @override
   void dispose() {
-    GetIt.I<MonthsDetailCubit>().resetState();
+    GetIt.I<ListBillCubit>().resetState();
     super.dispose();
   }
 
@@ -53,7 +53,7 @@ class _BillListPageState extends State<BillListPage> {
         backgroundColor: AppTheme.colors.appBackgroundColor,
         resizeToAvoidBottomInset: true,
         body: SafeArea(
-          child: BlocBuilder<MonthsDetailCubit, MonthsDetailState>(
+          child: BlocBuilder<ListBillCubit, ListBillState>(
             bloc: GetIt.I(),
             builder: (context, state) {
               if (state.getBillsResponse == GetBillsResponse.loaging) {
@@ -150,7 +150,7 @@ class _BillListPageState extends State<BillListPage> {
                             AppRoutes.addBillPage,
                             arguments: BillModel(
                               monthId: state.monthInFocus?.id,
-                              categoryId: state.categoryInFocus.toInt(),
+                              // categoryId: state.categoryInFocus.toInt(),
                             ),
                           ),
                           style: ElevatedButton.styleFrom(

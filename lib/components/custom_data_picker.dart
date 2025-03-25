@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 class CustomDataPicker extends StatefulWidget {
   final IconData icon;
   final String hint;
-  const CustomDataPicker({super.key, required this.icon, required this.hint});
+  final Function(String) onDateChanged;
+  const CustomDataPicker({super.key, required this.icon, required this.hint, required this.onDateChanged});
 
   @override
   State<CustomDataPicker> createState() => _CustomDataPickerState();
@@ -29,7 +30,8 @@ class _CustomDataPickerState extends State<CustomDataPicker> {
     );
     if (picked != null) {
       setState(() {
-        formattedDate = formatDate(picked.toIso8601String());
+        formattedDate = formatDate(picked.toString());
+        widget.onDateChanged(picked.toString());
         debugPrint(formattedDate);
       });
     }

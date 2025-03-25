@@ -1,4 +1,5 @@
 import 'package:Fluxx/blocs/resume_bloc/resume_cubit.dart';
+import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
@@ -31,10 +32,16 @@ class ShortcutAddBottomsheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
             child: ListTile(
-              onTap: () => Navigator.pushNamed(
+              onTap: () {
+                var currentMonthId =
+                    GetIt.I<ResumeCubit>().state.currentMonthId;
+                BillModel billModel = BillModel(monthId: currentMonthId);
+                Navigator.pushReplacementNamed(
                 context,
                 AppRoutes.addBillPage,
-              ),
+                arguments: billModel,
+              );
+              },
               title: Text(
                 'Adicionar Conta',
                 style: AppTheme.textStyles.bodyTextStyle,

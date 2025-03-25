@@ -1,6 +1,10 @@
 import 'package:Fluxx/blocs/bill_bloc/bill_cubit.dart';
 import 'package:Fluxx/blocs/bill_bloc/bill_state.dart';
-import 'package:Fluxx/blocs/month_detail_bloc/month_detail_cubit.dart';
+import 'package:Fluxx/blocs/category_bloc/category_cubit.dart';
+import 'package:Fluxx/blocs/category_bloc/category_state.dart';
+import 'package:Fluxx/blocs/bill_list_bloc/bill_list_cubit.dart';
+import 'package:Fluxx/blocs/revenue_bloc/revenue_bloc.dart';
+import 'package:Fluxx/blocs/revenue_bloc/revenue_state.dart';
 import 'package:Fluxx/components/categorie_slider.dart';
 import 'package:Fluxx/components/custom_app_bar.dart';
 import 'package:Fluxx/components/custom_data_picker.dart';
@@ -26,6 +30,7 @@ class AddBillPage extends StatefulWidget {
 
 class _AddBillPageState extends State<AddBillPage> {
   late TextEditingController nameController;
+  late TextEditingController descController;
   late TextEditingController priceController;
   late int count;
 
@@ -33,6 +38,7 @@ class _AddBillPageState extends State<AddBillPage> {
   void initState() {
     count = 0;
     nameController = TextEditingController();
+    descController = TextEditingController();
     priceController = TextEditingController();
     super.initState();
   }
@@ -40,16 +46,19 @@ class _AddBillPageState extends State<AddBillPage> {
   @override
   void dispose() {
     nameController.dispose();
+    descController.dispose();
     priceController.dispose();
     GetIt.I<BillCubit>().resetState();
+    GetIt.I<CategoryCubit>().resetState();
+    GetIt.I<RevenueCubit>().removeRevenueSelection();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
-    // final BillModel? bill =
-    //     ModalRoute.of(context)!.settings.arguments as BillModel;
+    final BillModel? bill =
+        ModalRoute.of(context)!.settings.arguments as BillModel;
     // if (count == 0) {
     //   GetIt.I<BillCubit>().updateCategoryInFocus(bill!.categoryId!);
     //   count = count = 1;
@@ -107,12 +116,6 @@ class _AddBillPageState extends State<AddBillPage> {
                   ),
                 ),
                 const SizedBox(height: 50),
-                // CategorieSlider(
-                //   initialPage: bill.categoryId ?? 0,
-                //   filters: Constants.categories,
-                //   function: (index) =>
-                //       GetIt.I<BillCubit>().updateCategoryInFocus(index),
-                // ),
                 Padding(
                   padding: EdgeInsets.only(
                       top: MediaQuery.of(context).viewInsets.top),
@@ -137,58 +140,79 @@ class _AddBillPageState extends State<AddBillPage> {
                               keyboardType: TextInputType.number,
                             ),
                             SizedBox(height: mediaQuery.height * .03),
-                            const CustomDataPicker(
+                            CustomDataPicker(
                               hint: 'Data de Pagamento',
                               icon: Icons.calendar_today_rounded,
+                              onDateChanged: (p0) =>
+                                  GetIt.I<BillCubit>().updatePaymentDate(p0),
                             ),
                             SizedBox(height: mediaQuery.height * .03),
                             CustomTextField(
                               hint: 'Descrição',
                               height: mediaQuery.height * .2,
-                              controller: priceController,
-                              keyboardType: TextInputType.number,
+                              controller: descController,
                             ),
                             SizedBox(height: mediaQuery.height * .03),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: AppTheme.colors.accentColor,
-                                  borderRadius: BorderRadius.circular(10)),
-                              padding: const EdgeInsets.all(3),
-                              width: mediaQuery.width * .85,
-                              child: ListTile(
-                                onTap: () => Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.chooseCategoryPage,
-                                ),
-                                title: Text(
-                                  'Categoria',
-                                  style: AppTheme.textStyles.bodyTextStyle,
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                  color: Colors.white,
+                            BlocBuilder<CategoryCubit, CategoryState>(
+                              bloc: GetIt.I(),
+                              buildWhen: (previous, current) =>
+                                  previous.selectedCategory !=
+                                  current.selectedCategory,
+                              builder: (context, state) => Container(
+                                decoration: BoxDecoration(
+                                    color: AppTheme.colors.accentColor,
+                                    borderRadius: BorderRadius.circular(10)),
+                                padding: const EdgeInsets.all(3),
+                                width: mediaQuery.width * .85,
+                                child: ListTile(
+                                  onTap: () => Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.chooseCategoryPage,
+                                  ),
+                                  title: Text(
+                                    state.selectedCategory != null
+                                        ? 'Categoria : ${state.selectedCategory!.categoryName!}'
+                                        : 'Categoria',
+                                    style: AppTheme.textStyles.bodyTextStyle,
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
                             SizedBox(height: mediaQuery.height * .03),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: AppTheme.colors.accentColor,
-                                  borderRadius: BorderRadius.circular(10)),
-                              padding: const EdgeInsets.all(3),
-                              width: mediaQuery.width * .85,
-                              child: ListTile(
-                                onTap: () => Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.choosePaymentPage,
-                                ),
-                                title: Text(
-                                  'Forma de Pagamento',
-                                  style: AppTheme.textStyles.bodyTextStyle,
-                                ),
-                                trailing: const Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                  color: Colors.white,
+                            BlocBuilder<RevenueCubit, RevenueState>(
+                              bloc: GetIt.I(),
+                              buildWhen: (previous, current) =>
+                                  previous.selectedRevenue !=
+                                  current.selectedRevenue,
+                              builder: (context, state) => Container(
+                                decoration: BoxDecoration(
+                                    color: AppTheme.colors.accentColor,
+                                    borderRadius: BorderRadius.circular(10)),
+                                padding: const EdgeInsets.all(3),
+                                width: mediaQuery.width * .85,
+                                child: ListTile(
+                                  onTap: priceController.text.isEmpty
+                                      ? () => showFlushbar(context,
+                                          'preencha o campo do valor primeiro.', true)
+                                      : () => Navigator.pushNamed(
+                                            context,
+                                            AppRoutes.choosePaymentPage,
+                                            arguments: priceController.text
+                                          ),
+                                  title: Text(
+                                    state.selectedRevenue != null
+                                        ? 'Pagar com : ${state.selectedRevenue!.name!}'
+                                        : 'Pagar com',
+                                    style: AppTheme.textStyles.bodyTextStyle,
+                                  ),
+                                  trailing: const Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                             ),
@@ -200,7 +224,22 @@ class _AddBillPageState extends State<AddBillPage> {
                               padding: const EdgeInsets.all(3),
                               width: mediaQuery.width * .85,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  var categoryId = GetIt.I<CategoryCubit>()
+                                          .state
+                                          .selectedCategory
+                                          ?.id ??
+                                      '';
+                                  var revenueId = GetIt.I<RevenueCubit>()
+                                          .state
+                                          .selectedRevenue
+                                          ?.id;
+                                  _validation(
+                                      monthId: bill!.monthId!,
+                                      categoryId: categoryId,
+                                      revenueId: revenueId,
+                                      );
+                                },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppTheme.colors.accentColor,
                                   minimumSize: const Size(50, 50),
@@ -223,34 +262,57 @@ class _AddBillPageState extends State<AddBillPage> {
     );
   }
 
+  void _validation({
+    required int monthId,
+    required String categoryId,
+    required String? revenueId,
+  }) {
+    if (nameController.text.isEmpty) {
+      showFlushbar(context, 'preencha o campo do nome', true);
+      return;
+    }
+    if (priceController.text.isEmpty) {
+      showFlushbar(context, 'preencha o campo do valor', true);
+      return;
+    }
+    if (GetIt.I<BillCubit>().state.paymentDate == '') {
+      showFlushbar(context, 'Escolha a data de pagamento', true);
+      return;
+    }
+    if (GetIt.I<CategoryCubit>().state.selectedCategory == null) {
+      showFlushbar(context, 'Escolha a categoria da conta', true);
+      return;
+    }
+    _addNewBill(monthId, categoryId,revenueId);
+  }
+
   Future<void> _addNewBill(
     int monthId,
-    int categoryId,
-    int initialCategoryId,
+    String categoryId,
+    String? revenueId,
   ) async {
-    if (nameController.text.isEmpty) {}
-    if (priceController.text.isEmpty) {}
-    if (nameController.text.isNotEmpty && priceController.text.isNotEmpty) {
-      final String price = priceController.text.replaceAll(',', '.');
+    final String price = priceController.text.replaceAll(',', '.');
 
-      var newBill = BillModel(
-        id: GetIt.I<BillCubit>().codeVoucherGenerate(),
-        name: nameController.text,
-        monthId: monthId,
-        categoryId: categoryId,
-        price: double.parse(price),
-        isPayed: 0,
-      );
-      var result = await GetIt.I<BillCubit>().addNewBill(newBill);
-      var state = GetIt.I<BillCubit>().state;
-      if (result != -1) {
-        Navigator.pop(context);
-        GetIt.I<MonthsDetailCubit>()
-            .getBillsByCategory(monthId, initialCategoryId);
-        showFlushbar(context, state.successMessage, false);
-      } else {
-        showFlushbar(context, state.errorMessage, true);
-      }
+    var newBill = BillModel(
+      name: nameController.text,
+      price: double.parse(price),
+      paymentDate: GetIt.I<BillCubit>().state.paymentDate,
+      description: descController.text,
+      id: codeGenerate(),
+      monthId: monthId,
+      categoryId: categoryId,
+      paymentId: revenueId,
+      isPayed: 0,
+    );
+    var result = await GetIt.I<BillCubit>().addNewBill(newBill);
+    var state = GetIt.I<BillCubit>().state;
+    if (result != -1) {
+      Navigator.pop(context);
+      // GetIt.I<MonthsDetailCubit>()
+      //     .getBillsByCategory(monthId, initialCategoryId);
+      showFlushbar(context, state.successMessage, false);
+    } else {
+      showFlushbar(context, state.errorMessage, true);
     }
   }
 }

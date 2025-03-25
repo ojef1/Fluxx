@@ -34,7 +34,8 @@ class _ResumePageState extends State<ResumePage> {
 
   Future<void> init()async{
     var actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
-    GetIt.I<RevenueCubit>().getRevenues(actualMonth);
+    // GetIt.I<RevenueCubit>().getRevenues(actualMonth);
+    GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth);
 
   }
 

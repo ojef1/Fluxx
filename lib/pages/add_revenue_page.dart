@@ -88,8 +88,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                         backgroundColor: AppTheme.colors.grayD4,
                         child: IconButton(
                             color: Colors.black,
-                            onPressed: () => Navigator.pushReplacementNamed(
-                                context, AppRoutes.home),
+                            onPressed: () => Navigator.pop(context),
                             icon: const Icon(Icons.arrow_back_rounded)),
                       ),
                       Text(

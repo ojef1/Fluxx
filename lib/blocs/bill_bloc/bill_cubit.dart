@@ -1,9 +1,10 @@
 import 'package:Fluxx/blocs/bill_bloc/bill_state.dart';
-import 'package:Fluxx/blocs/month_detail_bloc/month_detail_cubit.dart';
+import 'package:Fluxx/blocs/bill_list_bloc/bill_list_cubit.dart';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/extensions/category_extension.dart';
 import 'package:Fluxx/models/bill_model.dart';
+import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,13 +14,20 @@ import 'package:uuid/uuid.dart';
 class BillCubit extends Cubit<BillState> {
   BillCubit() : super(const BillState());
 
-  void updateBillStatus(int status){
+  void updateBillStatus(int status) {
     emit(state.copyWith(billIsPayed: status));
   }
 
-  void _updateMonthTotalValues(int monthId){
-    GetIt.I<MonthsDetailCubit>().getMonthTotalSpent(monthId);
-    GetIt.I<MonthsDetailCubit>().getMonthTotalPayed(monthId);
+  void updatePaymentDate(String? date) {
+    if (date != null) {
+      var formattedDate = formatDate(date);
+      emit(state.copyWith(paymentDate: formattedDate));
+    }
+  }
+
+  void _updateMonthTotalValues(int monthId) {
+    GetIt.I<ListBillCubit>().getMonthTotalSpent(monthId);
+    GetIt.I<ListBillCubit>().getMonthTotalPayed(monthId);
   }
 
   void updateAddBillsResponse(AddBillsResponse addBillsResponse) {
@@ -38,6 +46,7 @@ class BillCubit extends Cubit<BillState> {
     Categorys categoryInFocus = CategoryExtension.toEnum(category);
     emit(state.copyWith(categoryInFocus: categoryInFocus));
   }
+
   void updateEditCategoryInFocus(int category) {
     Categorys editCategoryInFocus = CategoryExtension.toEnum(category);
     emit(state.copyWith(editCategoryInFocus: editCategoryInFocus));
@@ -101,7 +110,7 @@ class BillCubit extends Cubit<BillState> {
     }
   }
 
-  Future<int> editBill( BillModel bill) async {
+  Future<int> editBill(BillModel bill) async {
     updateEditBillsResponse(EditBillsResponse.loaging);
     try {
       var result = await Db.updateBill(Tables.bills, bill.id!, bill);
@@ -122,7 +131,7 @@ class BillCubit extends Cubit<BillState> {
     }
   }
 
-  void resetState(){
+  void resetState() {
     emit(const BillState());
   }
 }

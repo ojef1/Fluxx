@@ -1,24 +1,24 @@
-import 'package:Fluxx/blocs/month_detail_bloc/month_detail_state.dart';
+import 'package:Fluxx/blocs/bill_list_bloc/bill_list_state.dart';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/extensions/category_extension.dart';
 import 'package:Fluxx/models/bill_model.dart';
-import 'package:Fluxx/models/chart_category_model.dart';
+import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
 
-class MonthsDetailCubit extends Cubit<MonthsDetailState> {
-  MonthsDetailCubit() : super(const MonthsDetailState());
+class ListBillCubit extends Cubit<ListBillState> {
+  ListBillCubit() : super(const ListBillState());
 
   Future<void> getStats(int monthId) async {
     updateGetStatsResponse(GetStatsResponse.loaging);
     try {
       final totalSpent = await Db.getTotalByCategory(monthId);
-      List<StatsCategoryModel> stats = totalSpent.map((item) {
-        return StatsCategoryModel(
+      List<CategoryModel> stats = totalSpent.map((item) {
+        return CategoryModel(
           categoryName: CategoryExtension.fromIntToString(item['category_id']),
           price: item['total'],
         );
@@ -170,6 +170,6 @@ class MonthsDetailCubit extends Cubit<MonthsDetailState> {
   }
 
   void resetState() {
-    emit(const MonthsDetailState());
+    emit(const ListBillState());
   }
 }

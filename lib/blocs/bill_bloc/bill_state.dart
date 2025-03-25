@@ -16,6 +16,8 @@ class BillState extends Equatable {
   final String successMessage;
   final String errorMessage;
   final int billIsPayed;
+  final String paymentDate;
+  // final 
 
   const BillState({
     this.categoryInFocus = Categorys.casa,
@@ -26,6 +28,7 @@ class BillState extends Equatable {
     this.successMessage = '',
     this.errorMessage = '',
     this.billIsPayed = 0,
+    this.paymentDate = '',
   });
 
   BillState copyWith({
@@ -37,6 +40,7 @@ class BillState extends Equatable {
     String? successMessage,
     String? errorMessage,
     int? billIsPayed,
+    String? paymentDate,
   }) {
     return BillState(
       categoryInFocus: categoryInFocus ?? this.categoryInFocus,
@@ -47,6 +51,7 @@ class BillState extends Equatable {
       successMessage: successMessage ?? this.successMessage,
       errorMessage: errorMessage ?? this.errorMessage,
       billIsPayed: billIsPayed ?? this.billIsPayed,
+      paymentDate: paymentDate ?? this.paymentDate,
     );
   }
 
@@ -60,5 +65,6 @@ class BillState extends Equatable {
         successMessage,
         errorMessage,
         billIsPayed,
+        paymentDate,
       ];
 }

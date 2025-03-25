@@ -1,4 +1,4 @@
-import 'package:Fluxx/models/chart_category_model.dart';
+import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:Fluxx/utils/helpers.dart';
@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
 class StatsItem extends StatelessWidget {
-  final StatsCategoryModel statsItem;
+  final CategoryModel statsItem;
   final double totalSpent;
   const StatsItem(
       {super.key, required this.statsItem, required this.totalSpent});

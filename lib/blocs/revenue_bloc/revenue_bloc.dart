@@ -1,5 +1,7 @@
 import 'package:Fluxx/blocs/revenue_bloc/revenue_state.dart';
 import 'package:Fluxx/data/database.dart';
+import 'package:Fluxx/data/tables.dart';
+import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,27 +55,26 @@ class RevenueCubit extends Cubit<RevenueState> {
   }
 
   Future<void> getRevenues(int monthId) async {
-  updateGetRevenueResponse(GetRevenueResponse.loading);
-  try {
-    final results = await Future.wait([
-      _getPublicRevenue(),
-      _getExclusiveRevenue(monthId),
-    ]);
+    updateGetRevenueResponse(GetRevenueResponse.loading);
+    try {
+      final results = await Future.wait([
+        _getPublicRevenue(),
+        _getExclusiveRevenue(monthId),
+      ]);
 
-    final combinedRevenuesList = [
-      ...results[0],
-      ...results[1],
-    ];
+      final combinedRevenuesList = [
+        ...results[0],
+        ...results[1],
+      ];
 
-    emit(state.copyWith(revenuesList: combinedRevenuesList));
-    updateGetRevenueResponse(GetRevenueResponse.success);
-  } catch (error) {
-    debugPrint('$error');
-    updateGetRevenueResponse(GetRevenueResponse.error);
-    emit(state.copyWith(revenuesList: state.revenuesList));
+      emit(state.copyWith(revenuesList: combinedRevenuesList));
+      updateGetRevenueResponse(GetRevenueResponse.success);
+    } catch (error) {
+      debugPrint('$error');
+      updateGetRevenueResponse(GetRevenueResponse.error);
+      emit(state.copyWith(revenuesList: state.revenuesList));
+    }
   }
-}
-
 
   Future<List<RevenueModel>> _getPublicRevenue() async {
     try {
@@ -154,6 +155,74 @@ class RevenueCubit extends Cubit<RevenueState> {
       debugPrint('$error');
       updateEditRevenueResponse(EditRevenueResponse.error);
       return 0;
+    }
+  }
+
+  void updateSelectedRevenue(RevenueModel revenue) {
+    emit(state.copyWith(selectedRevenue: revenue));
+  }
+
+  void removeRevenueSelection(){
+    RevenueModel unselected = RevenueModel(
+      id: '',
+      name: '',
+      monthId: null,
+      value: 0.0,
+      isPublic: null,
+    );
+    emit(state.copyWith(selectedRevenue: unselected));
+  }
+
+  Future<void> calculateAvailableValue(int monthId) async {
+    try {
+      // 1. Obter todas as contas do mês
+      final bills = await Db.getBillsByMonth(Tables.bills, monthId);
+
+      final billsList = bills
+          .map((item) => BillModel(
+                name: item['name'],
+                price: item['price'],
+                paymentDate: item['payment_date'],
+                description: item['description'],
+                paymentId: item['payment_id'],
+                id: item['id'],
+                monthId: item['month_id'],
+                categoryId: item['category_id'],
+                isPayed: item['isPayed'],
+              ))
+          .toList();
+
+      // 2. Obter todas as rendas do mês
+      await getRevenues(monthId);
+      final revenuesList = state.revenuesList;
+
+      // 3. Calcular o valor usado de cada renda
+      Map<String, double> valorUsadoPorRenda = {};
+      for (var bill in billsList) {
+        if (bill.paymentId != null) {
+          valorUsadoPorRenda[bill.paymentId!] =
+              (valorUsadoPorRenda[bill.paymentId!] ?? 0) + bill.price!;
+        }
+      }
+
+      // 4. Calcular o valor disponível de cada renda
+      List<RevenueModel> valoresDisponiveis = revenuesList.map((revenue) {
+        double valorUsado = valorUsadoPorRenda[revenue.id] ?? 0;
+        double valorDisponivel = revenue.value! - valorUsado;
+
+        return RevenueModel(
+          id: revenue.id,
+          name: revenue.name,
+          value: valorDisponivel,
+        );
+      }).toList(); // usar essa informação para bloquear opções de pagamentos
+
+      // exibição dos valores disponíveis
+      debugPrint('Valores Disponíveis: $valoresDisponiveis');
+
+      emit(state.copyWith(availableRevenues: valoresDisponiveis));
+    } catch (error) {
+      debugPrint('$error');
     }
   }
 

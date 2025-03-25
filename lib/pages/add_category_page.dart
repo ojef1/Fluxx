@@ -1,7 +1,10 @@
 import 'package:Fluxx/blocs/bill_bloc/bill_cubit.dart';
+import 'package:Fluxx/blocs/category_bloc/category_cubit.dart';
 import 'package:Fluxx/components/custom_text_field.dart';
+import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/constants.dart';
+import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -91,7 +94,7 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
                           padding: const EdgeInsets.all(3),
                           width: mediaQuery.width * .85,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () => _addCategory(),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.colors.accentColor,
                               minimumSize: const Size(50, 50),
@@ -112,34 +115,30 @@ class _AddCategoryPageState extends State<AddCategoryPage> {
     );
   }
 
-  // Future<void> _addNewBill(
-  //   int monthId,
-  //   int categoryId,
-  //   int initialCategoryId,
-  // ) async {
-  //   if (nameController.text.isEmpty) {}
-  //   if (priceController.text.isEmpty) {}
-  //   if (nameController.text.isNotEmpty && priceController.text.isNotEmpty) {
-  //     final String price = priceController.text.replaceAll(',', '.');
+  Future<void> _addCategory() async {
+    if (nameController.text.isEmpty) {
+      showFlushbar(context, 'preencha o campo do nome', true);
+      return;
+    }
 
-  //     var newBill = BillModel(
-  //       id: GetIt.I<BillCubit>().codeVoucherGenerate(),
-  //       name: nameController.text,
-  //       monthId: monthId,
-  //       categoryId: categoryId,
-  //       price: double.parse(price),
-  //       isPayed: 0,
-  //     );
-  //     var result = await GetIt.I<BillCubit>().addNewBill(newBill);
-  //     var state = GetIt.I<BillCubit>().state;
-  //     if (result != -1) {
-  //       Navigator.pop(context);
-  //       GetIt.I<MonthsDetailCubit>()
-  //           .getBillsByCategory(monthId, initialCategoryId);
-  //       showFlushbar(context, state.successMessage, false);
-  //     } else {
-  //       showFlushbar(context, state.errorMessage, true);
-  //     }
-  //   }
-  // }
+    if (nameController.text.isNotEmpty) {
+      var category = CategoryModel(
+        id: codeGenerate(),
+        categoryName: nameController.text,
+      );
+      var result = await GetIt.I<CategoryCubit>().addCategory(category);
+      var state = GetIt.I<CategoryCubit>().state;
+      if (result != -1) {
+        showFlushbar(context, state.successMessage, false);
+        _clearInput();
+      } else {
+        showFlushbar(context, state.errorMessage, true);
+      }
+    }
+  }
+  void _clearInput() {
+    setState(() {
+      nameController.clear();
+    });
+  }
 }

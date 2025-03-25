@@ -1,5 +1,6 @@
 import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/bill_model.dart';
+import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/models/user_model.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,7 @@ import 'package:sqflite/sql.dart';
 class Db {
   static Future<sql.Database> dataBase() async {
     final dbPath = await sql.getDatabasesPath();
-    // await sql.deleteDatabase(path.join(dbPath, 'Fluxx.db'));
+    // await sql.deleteDatabase(path.join(dbPath, 'Fluxx.db')); 
 
     return await sql.openDatabase(
       path.join(dbPath, 'Fluxx.db'),
@@ -23,14 +24,19 @@ class Db {
         await db.execute(
           'CREATE TABLE ${Tables.bills} ('
           'id TEXT PRIMARY KEY, '
-          'month_id INTEGER, '
-          'category_id INTEGER, '
           'name TEXT, '
           'price REAL, '
+          'paymentDate TEXT, '
+          'description TEXT, '
+          'category_id TEXT, '
+          'payment_id TEXT, '
+          'month_id INTEGER, '
           'isPayed INTEGER, '
           'FOREIGN KEY (month_id) REFERENCES ${Tables.months} (id), '
+          'FOREIGN KEY (payment_id) REFERENCES ${Tables.revenue} (id), '
           'FOREIGN KEY (category_id) REFERENCES ${Tables.category} (id))',
         );
+
         //criar a tabela do usuário
         await db.execute(
           'CREATE TABLE ${Tables.user} ('
@@ -50,9 +56,16 @@ class Db {
           'FOREIGN KEY (month_id) REFERENCES ${Tables.months} (id))',
         );
 
+        //criar a tabela de categorias
+        await db.execute(
+          'CREATE TABLE ${Tables.category} ('
+          'id TEXT PRIMARY KEY, '
+          'name TEXT)',
+        );
+
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      version: 9,
+      version: 10,
     );
   }
 
@@ -321,7 +334,8 @@ class Db {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getExclusiveRevenues(int monthId) async {
+  static Future<List<Map<String, dynamic>>> getExclusiveRevenues(
+      int monthId) async {
     final db = await Db.dataBase();
 
     try {
@@ -333,6 +347,32 @@ class Db {
       return result;
     } catch (e) {
       throw Exception('Erro ao consultar as receitas exclusivas : $e');
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getCategories() async {
+    final db = await Db.dataBase();
+    try {
+      final result = await db.query(Tables.category);
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao consultar as categorias: $e');
+    }
+  }
+
+  static Future<int> insertCategory(CategoryModel data) async {
+    final db = await Db.dataBase();
+    final dataJson = data.toJson();
+
+    try {
+      int result = await db.insert(
+        Tables.category,
+        dataJson,
+        conflictAlgorithm: sql.ConflictAlgorithm.replace,
+      );
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao inserir categoria: $e');
     }
   }
 }

@@ -1,35 +1,48 @@
 class BillModel {
-  String? id;
-  int? monthId;
-  int? categoryId;
   String? name;
   double? price;
+  String? paymentDate;
+  String? description;
+  String? categoryId;
+  String? paymentId;
+  String? id;
+  int? monthId;
   int? isPayed;
 
-  BillModel(
-      {this.id,
-      this.name,
-      this.monthId,
-      this.categoryId,
-      this.price,
-      this.isPayed});
+  BillModel({
+    this.name,
+    this.price,
+    this.paymentDate,
+    this.description,
+    this.categoryId,
+    this.paymentId,
+    this.id,
+    this.monthId,
+    this.isPayed,
+  });
 
   BillModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
     name = json['name'];
-    monthId = json['monthId'];
-    categoryId = json['categoryId'];
     price = json['price'];
+    paymentDate = json['paymentDate'];
+    description = json['description'];
+    categoryId = json['categoryId'];
+    paymentId = json['payment_id'];
+    id = json['id'];
+    monthId = json['monthId'];
     isPayed = json['isPayed'];
   }
 
   Map<String, dynamic> toJson() {
     var data = <String, dynamic>{};
-    data['id'] = id;
-    data['month_id'] = monthId;
-    data['category_id'] = categoryId;
     data['name'] = name;
     data['price'] = price;
+    data['paymentDate'] = paymentDate;
+    data['description'] = description;
+    data['category_id'] = categoryId;
+    data['payment_id'] = paymentId;
+    data['id'] = id;
+    data['month_id'] = monthId;
     data['isPayed'] = isPayed;
     return data;
   }
