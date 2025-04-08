@@ -4,6 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+ Color getBarColor(double percent) {
+    if (percent < 0.5) return Colors.green;
+    if (percent < 0.8) return Colors.orange;
+    if (percent > 0.8) return Colors.red;
+
+    return Colors.red;
+  }
+
 String formatPrice(double price) {
   final NumberFormat currencyFormatter =
       NumberFormat.currency(locale: 'pt_BR', symbol: '');

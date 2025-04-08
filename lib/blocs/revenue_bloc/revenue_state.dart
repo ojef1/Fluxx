@@ -18,6 +18,7 @@ class RevenueState extends Equatable {
   final List<RevenueModel> revenuesList; 
   final List<RevenueModel> availableRevenues;
   final RevenueModel? selectedRevenue;
+  final double totalRevenue;
   final String successMessage;
   final String errorMessage;
 
@@ -31,6 +32,7 @@ class RevenueState extends Equatable {
     this.availableRevenues = const [],
     this.successMessage = '',
     this.errorMessage = '',
+    this.totalRevenue = 0.0
   });
 
   RevenueState copyWith({
@@ -45,6 +47,7 @@ class RevenueState extends Equatable {
     RevenueModel? selectedRevenue,
     String? successMessage,
     String? errorMessage,
+    double? totalRevenue
   }) {
     return RevenueState(
       addRevenueResponse: addRevenueResponse ?? this.addRevenueResponse,
@@ -57,6 +60,7 @@ class RevenueState extends Equatable {
       selectedRevenue: selectedRevenue ?? this.selectedRevenue,
       successMessage: successMessage ?? this.successMessage,
       errorMessage: errorMessage ?? this.errorMessage,
+      totalRevenue: totalRevenue ?? this.totalRevenue,
     );
   }
 
@@ -71,5 +75,6 @@ class RevenueState extends Equatable {
         selectedRevenue,
         successMessage,
         errorMessage,
+        totalRevenue
       ];
 }

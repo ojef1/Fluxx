@@ -68,6 +68,7 @@ class RevenueCubit extends Cubit<RevenueState> {
       ];
 
       emit(state.copyWith(revenuesList: combinedRevenuesList));
+      calculateTotalRevenues();
       updateGetRevenueResponse(GetRevenueResponse.success);
     } catch (error) {
       debugPrint('$error');
@@ -162,7 +163,7 @@ class RevenueCubit extends Cubit<RevenueState> {
     emit(state.copyWith(selectedRevenue: revenue));
   }
 
-  void removeRevenueSelection(){
+  void removeRevenueSelection() {
     RevenueModel unselected = RevenueModel(
       id: '',
       name: '',
@@ -224,6 +225,17 @@ class RevenueCubit extends Cubit<RevenueState> {
     } catch (error) {
       debugPrint('$error');
     }
+  }
+
+  Future<double> calculateTotalRevenues() async {
+    List<RevenueModel> revenuesList = state.revenuesList;
+    double total = 0;
+    for (var revenue in revenuesList) {
+      total += revenue.value!;
+    }
+    emit(state.copyWith(totalRevenue: total));
+    debugPrint('teste> $total');
+    return total; 
   }
 
   void resetState() {

@@ -122,7 +122,7 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                 );
               } else if (state.getRevenueResponse ==
                   GetRevenueResponse.success) {
-                if (state.revenuesList.isEmpty) {
+                if (state.availableRevenues.isEmpty) {
                   return Padding(
                     padding: const EdgeInsets.all(28.0),
                     child: Center(
@@ -164,11 +164,25 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                       child: Center(
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
-                          itemCount: state.revenuesList.length,
+                          itemCount: state.availableRevenues.length,
                           shrinkWrap: true,
-                          itemBuilder: (context, index) => RevenueItem(
-                            item: state.revenuesList[index],
-                          ),
+                          itemBuilder: (context, index) {
+                            var valorDaLista = state.revenuesList[index].value!;
+                            var valorDisponivel =
+                                state.availableRevenues[index].value!;
+                            double totalPercent;
+                            if (valorDaLista != 0.0) {
+                              totalPercent = ((valorDaLista - valorDisponivel) /
+                                      valorDaLista)
+                                  .clamp(0.0, 1.0);
+                            } else {
+                              totalPercent = 0.0;
+                            }
+                            return RevenueItem(
+                              item: state.availableRevenues[index],
+                              totalPercent: totalPercent,
+                            );
+                          },
                         ),
                       ),
                     ),

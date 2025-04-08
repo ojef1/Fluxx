@@ -272,6 +272,24 @@ class Db {
     }
   }
 
+  static Future<double> getTotalByMonth(int monthId) async {
+  final db = await Db.dataBase();
+
+  try {
+    final result = await db.rawQuery('''
+    SELECT SUM(price) AS total
+    FROM ${Tables.bills}
+    WHERE month_id = ?
+    ''', [monthId]);
+
+    return result.isNotEmpty ? (result.first['total'] as double? ?? 0.0) : 0.0;
+  } catch (e) {
+    debugPrint("Erro ao obter total do mês: $e");
+    return 0.0;
+  }
+}
+
+
   static Future<int> insertRevenue(RevenueModel data) async {
     final db = await Db.dataBase();
     final revenueData = data.toJson();

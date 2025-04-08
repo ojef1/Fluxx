@@ -3,17 +3,20 @@ import 'dart:developer';
 import 'package:Fluxx/blocs/resume_bloc/resume_cubit.dart';
 import 'package:Fluxx/blocs/resume_bloc/resume_state.dart';
 import 'package:Fluxx/blocs/revenue_bloc/revenue_bloc.dart';
+import 'package:Fluxx/blocs/revenue_bloc/revenue_state.dart';
+import 'package:Fluxx/blocs/user_bloc/user_cubit.dart';
+import 'package:Fluxx/blocs/user_bloc/user_state.dart';
 import 'package:Fluxx/components/resumePage/available_revenues.dart';
 import 'package:Fluxx/components/shortcut_add_bottomsheet.dart';
 import 'package:Fluxx/components/shortcut_lists_bottomsheet.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/constants.dart';
+import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:Fluxx/blocs/revenue_bloc/revenue_state.dart';
 
 class ResumePage extends StatefulWidget {
   const ResumePage({super.key});
@@ -34,11 +37,13 @@ class _ResumePageState extends State<ResumePage> {
     super.initState();
   }
 
-  Future<void> init()async{
+  Future<void> init() async {
     var actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
     // GetIt.I<RevenueCubit>().getRevenues(actualMonth);
-    GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth);
-
+    await GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth);
+    await GetIt.I<ResumeCubit>().getTotalSpent(actualMonth);
+    var totalRevenues = await GetIt.I<RevenueCubit>().calculateTotalRevenues();
+    await GetIt.I<ResumeCubit>().calculatePercent(totalRevenues);
   }
 
   @override
@@ -73,10 +78,12 @@ class _ResumePageState extends State<ResumePage> {
                       ),
                     ),
                     SizedBox(width: mediaQuery.width * .07),
-                    Text(
-                      //FIXME colocar o nome do usuário de acordo com o back
-                      '$greeting \${username}',
-                      style: AppTheme.textStyles.titleTextStyle,
+                    BlocBuilder<UserCubit, UserState>(
+                      bloc: GetIt.I(),
+                      builder: (context, state) => Text(
+                        '$greeting ${state.user?.name ?? 'Usuário'}',
+                        style: AppTheme.textStyles.titleTextStyle,
+                      ),
                     ),
                   ],
                 ),
@@ -93,9 +100,27 @@ class _ResumePageState extends State<ResumePage> {
                   children: [
                     BlocBuilder<ResumeCubit, ResumeState>(
                       bloc: GetIt.I(),
-                      builder: (context, state) => Text(
-                        'Resumo de ${state.currentMonthName}',
-                        style: AppTheme.textStyles.titleTextStyle,
+                      builder: (context, state) => Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Resumo de ${state.currentMonthName}',
+                            style: AppTheme.textStyles.titleTextStyle,
+                          ),
+                          IconButton(
+                            onPressed: () async {
+                              var actualMonth =
+                                  await GetIt.I<ResumeCubit>().getActualMonth();
+                              GetIt.I<ResumeCubit>().getTotalSpent(actualMonth);
+
+                              var totalRevenues = await GetIt.I<RevenueCubit>()
+                                  .calculateTotalRevenues();
+                              GetIt.I<ResumeCubit>()
+                                  .calculatePercent(totalRevenues);
+                            },
+                            icon: const Icon(Icons.refresh_rounded),
+                          ),
+                        ],
                       ),
                     ),
                     SizedBox(height: mediaQuery.height * .02),
@@ -110,10 +135,12 @@ class _ResumePageState extends State<ResumePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            //FIXME colocar o valor de gasto total
-                            'R\$ 00,00',
-                            style: AppTheme.textStyles.titleTextStyle,
+                          BlocBuilder<ResumeCubit, ResumeState>(
+                            bloc: GetIt.I(),
+                            builder: (context, state) => Text(
+                              'R\$${formatPrice(state.totalSpent)}',
+                              style: AppTheme.textStyles.titleTextStyle,
+                            ),
                           ),
                           Column(
                             children: [
@@ -121,30 +148,44 @@ class _ResumePageState extends State<ResumePage> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    //FIXME colocar o valor de gasto total
-                                    'R\$ 00,00',
-                                    style:
-                                        AppTheme.textStyles.subTileTextStyle,
+                                  BlocBuilder<ResumeCubit, ResumeState>(
+                                    bloc: GetIt.I(),
+                                    buildWhen: (previous, current) =>
+                                        previous.percentSpent !=
+                                        current.percentSpent,
+                                    builder: (context, state) => Text(
+                                      '${state.percentSpent.toStringAsFixed(0)}%',
+                                      style:
+                                          AppTheme.textStyles.subTileTextStyle,
+                                    ),
                                   ),
-                                  Text(
-                                    //FIXME colocar o valor total disponível
-                                    'R\$ 00,00',
-                                    style:
-                                        AppTheme.textStyles.subTileTextStyle,
+                                  BlocBuilder<RevenueCubit, RevenueState>(
+                                    bloc: GetIt.I(),
+                                    buildWhen: (previous, current) =>
+                                        previous.totalRevenue !=
+                                        current.totalRevenue,
+                                    builder: (context, state) => Text(
+                                      'R\$${formatPrice(state.totalRevenue)}',
+                                      style:
+                                          AppTheme.textStyles.subTileTextStyle,
+                                    ),
                                   ),
                                 ],
                               ),
                               SizedBox(height: mediaQuery.height * .01),
-                              LinearPercentIndicator(
-                                padding: EdgeInsets.zero,
-                                barRadius: const Radius.circular(50),
-                                lineHeight: 20,
-                                //FIXME colocar o valor de acordo com o calculo = renda total - total gasto
-                                percent: 0.7,
-                                //FIXME colocar as cores de acordo com a porcentagem
-                                //TODO definir limiares de porcetagem para mudar de cor
-                                progressColor: Colors.amber,
+                              BlocBuilder<ResumeCubit, ResumeState>(
+                                bloc: GetIt.I(),
+                                buildWhen: (previous, current) =>
+                                    previous.percentSpent !=
+                                    current.percentSpent,
+                                builder: (context, state) =>
+                                    LinearPercentIndicator(
+                                  padding: EdgeInsets.zero,
+                                  barRadius: const Radius.circular(50),
+                                  lineHeight: 20,
+                                  percent: state.percentSpent / 100,
+                                  progressColor: getBarColor(state.percentSpent / 100),
+                                ),
                               ),
                             ],
                           ),
@@ -195,8 +236,7 @@ class _ResumePageState extends State<ResumePage> {
                                   icon: const Icon(Icons.add_rounded),
                                   color: Colors.white,
                                   iconSize: 30,
-                                  onPressed: () =>
-                                      _showAddBottomSheet(context),
+                                  onPressed: () => _showAddBottomSheet(context),
                                 ),
                               ),
                               Text(
@@ -276,6 +316,8 @@ class _ResumePageState extends State<ResumePage> {
       ),
     );
   }
+
+ 
 
   void _showAddBottomSheet(BuildContext context) {
     showModalBottomSheet(
