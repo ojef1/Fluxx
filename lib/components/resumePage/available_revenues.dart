@@ -51,7 +51,7 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                           var actualMonth =
                               await GetIt.I<ResumeCubit>().getActualMonth();
                           GetIt.I<RevenueCubit>()
-                              .calculateAvailableValue(actualMonth);
+                              .calculateAvailableValue(actualMonth.id!);
                         },
                         icon: const Icon(Icons.refresh_rounded),
                       );
@@ -108,7 +108,7 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                         const SizedBox(height: 10),
                         ElevatedButton(
                           onPressed: () => GetIt.I<RevenueCubit>().getRevenues(
-                              GetIt.I<ResumeCubit>().state.currentMonthId),
+                              GetIt.I<ResumeCubit>().state.currentMonth!.id!),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.colors.accentColor,
                             minimumSize: const Size(50, 50),
@@ -138,7 +138,7 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                           ElevatedButton(
                             onPressed: () {
                               var currentMonthId =
-                                  GetIt.I<ResumeCubit>().state.currentMonthId;
+                                  GetIt.I<ResumeCubit>().state.currentMonth!.id;
                               RevenueModel revenue =
                                   RevenueModel(monthId: currentMonthId);
                               Navigator.pushReplacementNamed(

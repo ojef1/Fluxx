@@ -1,9 +1,26 @@
+import 'package:Fluxx/blocs/bill_list_bloc/bill_list_cubit.dart';
+import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
-class ShortcutListsBottomsheet extends StatelessWidget {
-  const ShortcutListsBottomsheet({super.key});
+class ShortcutListsBottomsheet extends StatefulWidget {
+  final MonthModel currentMonth;
+  const ShortcutListsBottomsheet({super.key, required this.currentMonth});
+
+  @override
+  State<ShortcutListsBottomsheet> createState() =>
+      _ShortcutListsBottomsheetState();
+}
+
+class _ShortcutListsBottomsheetState extends State<ShortcutListsBottomsheet> {
+  @override
+  void initState() {
+    super.initState();
+
+    GetIt.I<ListBillCubit>().updateMonthInFocus(widget.currentMonth);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +65,7 @@ class ShortcutListsBottomsheet extends StatelessWidget {
             padding: const EdgeInsets.all(3),
             child: ListTile(
               onTap: () {
-                debugPrint('Lista de Contas');
+                Navigator.pushReplacementNamed(context, AppRoutes.detailPage);
               },
               title: Text(
                 'Lista de Contas',

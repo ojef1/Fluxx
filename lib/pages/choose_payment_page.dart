@@ -33,7 +33,7 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
   Future<void> init() async {
     var actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
     // GetIt.I<RevenueCubit>().getRevenues(actualMonth);
-    GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth);
+    GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth.id!);
   }
 
   @override
@@ -98,7 +98,7 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
                                 onPressed: () {
                                   var currentMonthId = GetIt.I<ResumeCubit>()
                                       .state
-                                      .currentMonthId;
+                                      .currentMonth!.id!;
                                   RevenueModel revenue =
                                       RevenueModel(monthId: currentMonthId);
                                   Navigator.pushReplacementNamed(

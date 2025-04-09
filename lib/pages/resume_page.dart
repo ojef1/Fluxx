@@ -1,5 +1,5 @@
-import 'dart:developer';
 
+import 'package:Fluxx/blocs/bill_list_bloc/bill_list_cubit.dart';
 import 'package:Fluxx/blocs/resume_bloc/resume_cubit.dart';
 import 'package:Fluxx/blocs/resume_bloc/resume_state.dart';
 import 'package:Fluxx/blocs/revenue_bloc/revenue_bloc.dart';
@@ -9,6 +9,7 @@ import 'package:Fluxx/blocs/user_bloc/user_state.dart';
 import 'package:Fluxx/components/resumePage/available_revenues.dart';
 import 'package:Fluxx/components/shortcut_add_bottomsheet.dart';
 import 'package:Fluxx/components/shortcut_lists_bottomsheet.dart';
+import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/constants.dart';
@@ -28,6 +29,7 @@ class ResumePage extends StatefulWidget {
 class _ResumePageState extends State<ResumePage> {
   late final ScrollController _pageScrollController;
   late final String greeting;
+  late MonthModel actualMonth;
 
   @override
   void initState() {
@@ -38,10 +40,11 @@ class _ResumePageState extends State<ResumePage> {
   }
 
   Future<void> init() async {
-    var actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
+    actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
     // GetIt.I<RevenueCubit>().getRevenues(actualMonth);
-    await GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth);
-    await GetIt.I<ResumeCubit>().getTotalSpent(actualMonth);
+    GetIt.I<ListBillCubit>().updateMonthInFocus(actualMonth);
+    await GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth.id!);
+    await GetIt.I<ResumeCubit>().getTotalSpent(actualMonth.id!);
     var totalRevenues = await GetIt.I<RevenueCubit>().calculateTotalRevenues();
     await GetIt.I<ResumeCubit>().calculatePercent(totalRevenues);
   }
@@ -104,14 +107,14 @@ class _ResumePageState extends State<ResumePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Resumo de ${state.currentMonthName}',
+                            'Resumo de ${state.currentMonth?.name ?? ''}',
                             style: AppTheme.textStyles.titleTextStyle,
                           ),
                           IconButton(
                             onPressed: () async {
                               var actualMonth =
                                   await GetIt.I<ResumeCubit>().getActualMonth();
-                              GetIt.I<ResumeCubit>().getTotalSpent(actualMonth);
+                              GetIt.I<ResumeCubit>().getTotalSpent(actualMonth.id!);
 
                               var totalRevenues = await GetIt.I<RevenueCubit>()
                                   .calculateTotalRevenues();
@@ -332,7 +335,7 @@ class _ResumePageState extends State<ResumePage> {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return const ShortcutListsBottomsheet();
+        return ShortcutListsBottomsheet(currentMonth: actualMonth,);
       },
     );
   }

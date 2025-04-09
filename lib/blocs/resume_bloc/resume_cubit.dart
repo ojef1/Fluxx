@@ -1,7 +1,7 @@
 import 'package:Fluxx/blocs/resume_bloc/resume_state.dart';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/data/tables.dart';
-import 'package:Fluxx/models/bill_model.dart';
+import 'package:Fluxx/models/month_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,14 +21,19 @@ class ResumeCubit extends Cubit<ResumeState> {
     }
   }
 
-  Future<int> getActualMonth() async {
+  Future<MonthModel> getActualMonth() async {
     var result = await Db.getData(Tables.months);
     final currentMonth = DateTime.now().month;
     final actualMonth =
         result.firstWhere((month) => month['id'] == currentMonth);
-    emit(state.copyWith(currentMonthId: actualMonth['id']));
-    emit(state.copyWith(currentMonthName: actualMonth['name']));
-    return actualMonth['id'];
+    final totalSpent = await Db.sumPricesByMonth(actualMonth['id']);
+    final monthModel = MonthModel(
+      id: actualMonth['id'],
+      name: actualMonth['name'],
+      total: totalSpent,
+    );
+    emit(state.copyWith(currentMonth: monthModel));
+    return monthModel;
   }
 
   Future<void> getTotalSpent(int monthId) async {

@@ -34,7 +34,7 @@ class ShortcutAddBottomsheet extends StatelessWidget {
             child: ListTile(
               onTap: () {
                 var currentMonthId =
-                    GetIt.I<ResumeCubit>().state.currentMonthId;
+                    GetIt.I<ResumeCubit>().state.currentMonth!.id!;
                 BillModel billModel = BillModel(monthId: currentMonthId);
                 Navigator.pushReplacementNamed(
                 context,
@@ -61,7 +61,7 @@ class ShortcutAddBottomsheet extends StatelessWidget {
             child: ListTile(
               onTap: () {
                 var currentMonthId =
-                    GetIt.I<ResumeCubit>().state.currentMonthId;
+                    GetIt.I<ResumeCubit>().state.currentMonth!.id;
                 RevenueModel revenue = RevenueModel(monthId: currentMonthId);
                 Navigator.pushReplacementNamed(
                     context, AppRoutes.addRevenuePage,
