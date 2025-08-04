@@ -15,26 +15,28 @@ Um aplicativo completo de **gestão financeira pessoal**, focado em organizaçã
 ## 📸 Imagens (exemplos)
 
 > ### Tela inicial
-![Tela inicial](screenshots/tela_inicial.png)
-![Opções de Adicionar](screenshots/opcoes_adicionar.png)
-![Opções de Listas](screenshots/opcoes_listas.png)
-> ### Tela de Estatisticas
-![Tela de Estatisticas](screenshots/tela_estatisticas.png)
+<img src="assets/screenshots/tela_inicial.png" alt="Tela Inicial" width="250"/> <img src="assets/screenshots/opcoes_adicionar.png" alt="Opções de Adicionar" width="250"/> <img src="assets/screenshots/opcoes_listas.png" alt="Opções de Listas" width="250"/>
+
+> ### Tela de Estatísticas
+<img src="assets/screenshots/tela_estatisticas.png" alt="Tela de Estatísticas" width="250"/>
+
 > ### Tela de Lista de Meses
-![Tela de Lista de Meses](screenshots/lista_meses.png)
+<img src="assets/screenshots/lista_meses.png" alt="Tela de Lista de Meses" width="250"/>
+
 > ### Tela de Contas
-![Tela de Contas](screenshots/lista_contas.png)
+<img src="assets/screenshots/lista_contas.png" alt="Tela de Contas" width="250"/>
+
 > ### Tela Detalhes da Conta
-![Tela Detalhes da Conta](screenshots/tela_detalhes_conta.png)
+<img src="assets/screenshots/tela_detalhes_conta.png" alt="Tela Detalhes da Conta" width="250"/>
+
 > ### Tela de Adicionar Conta
-![Tela de Adicionar Conta](screenshots/tela_adicionar_conta.png)
-![Tela para Escolher a Categoria da conta](screenshots/lista_categorias.png)
-![Tela para Escolher a Renda da conta](screenshots/lista_rendas.png)
+<img src="assets/screenshots/tela_adicionar_conta.png" alt="Tela de Adicionar Conta" width="250"/> <img src="assets/screenshots/lista_categorias.png" alt="Tela para Escolher a Categoria da Conta" width="250"/> <img src="assets/screenshots/lista_rendas.png" alt="Tela para Escolher a Renda da Conta" width="250"/>
+
 > ### Tela de Adicionar Categoria
-![Tela de Adicionar Categoria](screenshots/tela_adicionar_categoria.png)
+<img src="assets/screenshots/tela_adicionar_categoria.png" alt="Tela de Adicionar Categoria" width="250"/>
+
 > ### Tela de Adicionar Renda
-![Tela de Adicionar Renda](screenshots/tela_adicionar_renda.png)
-![Descrição de como funciona a adicão de rendas](screenshots/descricao_add_renda.png)
+<img src="assets/screenshots/tela_adicionar_renda.png" alt="Tela de Adicionar Renda" width="250"/> <img src="assets/screenshots/descricao_add_renda.png" alt="Descrição de como funciona a adição de rendas" width="250"/>
 
 ## 🛠️ Tecnologias Utilizadas
 
