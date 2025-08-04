@@ -30,4 +30,9 @@ class RevenueModel{
     data['isPublic'] = isPublic;
     return data;
   }
+
+  @override
+  String toString() {
+    return 'RevenueModel{id: $id, name: $name, monthId: $monthId , value: $value, isPublic: $isPublic}';
+  }
 }

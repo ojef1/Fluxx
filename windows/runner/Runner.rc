@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "Fluxx" "\0"
+            VALUE "FileDescription", "fluxx" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "Fluxx" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "Fluxx.exe" "\0"
-            VALUE "ProductName", "Fluxx" "\0"
+            VALUE "InternalName", "fluxx" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
+            VALUE "OriginalFilename", "fluxx.exe" "\0"
+            VALUE "ProductName", "fluxx" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

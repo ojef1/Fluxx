@@ -27,7 +27,7 @@ class _DefaultFontSizes implements FontSizesInterface {
   double get small => 13;
 
   @override
-  double get xlarge => 25;
+  double get xlarge => 23;
 
   @override
   double get xsmall => 10;

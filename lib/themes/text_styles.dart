@@ -3,10 +3,12 @@ part of 'app_theme.dart';
 abstract class TextStylesInterface {
   TextStyle get defaultTextStyle;
   TextStyle get titleTextStyle;
+  TextStyle get itemTitleTextStyle;
   TextStyle get bodyTextStyle;
   TextStyle get tileTextStyle;
   TextStyle get subTileTextStyle;
-  TextStyle get accentTextStyle;
+  TextStyle get itemTextStyle;
+  TextStyle get secondaryTextStyle;
   TextStyle get descTextStyle;
 }
 
@@ -27,7 +29,15 @@ class _DefaultTextStyles implements TextStylesInterface {
   TextStyle get titleTextStyle => TextStyle(
       fontWeight: FontWeight.w700,
       fontSize: AppTheme.fontSizes.xlarge,
-      color: Colors.black,
+      color: AppTheme.colors.primaryTextColor,
+      overflow: TextOverflow.ellipsis,
+      fontFamily: 'Mulish');
+
+  @override
+  TextStyle get itemTitleTextStyle => TextStyle(
+      fontWeight: FontWeight.w700,
+      fontSize: AppTheme.fontSizes.xlarge,
+      color: AppTheme.colors.black,
       overflow: TextOverflow.ellipsis,
       fontFamily: 'Mulish');
 
@@ -43,7 +53,7 @@ class _DefaultTextStyles implements TextStylesInterface {
   TextStyle get tileTextStyle => TextStyle(
         fontWeight: FontWeight.w700,
         fontSize: AppTheme.fontSizes.large,
-        color: Colors.black,
+        color:  AppTheme.colors.hintTextColor,
         overflow: TextOverflow.ellipsis,
         fontFamily: 'Mulish',
       );
@@ -51,23 +61,31 @@ class _DefaultTextStyles implements TextStylesInterface {
   TextStyle get subTileTextStyle => TextStyle(
         fontWeight: FontWeight.w800,
         fontSize: AppTheme.fontSizes.medium,
-        color: Colors.black,
+        color:  AppTheme.colors.hintTextColor,
         overflow: TextOverflow.ellipsis,
         fontFamily: 'Mulish',
       );
   @override
-  TextStyle get accentTextStyle => TextStyle(
+  TextStyle get itemTextStyle => TextStyle(
+        fontWeight: FontWeight.w800,
+        fontSize: AppTheme.fontSizes.medium,
+        color:  Colors.black,
+        overflow: TextOverflow.ellipsis,
+        fontFamily: 'Mulish',
+      );
+  @override
+  TextStyle get secondaryTextStyle => TextStyle(
         fontWeight: FontWeight.w700,
         fontSize: AppTheme.fontSizes.small,
-        color: Colors.black,
+        color: AppTheme.colors.hintTextColor,
         overflow: TextOverflow.ellipsis,
         fontFamily: 'Mulish',
       );
   @override
   TextStyle get descTextStyle => TextStyle(
         fontWeight: FontWeight.w700,
-        fontSize: AppTheme.fontSizes.medium,
-        color: Colors.grey,
+        fontSize: AppTheme.fontSizes.small,
+        color: AppTheme.colors.black,
         overflow: TextOverflow.ellipsis,
         fontFamily: 'Mulish',
       );

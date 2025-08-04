@@ -1,4 +1,4 @@
-# Fluxx
+# fluxx
 
 A new Flutter project.
 

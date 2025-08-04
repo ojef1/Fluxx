@@ -1,9 +1,11 @@
-import 'package:Fluxx/components/status.dart';
+
+import 'package:Fluxx/blocs/bill_cubit/bill_cubit.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class BillItem extends StatelessWidget {
   final BillModel bill;
@@ -13,19 +15,21 @@ class BillItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(
+      onTap: () {
+        Navigator.pushNamed(
         context,
-        AppRoutes.editBillPage,
-        arguments: bill,
-      ),
+        AppRoutes.detailBillPage,
+      );
+      GetIt.I<BillCubit>().getBill(bill.id!, bill.monthId!);
+      },
       child: Container(
         margin: EdgeInsets.symmetric(
           horizontal: mediaQuery.width * .05,
           vertical: mediaQuery.width * .01,
         ),
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 16),
         decoration: BoxDecoration(
-          color: AppTheme.colors.accentColor,
+          color: AppTheme.colors.white,
           borderRadius: BorderRadius.circular(20),
         ),
         height: mediaQuery.height * .2,
@@ -38,7 +42,7 @@ class BillItem extends StatelessWidget {
                 Expanded(
                   child: Text(
                     bill.name ?? '',
-                    style: AppTheme.textStyles.bodyTextStyle,
+                    style: AppTheme.textStyles.itemTitleTextStyle,
                   ),
                 ),
                 Icon(
@@ -54,13 +58,13 @@ class BillItem extends StatelessWidget {
               children: [
                 Text(
                   'Categoria: ',
-                  style: AppTheme.textStyles.bodyTextStyle,
+                  style: AppTheme.textStyles.itemTextStyle,
                 ),
                 Expanded(
                   child: Text(
                     textAlign: TextAlign.end,
-                    '{categoria da conta} ',
-                    style: AppTheme.textStyles.bodyTextStyle,
+                    '${bill.categoryName} ',
+                    style: AppTheme.textStyles.itemTextStyle,
                   ),
                 ),
               ],
@@ -70,13 +74,13 @@ class BillItem extends StatelessWidget {
               children: [
                 Text(
                   'Renda Usada: ',
-                  style: AppTheme.textStyles.bodyTextStyle,
+                  style: AppTheme.textStyles.itemTextStyle,
                 ),
                 Expanded(
                   child: Text(
                     textAlign: TextAlign.end,
-                    '{renda usada} ',
-                    style: AppTheme.textStyles.bodyTextStyle,
+                    '${bill.paymentName} ',
+                    style: AppTheme.textStyles.itemTextStyle,
                   ),
                 ),
               ],
@@ -94,15 +98,15 @@ class BillItem extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    '{data da conta}',
-                    style: AppTheme.textStyles.bodyTextStyle,
+                    '${(bill.paymentDate)}',
+                    style: AppTheme.textStyles.itemTextStyle,
                   ),
                 ),
                 Expanded(
                   child: Text(
                     textAlign: TextAlign.end,
                     formatPrice(bill.price ?? 0.0),
-                    style: AppTheme.textStyles.bodyTextStyle,
+                    style: AppTheme.textStyles.itemTextStyle,
                   ),
                 ),
               ],

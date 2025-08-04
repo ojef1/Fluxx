@@ -16,7 +16,7 @@ class MonthsListCubit extends Cubit<MonthsListState> {
   }
 
   Future<void> getMonths() async {
-    updateGetMonthsResponse(GetMonthsResponse.loaging);
+    updateGetMonthsResponse(GetMonthsResponse.loading);
     final months = await Db.getData(Tables.months);
 
     if (months.isEmpty) {
@@ -26,11 +26,15 @@ class MonthsListCubit extends Cubit<MonthsListState> {
     final monthsList = await Future.wait(
       months.map((item) async {
         final totalSpent = await Db.sumPricesByMonth(item['id']);
+        final mostUsedCategory = await Db.getMostUsedCategoryByMonth(item['id']);
+        final mostUsedRevenue = await Db.getMostUsedRevenueByMonth(item['id']);
 
         return MonthModel(
           id: item['id'],
           name: item['name'],
-          total: totalSpent, 
+          total: totalSpent,
+          categoryMostUsed: mostUsedCategory,
+          revenueMostUsed: mostUsedRevenue,
         );
       }).toList(),
     );

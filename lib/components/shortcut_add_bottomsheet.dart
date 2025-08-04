@@ -1,4 +1,4 @@
-import 'package:Fluxx/blocs/resume_bloc/resume_cubit.dart';
+import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
@@ -14,50 +14,53 @@ class ShortcutAddBottomsheet extends StatelessWidget {
     var mediaQuery = MediaQuery.of(context).size;
     return Container(
       height: mediaQuery.height * .4,
+      color: AppTheme.colors.appBackgroundColor,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
-            height: 10,
-            width: 50,
+            height: 6,
+            width: 30,
             decoration: BoxDecoration(
-                color: AppTheme.colors.accentColor,
+                color: AppTheme.colors.hintColor,
                 borderRadius: BorderRadius.circular(25)),
           ),
           const SizedBox(height: 40),
           Container(
             decoration: BoxDecoration(
-                color: AppTheme.colors.accentColor,
+                color: AppTheme.colors.itemBackgroundColor,
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
+            width: mediaQuery.width * .85,
             child: ListTile(
               onTap: () {
                 var currentMonthId =
                     GetIt.I<ResumeCubit>().state.currentMonth!.id!;
                 BillModel billModel = BillModel(monthId: currentMonthId);
                 Navigator.pushReplacementNamed(
-                context,
-                AppRoutes.addBillPage,
-                arguments: billModel,
-              );
+                  context,
+                  AppRoutes.addBillPage,
+                  arguments: billModel,
+                );
               },
               title: Text(
                 'Adicionar Conta',
                 style: AppTheme.textStyles.bodyTextStyle,
               ),
-              trailing: const Icon(
+              trailing: Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: Colors.white,
+                color: AppTheme.colors.hintColor,
               ),
             ),
           ),
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
-                color: AppTheme.colors.accentColor,
+                color: AppTheme.colors.itemBackgroundColor,
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
+            width: mediaQuery.width * .85,
             child: ListTile(
               onTap: () {
                 var currentMonthId =
@@ -71,28 +74,29 @@ class ShortcutAddBottomsheet extends StatelessWidget {
                 'Adicionar Renda',
                 style: AppTheme.textStyles.bodyTextStyle,
               ),
-              trailing: const Icon(
+              trailing: Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: Colors.white,
+                color: AppTheme.colors.hintColor,
               ),
             ),
           ),
           const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
-                color: AppTheme.colors.accentColor,
+                color: AppTheme.colors.itemBackgroundColor,
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
+            width: mediaQuery.width * .85,
             child: ListTile(
-              onTap: () =>
-                  Navigator.pushNamed(context, AppRoutes.addCategoryPage),
+              onTap: () => Navigator.pushReplacementNamed(
+                  context, AppRoutes.addCategoryPage),
               title: Text(
                 'Adicionar Categoria',
                 style: AppTheme.textStyles.bodyTextStyle,
               ),
-              trailing: const Icon(
+              trailing: Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: Colors.white,
+                color: AppTheme.colors.hintColor,
               ),
             ),
           ),

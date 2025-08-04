@@ -26,7 +26,7 @@ class CustomTextField extends StatelessWidget {
       height: height ?? mediaQuery.height * .07,
       padding: EdgeInsets.symmetric(horizontal: mediaQuery.width * .03),
       decoration: BoxDecoration(
-        color: AppTheme.colors.accentColor,
+        color: AppTheme.colors.itemBackgroundColor,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -53,12 +53,12 @@ class CustomTextField extends StatelessWidget {
             Container(
               margin: EdgeInsets.symmetric(horizontal: mediaQuery.width * .03),
               width: 1,
-              color: Colors.white,
+              color: AppTheme.colors.hintColor,
             ),
           if (icon != null)
             Icon(
               icon,
-              color: Colors.white,
+              color: AppTheme.colors.hintColor,
               size: 30,
             )
         ],

@@ -1,9 +1,8 @@
-import 'dart:developer';
-
-import 'package:Fluxx/blocs/resume_bloc/resume_cubit.dart';
-import 'package:Fluxx/blocs/revenue_bloc/revenue_bloc.dart';
-import 'package:Fluxx/blocs/revenue_bloc/revenue_state.dart';
-import 'package:Fluxx/components/animated_check_button.dart';
+import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
+import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
+import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
+import 'package:Fluxx/components/app_bar.dart';
+import 'package:Fluxx/components/empty_list_placeholder/empty_revenue_list.dart';
 import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
@@ -31,23 +30,24 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
   }
 
   Future<void> init() async {
-    var actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
-    // GetIt.I<RevenueCubit>().getRevenues(actualMonth);
-    GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth.id!);
+    debugPrint('caiu no init');
+    var monthInFocus = GetIt.I<ResumeCubit>().state.monthInFocus;
+    GetIt.I<RevenueCubit>().calculateAvailableValue(monthInFocus!.id!);
   }
 
   @override
   Widget build(BuildContext context) {
     final String billValue =
         ModalRoute.of(context)!.settings.arguments as String;
-    final double billValueDouble = double.parse(billValue);
-    log('valor da conta : $billValueDouble');
+    final String billValueFormatted = billValue.replaceAll(',', '.');
+    final double billValueDouble = double.parse(billValueFormatted);
     var mediaQuery = MediaQuery.of(context).size;
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.dark,
       child: Scaffold(
         backgroundColor: AppTheme.colors.appBackgroundColor,
         resizeToAvoidBottomInset: true,
+        appBar: const CustomAppBar(title: 'Forma de Pagamento'),
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(
@@ -55,92 +55,105 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
             ),
             child: Column(
               children: [
-                //AppBar
-                Container(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: Constants.topMargin),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: AppTheme.colors.grayD4,
-                        child: IconButton(
-                            color: Colors.black,
-                            onPressed: () => Navigator.pop(context),
-                            icon: const Icon(Icons.arrow_back_rounded)),
-                      ),
-                      SizedBox(width: mediaQuery.width * .1),
-                      Text(
-                        'Forma de Pagamento',
-                        style: AppTheme.textStyles.titleTextStyle,
-                      ),
-                    ],
-                  ),
-                ),
+                const SizedBox(height: Constants.topMargin),
                 BlocBuilder<RevenueCubit, RevenueState>(
                   bloc: GetIt.I(),
                   buildWhen: (previous, current) =>
-                      previous.revenuesList != current.revenuesList,
+                      previous.availableRevenues != current.availableRevenues,
                   builder: (context, state) {
-                    if (state.revenuesList.isEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.all(28.0),
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                maxLines: 3,
-                                textAlign: TextAlign.center,
-                                'Você ainda não possui Rendas Cadastradas!',
-                                style: AppTheme.textStyles.subTileTextStyle,
-                              ),
-                              const SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: () {
-                                  var currentMonthId = GetIt.I<ResumeCubit>()
-                                      .state
-                                      .currentMonth!.id!;
-                                  RevenueModel revenue =
-                                      RevenueModel(monthId: currentMonthId);
-                                  Navigator.pushReplacementNamed(
-                                      context, AppRoutes.addRevenuePage,
-                                      arguments: revenue);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppTheme.colors.accentColor,
-                                  minimumSize: const Size(50, 50),
-                                ),
-                                child: Text('Adicionar Nova Renda',
-                                    style: AppTheme.textStyles.bodyTextStyle),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
+                    if (state.getRevenueResponse ==
+                        GetRevenueResponse.loading) {
+                      return const Center(child: CircularProgressIndicator());
                     } else {
-                      return Expanded(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: state.revenuesList.length,
-                          itemBuilder: (context, index) {
-                            bool available = _verifyAvailability(billValueDouble,  state.availableRevenues[index].value ?? 0.0);
-                            return PrimaryButton(
-                              width: mediaQuery.width * .85,
-                              text: state.revenuesList[index].name ?? '',
-                              onPressed: !available
-                                  ? () => _showUnavailableDialog(
-                                        context,
-                                        state.revenuesList[index].name ?? '',
-                                      )
-                                  : () => _showConfirmationDialog(
-                                        context,
-                                        state.revenuesList[index].name ?? '',
-                                        state.revenuesList[index].id ?? '',
-                                        state.revenuesList[index].value ?? 0.0,
-                                      ),
+                      if (state.availableRevenues.isEmpty) {
+                        return EmptyRevenueList(
+                          onPressed: () {
+                            var currentMonthId =
+                                GetIt.I<ResumeCubit>().state.currentMonth!.id!;
+                            RevenueModel revenue =
+                                RevenueModel(monthId: currentMonthId);
+                            Navigator.pushNamed(
+                                    context, AppRoutes.addRevenuePage,
+                                    arguments: revenue)
+                                .then(
+                              (value) => init(),
                             );
                           },
-                        ),
-                      );
+                        );
+                      } else {
+                        return Expanded(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: state.availableRevenues.length,
+                            itemBuilder: (context, index) {
+                              bool available = _verifyAvailability(
+                                  billValueDouble,
+                                  state.availableRevenues[index].value ?? 0.0);
+                              return Column(
+                                children: [
+                                  PrimaryButton(
+                                    color: AppTheme.colors.itemBackgroundColor,
+                                    textStyle:
+                                        AppTheme.textStyles.bodyTextStyle,
+                                    width: mediaQuery.width * .85,
+                                    text: state.availableRevenues[index].name ??
+                                        '',
+                                    onPressed: !available
+                                        ? () => _showUnavailableDialog(
+                                              context,
+                                              state.availableRevenues[index]
+                                                      .name ??
+                                                  '',
+                                            )
+                                        : () => _showConfirmationDialog(
+                                              context,
+                                              state.availableRevenues[index]
+                                                      .name ??
+                                                  '',
+                                              state.availableRevenues[index]
+                                                      .id ??
+                                                  '',
+                                              state.availableRevenues[index]
+                                                      .value ??
+                                                  0.0,
+                                            ),
+                                  ),
+                                  if (state.availableRevenues.length - 1 ==
+                                      index)
+                                    const SizedBox(height: 24),
+                                  if (state.availableRevenues.length - 1 ==
+                                      index)
+                                    PrimaryButton(
+                                      color:
+                                          AppTheme.colors.itemBackgroundColor,
+                                      textStyle: AppTheme
+                                          .textStyles.bodyTextStyle
+                                          .copyWith(
+                                              color: AppTheme.colors.hintColor),
+                                      width: mediaQuery.width * .85,
+                                      text: 'Adicionar mais Rendas',
+                                      onPressed: () {
+                                        var currentMonthId =
+                                            GetIt.I<ResumeCubit>()
+                                                .state
+                                                .currentMonth!
+                                                .id!;
+                                        RevenueModel revenue = RevenueModel(
+                                            monthId: currentMonthId);
+                                        return Navigator.pushNamed(context,
+                                                AppRoutes.addRevenuePage,
+                                                arguments: revenue)
+                                            .then(
+                                          (value) => init(),
+                                        );
+                                      },
+                                    ),
+                                ],
+                              );
+                            },
+                          ),
+                        );
+                      }
                     }
                   },
                 ),
@@ -180,7 +193,7 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.colors.accentColor,
+                backgroundColor: AppTheme.colors.hintColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -211,7 +224,8 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
             maxLines: 4,
             textAlign: TextAlign.center,
             'Escolher $name?',
-            style: AppTheme.textStyles.tileTextStyle,
+            style:
+                AppTheme.textStyles.tileTextStyle.copyWith(color: Colors.black),
           ),
           actions: [
             TextButton(
@@ -220,7 +234,7 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
               },
               child: Text(
                 'Não',
-                style: AppTheme.textStyles.accentTextStyle.copyWith(
+                style: AppTheme.textStyles.itemTextStyle.copyWith(
                   color: Colors.grey,
                 ),
               ),
@@ -233,7 +247,7 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
                 Navigator.of(context).pop(); //volta para a página de add conta
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.colors.accentColor,
+                backgroundColor: AppTheme.colors.hintColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -248,12 +262,11 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
       },
     );
   }
-  
-  
+
   bool _verifyAvailability(double billValue, double revenueValue) {
     if (billValue <= revenueValue) {
       return true;
-    }else{
+    } else {
       return false;
     }
   }

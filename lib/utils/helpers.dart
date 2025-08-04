@@ -1,16 +1,9 @@
 import 'package:Fluxx/components/custom_flushbar.dart';
-import 'package:Fluxx/themes/app_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
-
- Color getBarColor(double percent) {
-    if (percent < 0.5) return Colors.green;
-    if (percent < 0.8) return Colors.orange;
-    if (percent > 0.8) return Colors.red;
-
-    return Colors.red;
-  }
+import 'package:yaml/yaml.dart';
 
 String formatPrice(double price) {
   final NumberFormat currencyFormatter =
@@ -23,20 +16,13 @@ bool intToBool(int value) {
   return value != 0;
 }
 
-Future<void> showFlushbar(BuildContext context, String message, bool isError) async {
-  if (isError) {
-    await CustomSnackBar.show(
-        context: context,
-        message: message,
-        icon: Icons.warning_rounded,
-        color: Colors.red);
-  } else {
-    await CustomSnackBar.show(
-        context: context,
-        message: message,
-        icon: Icons.check,
-        color: AppTheme.colors.accentColor);
-  }
+Future<void> showFlushbar(
+    BuildContext context, String message, bool isError) async {
+  await CustomFlushbar.show(
+    context: context,
+    message: message,
+    isError: isError,
+  );
 }
 
 String? formatDate(String? dateTime) {
@@ -53,4 +39,11 @@ String codeGenerate() {
   var code = const Uuid().v4();
   var shortCode = code.substring(0, 8);
   return shortCode;
+}
+
+Future<String> getVersion() async {
+  final yamlFile = await rootBundle.loadString('pubspec.yaml');
+  final yaml = loadYaml(yamlFile);
+  final version = yaml['version'] as String;
+  return version; // Retorna a versão completa, incluindo o número de build
 }

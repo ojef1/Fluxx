@@ -1,6 +1,7 @@
-import 'package:Fluxx/blocs/category_bloc/category_cubit.dart';
-import 'package:Fluxx/blocs/category_bloc/category_state.dart';
-import 'package:Fluxx/components/animated_check_button.dart';
+import 'package:Fluxx/blocs/category_cubit/category_cubit.dart';
+import 'package:Fluxx/blocs/category_cubit/category_state.dart';
+import 'package:Fluxx/components/app_bar.dart';
+import 'package:Fluxx/components/empty_list_placeholder/empty_category_list.dart';
 import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
@@ -33,6 +34,7 @@ class _ChooseCategoryPageState extends State<ChooseCategoryPage> {
       child: Scaffold(
         backgroundColor: AppTheme.colors.appBackgroundColor,
         resizeToAvoidBottomInset: true,
+        appBar: const CustomAppBar(title: 'Escolher Categoria'),
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(
@@ -40,61 +42,22 @@ class _ChooseCategoryPageState extends State<ChooseCategoryPage> {
             ),
             child: Column(
               children: [
-                //AppBar
-                Container(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: Constants.topMargin),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: AppTheme.colors.grayD4,
-                        child: IconButton(
-                            color: Colors.black,
-                            onPressed: () => Navigator.pop(context),
-                            icon: const Icon(Icons.arrow_back_rounded)),
-                      ),
-                      SizedBox(width: mediaQuery.width * .1),
-                      Text(
-                        'Escolher Categoria',
-                        style: AppTheme.textStyles.titleTextStyle,
-                      ),
-                    ],
-                  ),
-                ),
-
+                const SizedBox(height: Constants.topMargin),
                 BlocBuilder<CategoryCubit, CategoryState>(
                   bloc: GetIt.I(),
                   buildWhen: (previous, current) =>
                       previous.categories != current.categories,
                   builder: (context, state) {
                     if (state.categories.isEmpty) {
-                      return Padding(
-                        padding: const EdgeInsets.all(28.0),
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                maxLines: 3,
-                                textAlign: TextAlign.center,
-                                'Você ainda não possui Categorias Cadastradas!',
-                                style: AppTheme.textStyles.subTileTextStyle,
-                              ),
-                              const SizedBox(height: 10),
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.pushReplacementNamed(
-                                      context, AppRoutes.addCategoryPage);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppTheme.colors.accentColor,
-                                  minimumSize: const Size(50, 50),
-                                ),
-                                child: Text('Adicionar Nova Categoria',
-                                    style: AppTheme.textStyles.bodyTextStyle),
-                              ),
-                            ],
-                          ),
+                      return EmptyCategoryList(
+                        onPressed: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.addCategoryPage,
+                        ).then(
+                          (value) => GetIt.I<CategoryCubit>().getCategorys(),
                         ),
+                        title: 'Parece que você não possui categorias',
+                        subTitle: 'Clique aqui para criar',
                       );
                     } else {
                       return Expanded(
@@ -102,14 +65,38 @@ class _ChooseCategoryPageState extends State<ChooseCategoryPage> {
                           shrinkWrap: true,
                           itemCount: state.categories.length,
                           itemBuilder: (context, index) {
-                            return PrimaryButton(
-                              width: mediaQuery.width * .85,
-                              text: state.categories[index].categoryName ?? '',
-                              onPressed: () => _showConfirmationDialog(
-                                context,
-                                state.categories[index].categoryName ?? '',
-                                state.categories[index].id ?? '',
-                              ),
+                            return Column(
+                              children: [
+                                PrimaryButton(
+                                  color: AppTheme.colors.itemBackgroundColor,
+                                  textStyle: AppTheme.textStyles.bodyTextStyle,
+                                  width: mediaQuery.width * .85,
+                                  text: state.categories[index].categoryName ??
+                                      '',
+                                  onPressed: () => _showConfirmationDialog(
+                                    context,
+                                    state.categories[index].categoryName ?? '',
+                                    state.categories[index].id ?? '',
+                                  ),
+                                ),
+                                if (state.categories.length - 1 == index)
+                                  const SizedBox(height: 24),
+                                if (state.categories.length - 1 == index)
+                                  PrimaryButton(
+                                    color: AppTheme.colors.itemBackgroundColor,
+                                    textStyle: AppTheme.textStyles.bodyTextStyle
+                                        .copyWith(
+                                            color: AppTheme.colors.hintColor),
+                                    width: mediaQuery.width * .85,
+                                    text: 'Adicionar mais categorias',
+                                    onPressed: () => Navigator.pushNamed(
+                                            context, AppRoutes.addCategoryPage)
+                                        .then(
+                                      (value) => GetIt.I<CategoryCubit>()
+                                          .getCategorys(),
+                                    ),
+                                  ),
+                              ],
                             );
                           },
                         ),
@@ -140,7 +127,8 @@ class _ChooseCategoryPageState extends State<ChooseCategoryPage> {
             maxLines: 4,
             textAlign: TextAlign.center,
             'Escolher $categoryName?',
-            style: AppTheme.textStyles.tileTextStyle,
+            style:
+                AppTheme.textStyles.tileTextStyle.copyWith(color: Colors.black),
           ),
           actions: [
             TextButton(
@@ -149,21 +137,21 @@ class _ChooseCategoryPageState extends State<ChooseCategoryPage> {
               },
               child: Text(
                 'Não',
-                style: AppTheme.textStyles.accentTextStyle.copyWith(
+                style: AppTheme.textStyles.itemTextStyle.copyWith(
                   color: Colors.grey,
                 ),
               ),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pop();//fecha dialog
-                var category = CategoryModel(id: categoryId, categoryName: categoryName); 
+                Navigator.of(context).pop(); //fecha dialog
+                var category =
+                    CategoryModel(id: categoryId, categoryName: categoryName);
                 GetIt.I<CategoryCubit>().updateSelectedCategory(category);
-                Navigator.of(context).pop();//volta para a página de add conta
-
+                Navigator.of(context).pop(); //volta para a página de add conta
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.colors.accentColor,
+                backgroundColor: AppTheme.colors.hintColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),

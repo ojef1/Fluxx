@@ -1,4 +1,5 @@
-import 'package:Fluxx/blocs/bill_list_bloc/bill_list_cubit.dart';
+
+import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
@@ -15,8 +16,8 @@ class Month extends StatelessWidget {
     var mediaQuery = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
-        GetIt.I<ListBillCubit>().updateMonthInFocus(month);
-        Navigator.pushReplacementNamed(context, AppRoutes.detailPage);
+        GetIt.I<ResumeCubit>().updateMonthInFocus(month);
+        Navigator.pushNamed(context, AppRoutes.detailPage);
       },
       child: Container(
         margin: EdgeInsets.symmetric(
@@ -30,13 +31,13 @@ class Month extends StatelessWidget {
         width: mediaQuery.width * .7,
         height: mediaQuery.height * .2,
         decoration: BoxDecoration(
-          color: AppTheme.colors.appBackgroundColor,
+          color: AppTheme.colors.itemBackgroundColor,
           boxShadow: const [
-            BoxShadow(color: Colors.black, blurRadius: 2, offset: Offset(3, 3))
+            BoxShadow(color: Colors.black, blurRadius: 1, offset: Offset(3, 3))
           ],
-          border: const Border(
+          border: Border(
             left: BorderSide(
-              color: Colors.red, // trocar pela cor de acordo com o gasto no mês
+              color: AppTheme.colors.hintColor,
               width: 10,
             ),
           ),
@@ -51,9 +52,9 @@ class Month extends StatelessWidget {
               children: [
                 Text(month.name ?? '',
                     style: AppTheme.textStyles.titleTextStyle),
-                const Icon(
+                Icon(
                   Icons.arrow_forward_ios_rounded,
-                  color: Colors.black,
+                  color: AppTheme.colors.hintColor,
                   size: 17,
                 ),
               ],
@@ -65,14 +66,14 @@ class Month extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Total gasto:  ',
-                        style: AppTheme.textStyles.accentTextStyle),
+                        style: AppTheme.textStyles.descTextStyle.copyWith(color: AppTheme.colors.hintTextColor)),
                     Expanded(
                       child: Text(
                           textAlign: TextAlign.end,
                           'R\$ ${formatPrice(
                             month.total ?? 0,
                           )}',
-                          style: AppTheme.textStyles.accentTextStyle),
+                          style: AppTheme.textStyles.descTextStyle.copyWith(color: AppTheme.colors.hintTextColor)),
                     ),
                   ],
                 ),
@@ -80,15 +81,13 @@ class Month extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Categoria com maior despesa:  ',
-                        style: AppTheme.textStyles.accentTextStyle),
+                    Text('Categoria de maior despesa:  ',
+                        style: AppTheme.textStyles.descTextStyle.copyWith(color: AppTheme.colors.hintTextColor)),
                     Expanded(
                       child: Text(
                           textAlign: TextAlign.end,
-                          'R\$ ${formatPrice(
-                            month.total ?? 0,
-                          )}',
-                          style: AppTheme.textStyles.accentTextStyle),
+                          month.categoryMostUsed ?? 'N.A',
+                          style: AppTheme.textStyles.descTextStyle.copyWith(color: AppTheme.colors.hintTextColor)),
                     ),
                   ],
                 ),
@@ -97,14 +96,12 @@ class Month extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Receita mais usada:  ',
-                        style: AppTheme.textStyles.accentTextStyle),
+                        style: AppTheme.textStyles.descTextStyle.copyWith(color: AppTheme.colors.hintTextColor)),
                     Expanded(
                       child: Text(
                           textAlign: TextAlign.end,
-                          'R\$ ${formatPrice(
-                            month.total ?? 0,
-                          )}',
-                          style: AppTheme.textStyles.accentTextStyle),
+                          month.revenueMostUsed ?? 'N.A',
+                          style: AppTheme.textStyles.descTextStyle.copyWith(color: AppTheme.colors.hintTextColor)),
                     ),
                   ],
                 ),

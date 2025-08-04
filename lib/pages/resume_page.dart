@@ -1,12 +1,12 @@
+import 'dart:io';
 
-import 'package:Fluxx/blocs/bill_list_bloc/bill_list_cubit.dart';
-import 'package:Fluxx/blocs/resume_bloc/resume_cubit.dart';
-import 'package:Fluxx/blocs/resume_bloc/resume_state.dart';
-import 'package:Fluxx/blocs/revenue_bloc/revenue_bloc.dart';
-import 'package:Fluxx/blocs/revenue_bloc/revenue_state.dart';
-import 'package:Fluxx/blocs/user_bloc/user_cubit.dart';
-import 'package:Fluxx/blocs/user_bloc/user_state.dart';
-import 'package:Fluxx/components/resumePage/available_revenues.dart';
+import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
+import 'package:Fluxx/blocs/resume_cubit/resume_state.dart';
+import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
+import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
+import 'package:Fluxx/blocs/user_cubit/user_cubit.dart';
+import 'package:Fluxx/blocs/user_cubit/user_state.dart';
+import 'package:Fluxx/components/available_revenues.dart';
 import 'package:Fluxx/components/shortcut_add_bottomsheet.dart';
 import 'package:Fluxx/components/shortcut_lists_bottomsheet.dart';
 import 'package:Fluxx/models/month_model.dart';
@@ -31,9 +31,24 @@ class _ResumePageState extends State<ResumePage> {
   late final String greeting;
   late MonthModel actualMonth;
 
+  bool _wasPaused = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
+    if (isCurrent && _wasPaused) {
+      init();
+      _wasPaused = false;
+    } else if (!isCurrent) {
+      _wasPaused = true;
+    }
+  }
+
   @override
   void initState() {
     greeting = GetIt.I<ResumeCubit>().getGreeting();
+    GetIt.I<UserCubit>().getUserInfos();
     _pageScrollController = ScrollController();
     init();
     super.initState();
@@ -41,8 +56,8 @@ class _ResumePageState extends State<ResumePage> {
 
   Future<void> init() async {
     actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
-    // GetIt.I<RevenueCubit>().getRevenues(actualMonth);
-    GetIt.I<ListBillCubit>().updateMonthInFocus(actualMonth);
+
+    GetIt. I<ResumeCubit>().updateMonthInFocus(actualMonth);
     await GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth.id!);
     await GetIt.I<ResumeCubit>().getTotalSpent(actualMonth.id!);
     var totalRevenues = await GetIt.I<RevenueCubit>().calculateTotalRevenues();
@@ -52,9 +67,6 @@ class _ResumePageState extends State<ResumePage> {
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
-    //FIXME remover esse link mocado
-    const url =
-        'https://static.vecteezy.com/system/resources/thumbnails/002/387/693/small_2x/user-profile-icon-free-vector.jpg';
     return Scaffold(
       extendBody: true,
       resizeToAvoidBottomInset: true,
@@ -70,25 +82,56 @@ class _ResumePageState extends State<ResumePage> {
                 padding: EdgeInsets.symmetric(
                   horizontal: mediaQuery.width * .05,
                 ),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () =>
-                          Navigator.pushNamed(context, AppRoutes.profilePage),
-                      child: const CircleAvatar(
-                        //FIXME usar a imagem escolhida do próprio usuário
-                        backgroundImage: NetworkImage(url),
+                child: BlocBuilder<UserCubit, UserState>(
+                  bloc: GetIt.I(),
+                  builder: (context, state) => Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      GestureDetector(
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.profilePage)
+                                .then((value) => init()),
+                        child: Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                              color: AppTheme.colors.grayD4,
+                              shape: BoxShape.circle),
+                          child: ClipOval(
+                            child:
+                                state.user?.picture == Constants.defaultPicture
+                                    ? Image.asset(
+                                        Constants.defaultPicture,
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Image.asset(
+                                          Constants.defaultPicture,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      )
+                                    : Image.file(
+                                        File(state.user?.picture ?? ''),
+                                        fit: BoxFit.cover,
+                                        errorBuilder:
+                                            (context, error, stackTrace) =>
+                                                Image.asset(
+                                          state.user?.picture ?? '',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                          ),
+                        ),
                       ),
-                    ),
-                    SizedBox(width: mediaQuery.width * .07),
-                    BlocBuilder<UserCubit, UserState>(
-                      bloc: GetIt.I(),
-                      builder: (context, state) => Text(
-                        '$greeting ${state.user?.name ?? 'Usuário'}',
-                        style: AppTheme.textStyles.titleTextStyle,
+                      SizedBox(width: mediaQuery.width * .07),
+                      Expanded(
+                        child: Text(
+                          '$greeting ${state.user?.name ?? 'Usuário'}',
+                          style: AppTheme.textStyles.titleTextStyle,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
               //Resumo
@@ -103,27 +146,9 @@ class _ResumePageState extends State<ResumePage> {
                   children: [
                     BlocBuilder<ResumeCubit, ResumeState>(
                       bloc: GetIt.I(),
-                      builder: (context, state) => Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Resumo de ${state.currentMonth?.name ?? ''}',
-                            style: AppTheme.textStyles.titleTextStyle,
-                          ),
-                          IconButton(
-                            onPressed: () async {
-                              var actualMonth =
-                                  await GetIt.I<ResumeCubit>().getActualMonth();
-                              GetIt.I<ResumeCubit>().getTotalSpent(actualMonth.id!);
-
-                              var totalRevenues = await GetIt.I<RevenueCubit>()
-                                  .calculateTotalRevenues();
-                              GetIt.I<ResumeCubit>()
-                                  .calculatePercent(totalRevenues);
-                            },
-                            icon: const Icon(Icons.refresh_rounded),
-                          ),
-                        ],
+                      builder: (context, state) => Text(
+                        'Resumo de ${state.currentMonth?.name ?? ''}',
+                        style: AppTheme.textStyles.titleTextStyle,
                       ),
                     ),
                     SizedBox(height: mediaQuery.height * .02),
@@ -132,7 +157,7 @@ class _ResumePageState extends State<ResumePage> {
                       height: mediaQuery.height * .18,
                       width: double.infinity,
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppTheme.colors.itemBackgroundColor,
                           borderRadius: BorderRadius.circular(10)),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -168,10 +193,9 @@ class _ResumePageState extends State<ResumePage> {
                                         previous.totalRevenue !=
                                         current.totalRevenue,
                                     builder: (context, state) => Text(
-                                      'R\$${formatPrice(state.totalRevenue)}',
-                                      style:
-                                          AppTheme.textStyles.subTileTextStyle,
-                                    ),
+                                        'R\$${formatPrice(state.totalRevenue)}',
+                                        style: AppTheme
+                                            .textStyles.subTileTextStyle),
                                   ),
                                 ],
                               ),
@@ -187,7 +211,9 @@ class _ResumePageState extends State<ResumePage> {
                                   barRadius: const Radius.circular(50),
                                   lineHeight: 20,
                                   percent: state.percentSpent / 100,
-                                  progressColor: getBarColor(state.percentSpent / 100),
+                                  progressColor: AppTheme.colors.hintColor,
+                                  backgroundColor:
+                                      AppTheme.colors.lightHintColor,
                                 ),
                               ),
                             ],
@@ -198,15 +224,7 @@ class _ResumePageState extends State<ResumePage> {
                   ],
                 ),
               ),
-              //Divisor
-              Container(
-                margin: EdgeInsets.only(
-                  top: mediaQuery.width * .05,
-                  bottom: mediaQuery.width * .01,
-                ),
-                height: 1,
-                color: Colors.white,
-              ),
+
               //Acesso Rápido
               Container(
                 width: double.infinity,
@@ -216,85 +234,99 @@ class _ResumePageState extends State<ResumePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Acesso Rápido',
-                      style: AppTheme.textStyles.titleTextStyle,
-                    ),
-                    SizedBox(height: mediaQuery.height * .01),
+                    SizedBox(height: mediaQuery.height * .025),
                     Center(
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Column(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 5),
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: AppTheme.colors.accentColor,
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(Icons.add_rounded),
-                                  color: Colors.white,
-                                  iconSize: 30,
-                                  onPressed: () => _showAddBottomSheet(context),
-                                ),
+                          GestureDetector(
+                            onTap: () => _showAddBottomSheet(context),
+                            child: Container(
+                              alignment: Alignment.center,
+                              margin: const EdgeInsets.only(bottom: 5),
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: AppTheme.colors.itemBackgroundColor,
                               ),
-                              Text(
-                                'Adicionar',
-                                style: AppTheme.textStyles.accentTextStyle,
-                              )
-                            ],
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_rounded,
+                                    color: AppTheme.colors.hintColor,
+                                    size: 30,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    'Adicionar',
+                                    style: AppTheme.textStyles.subTileTextStyle
+                                        .copyWith(fontSize: 10),
+                                  )
+                                ],
+                              ),
+                            ),
                           ),
-                          Column(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 5),
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: AppTheme.colors.accentColor,
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(Icons.menu_rounded),
-                                  color: Colors.white,
-                                  iconSize: 30,
-                                  onPressed: () =>
-                                      _showListsBottomSheet(context),
-                                ),
+                          GestureDetector(
+                            onTap: () => _showListsBottomSheet(context),
+                            child: Container(
+                              alignment: Alignment.center,
+                              margin: const EdgeInsets.only(bottom: 5),
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: AppTheme.colors.itemBackgroundColor,
                               ),
-                              Text(
-                                'Listas',
-                                style: AppTheme.textStyles.accentTextStyle,
-                              )
-                            ],
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.menu_rounded,
+                                    color: AppTheme.colors.hintColor,
+                                    size: 30,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    'Listas',
+                                    style: AppTheme.textStyles.subTileTextStyle
+                                        .copyWith(fontSize: 10),
+                                  )
+                                ],
+                              ),
+                            ),
                           ),
-                          Column(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 5),
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: AppTheme.colors.accentColor,
-                                ),
-                                child: IconButton(
-                                  icon: const Icon(Icons.bar_chart_rounded),
-                                  color: Colors.white,
-                                  iconSize: 30,
-                                  onPressed: () => Navigator.pushNamed(
-                                      context, AppRoutes.statsPage),
-                                ),
+                          GestureDetector(
+                            onTap: () => Navigator.pushNamed(
+                                    context, AppRoutes.statsPage)
+                                .then((value) => init()),
+                            child: Container(
+                              alignment: Alignment.center,
+                              margin: const EdgeInsets.only(bottom: 5),
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: AppTheme.colors.itemBackgroundColor,
                               ),
-                              Text(
-                                'Estatísticas',
-                                style: AppTheme.textStyles.accentTextStyle,
-                              )
-                            ],
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.bar_chart_rounded,
+                                    color: AppTheme.colors.hintColor,
+                                    size: 30,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    'Estatísticas',
+                                    style: AppTheme.textStyles.subTileTextStyle
+                                        .copyWith(fontSize: 10),
+                                  )
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -302,15 +334,7 @@ class _ResumePageState extends State<ResumePage> {
                   ],
                 ),
               ),
-              //Divisor
-              Container(
-                margin: EdgeInsets.only(
-                  top: mediaQuery.width * .05,
-                  bottom: mediaQuery.width * .01,
-                ),
-                height: 1,
-                color: Colors.white,
-              ),
+
               //Receitas Disponíveis
               const AvailableRevenues()
             ],
@@ -319,8 +343,6 @@ class _ResumePageState extends State<ResumePage> {
       ),
     );
   }
-
- 
 
   void _showAddBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -335,7 +357,7 @@ class _ResumePageState extends State<ResumePage> {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return ShortcutListsBottomsheet(currentMonth: actualMonth,);
+        return const ShortcutListsBottomsheet();
       },
     );
   }

@@ -1,12 +1,16 @@
-import 'package:Fluxx/blocs/bill_bloc/bill_cubit.dart';
-import 'package:Fluxx/blocs/revenue_bloc/revenue_bloc.dart';
-import 'package:Fluxx/blocs/revenue_bloc/revenue_state.dart';
+
+import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
+import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
+import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
+import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/custom_text_field.dart';
+import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:Fluxx/utils/helpers.dart';
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,7 +28,7 @@ class AddRevenuePage extends StatefulWidget {
 class _AddRevenuePageState extends State<AddRevenuePage> {
   late TextEditingController nameController;
   late TextEditingController valueController;
-  late final RevenueModel? revenueModel;
+  RevenueModel? revenueModel;
   bool isPublic = false;
   bool isEditing = false;
 
@@ -38,15 +42,17 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    revenueModel = ModalRoute.of(context)!.settings.arguments as RevenueModel?;
-    _hasData(revenueModel);
+    if (revenueModel == null) {
+      revenueModel =
+          ModalRoute.of(context)!.settings.arguments as RevenueModel?;
+      _hasData(revenueModel);
+    }
   }
 
   @override
   void dispose() {
     nameController.dispose();
     valueController.dispose();
-    GetIt.I<BillCubit>().resetState();
     super.dispose();
   }
 
@@ -71,42 +77,26 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
       child: Scaffold(
         backgroundColor: AppTheme.colors.appBackgroundColor,
         resizeToAvoidBottomInset: true,
+        appBar: CustomAppBar(
+          title: isEditing ? 'Editar Renda' : 'Adicionar Renda',
+          // backButton: () => isEditing
+          //     ? Navigator.pop(context)
+          //     : Navigator.pushReplacementNamed(
+          //         context,
+          //         AppRoutes.home,
+          //       ),
+          actions: [
+            IconButton(
+                color: AppTheme.colors.hintColor,
+                onPressed: () => _showInfoDialog(context),
+                icon: const Icon(Icons.question_mark_rounded)),
+          ],
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Column(
               children: [
-                //AppBar
-                Container(
-                  margin: const EdgeInsets.only(top: Constants.topMargin),
-                  padding: EdgeInsets.symmetric(
-                    horizontal: mediaQuery.width * .05,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CircleAvatar(
-                        backgroundColor: AppTheme.colors.grayD4,
-                        child: IconButton(
-                            color: Colors.black,
-                            onPressed: () => Navigator.pop(context),
-                            icon: const Icon(Icons.arrow_back_rounded)),
-                      ),
-                      Text(
-                        isEditing ? 'Editar Renda' : 'Adicionar Renda',
-                        style: AppTheme.textStyles.titleTextStyle,
-                      ),
-                      CircleAvatar(
-                        backgroundColor: AppTheme.colors.grayD4,
-                        child: IconButton(
-                            color: Colors.black,
-                            onPressed: () => _showInfoDialog(context),
-                            icon: const Icon(Icons.question_mark_rounded)),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 50),
-
+                const SizedBox(height: Constants.topMargin),
                 Padding(
                   padding: EdgeInsets.only(
                       top: MediaQuery.of(context).viewInsets.top),
@@ -134,28 +124,53 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                             SizedBox(height: mediaQuery.height * .03),
                             Padding(
                               padding: EdgeInsets.symmetric(
-                                  horizontal: mediaQuery.height * .05),
+                                  horizontal: mediaQuery.height * .04),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    'Renda válida para todos os meses?',
-                                    style: AppTheme.textStyles.accentTextStyle,
+                                  Expanded(
+                                    child: Text(
+                                      maxLines: 2,
+                                      softWrap: true,
+                                      textAlign: TextAlign.start,
+                                      'Renda válida para todos os meses?',
+                                      style: AppTheme
+                                          .textStyles.secondaryTextStyle,
+                                    ),
                                   ),
-                                  Switch(
-                                    value: isPublic,
-                                    activeColor: AppTheme.colors.accentColor,
-                                    activeTrackColor: Colors.white,
-                                    inactiveThumbColor: Colors.white,
-                                    inactiveTrackColor:
-                                        AppTheme.colors.accentColor,
+                                  AnimatedToggleSwitch<bool>.dual(
+                                    current: isPublic,
+                                    first: false,
+                                    second: true,
+                                    spacing: 4,
+                                    style: const ToggleStyle(
+                                      borderColor: Colors.transparent,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          spreadRadius: 1,
+                                          blurRadius: 2,
+                                          offset: Offset(0, 1.5),
+                                        ),
+                                      ],
+                                    ),
+                                    borderWidth: 5.0,
+                                    height: 55,
                                     onChanged: (value) {
                                       setState(() {
                                         isPublic = value;
                                       });
                                     },
-                                  )
+                                    styleBuilder: (b) => ToggleStyle(
+                                        backgroundColor: b
+                                            ? AppTheme.colors.hintColor
+                                            : AppTheme.colors.lightHintColor,
+                                        indicatorColor: AppTheme.colors.white),
+                                    iconBuilder: (value) => value
+                                        ? const Icon(Icons.check_rounded)
+                                        : const Icon(Icons.close_rounded),
+                                  ),
                                 ],
                               ),
                             ),
@@ -190,30 +205,13 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                               builder: (context, state) {
                                 bool isLoading = state.addRevenueResponse ==
                                     AddRevenueResponse.loading;
-                                return Container(
-                                  decoration: BoxDecoration(
-                                      color: AppTheme.colors.accentColor,
-                                      borderRadius: BorderRadius.circular(10)),
-                                  padding: const EdgeInsets.all(3),
+                                return PrimaryButton(
+                                  text: isEditing ? 'Editar' : 'Adicionar',
+                                  onPressed: () =>
+                                      _verifyData(revenueId: revenueModel?.id),
                                   width: mediaQuery.width * .85,
-                                  child: ElevatedButton(
-                                    onPressed: isLoading
-                                        ? null
-                                        : () => _verifyData(
-                                            revenueModel!.monthId,
-                                            revenueId: revenueModel?.id),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                          AppTheme.colors.accentColor,
-                                      minimumSize: const Size(50, 50),
-                                    ),
-                                    child: isLoading
-                                        ? const CircularProgressIndicator()
-                                        : Text(
-                                            isEditing ? 'Editar' : 'Adicionar',
-                                            style: AppTheme
-                                                .textStyles.bodyTextStyle),
-                                  ),
+                                  color: AppTheme.colors.itemBackgroundColor,
+                                  textStyle: AppTheme.textStyles.bodyTextStyle,
                                 );
                               },
                             ),
@@ -267,7 +265,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                           height: MediaQuery.of(context).size.height * .02),
                       Text(
                         'O toggle permite definir o tipo de renda que está sendo criada.',
-                        style: AppTheme.textStyles.accentTextStyle,
+                        style: AppTheme.textStyles.secondaryTextStyle,
                         maxLines: 4,
                         textAlign: TextAlign.center,
                       ),
@@ -275,7 +273,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                           height: MediaQuery.of(context).size.height * .02),
                       Text(
                         'Se ativado, ela será global e se aplicará automaticamente a todos os meses, ideal para rendas fixas como salário. ',
-                        style: AppTheme.textStyles.accentTextStyle,
+                        style: AppTheme.textStyles.secondaryTextStyle,
                         maxLines: 4,
                         textAlign: TextAlign.center,
                       ),
@@ -283,7 +281,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                           height: MediaQuery.of(context).size.height * .02),
                       Text(
                         'Se desativado, a renda será específica do mês atual, útil para ganhos pontuais como freelances.',
-                        style: AppTheme.textStyles.accentTextStyle,
+                        style: AppTheme.textStyles.secondaryTextStyle,
                         maxLines: 4,
                         textAlign: TextAlign.center,
                       ),
@@ -323,7 +321,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
               },
               child: Text(
                 'Cancelar',
-                style: AppTheme.textStyles.accentTextStyle.copyWith(
+                style: AppTheme.textStyles.secondaryTextStyle.copyWith(
                   color: Colors.grey,
                 ),
               ),
@@ -350,7 +348,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     );
   }
 
-  Future<void> _verifyData(int? monthId, {String? revenueId}) async {
+  Future<void> _verifyData({String? revenueId}) async {
     if (nameController.text.isEmpty) {
       showFlushbar(context, 'preencha o campo do nome', true);
       return;
@@ -361,43 +359,44 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     }
     if (nameController.text.isNotEmpty && valueController.text.isNotEmpty) {
       if (isEditing) {
-        _editRevenue(monthId, revenueId!);
+        _editRevenue(revenueId!);
       } else {
-        _addNewRevenue(monthId);
+        _addNewRevenue();
       }
     }
   }
 
   Future<void> _editRevenue(
-    int? monthId,
     String revenueId,
   ) async {
     final String value = valueController.text.replaceAll(',', '.');
+    final resumeState = GetIt.I<ResumeCubit>().state;
 
     var newRevenue = RevenueModel(
         id: revenueId,
         name: nameController.text,
-        monthId: monthId,
+        monthId: resumeState.monthInFocus!.id!,
         value: double.parse(value),
         isPublic: isPublic ? 1 : 0);
     var result = await GetIt.I<RevenueCubit>().editRevenue(newRevenue);
     var state = GetIt.I<RevenueCubit>().state;
     if (result != -1) {
       showFlushbar(context, state.successMessage, false);
+      
+      Navigator.pop(context);
     } else {
       showFlushbar(context, state.errorMessage, true);
     }
   }
 
-  Future<void> _addNewRevenue(
-    int? monthId,
-  ) async {
+  Future<void> _addNewRevenue() async {
     final String value = valueController.text.replaceAll(',', '.');
+    final resumeState = GetIt.I<ResumeCubit>().state;
 
     var newRevenue = RevenueModel(
         id: codeGenerate(),
         name: nameController.text,
-        monthId: monthId,
+        monthId: resumeState.monthInFocus!.id!,
         value: double.parse(value),
         isPublic: isPublic ? 1 : 0);
     var result = await GetIt.I<RevenueCubit>().addNewRevenue(newRevenue);
@@ -405,6 +404,8 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     if (result != -1) {
       showFlushbar(context, state.successMessage, false);
       _clearInputs();
+
+      Navigator.pop(context);
     } else {
       showFlushbar(context, state.errorMessage, true);
     }

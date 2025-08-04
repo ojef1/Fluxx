@@ -1,68 +1,55 @@
-import 'package:Fluxx/blocs/bill_list_bloc/bill_list_cubit.dart';
-import 'package:Fluxx/models/month_model.dart';
+
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
-class ShortcutListsBottomsheet extends StatefulWidget {
-  final MonthModel currentMonth;
-  const ShortcutListsBottomsheet({super.key, required this.currentMonth});
-
-  @override
-  State<ShortcutListsBottomsheet> createState() =>
-      _ShortcutListsBottomsheetState();
-}
-
-class _ShortcutListsBottomsheetState extends State<ShortcutListsBottomsheet> {
-  @override
-  void initState() {
-    super.initState();
-
-    GetIt.I<ListBillCubit>().updateMonthInFocus(widget.currentMonth);
-  }
+class ShortcutListsBottomsheet extends StatelessWidget {
+  const ShortcutListsBottomsheet({super.key, });
 
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
     return Container(
       height: mediaQuery.height * .5,
+      color: AppTheme.colors.appBackgroundColor,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
-            height: 10,
-            width: 50,
+            height: 6,
+            width: 30,
             decoration: BoxDecoration(
-                color: AppTheme.colors.accentColor,
+                color: AppTheme.colors.hintColor,
                 borderRadius: BorderRadius.circular(25)),
           ),
           const SizedBox(height: 40),
           Container(
             decoration: BoxDecoration(
-                color: AppTheme.colors.accentColor,
+                color: AppTheme.colors.itemBackgroundColor,
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
+            width: mediaQuery.width * .85,
             child: ListTile(
               onTap: () =>
-                  Navigator.pushNamed(context, AppRoutes.monthListPage),
+                  Navigator.pushReplacementNamed(context, AppRoutes.monthListPage),
               title: Text(
                 'Lista de Meses',
                 style: AppTheme.textStyles.bodyTextStyle,
               ),
-              trailing: const Icon(
+              trailing: Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: Colors.white,
+                color: AppTheme.colors.hintColor,
               ),
             ),
           ),
           const SizedBox(height: 12),
           Container(
-            decoration: BoxDecoration(
-                color: AppTheme.colors.accentColor,
+             decoration: BoxDecoration(
+                color: AppTheme.colors.itemBackgroundColor,
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
+            width: mediaQuery.width * .85,
             child: ListTile(
               onTap: () {
                 Navigator.pushReplacementNamed(context, AppRoutes.detailPage);
@@ -71,49 +58,48 @@ class _ShortcutListsBottomsheetState extends State<ShortcutListsBottomsheet> {
                 'Lista de Contas',
                 style: AppTheme.textStyles.bodyTextStyle,
               ),
-              trailing: const Icon(
+              trailing: Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: Colors.white,
+                color: AppTheme.colors.hintColor,
               ),
             ),
           ),
           const SizedBox(height: 12),
           Container(
-            decoration: BoxDecoration(
-                color: AppTheme.colors.accentColor,
+             decoration: BoxDecoration(
+                color: AppTheme.colors.itemBackgroundColor,
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
+            width: mediaQuery.width * .85,
             child: ListTile(
-              onTap: () {
-                debugPrint('Lista de Categorias');
-              },
+              onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.categoryListPage),
               title: Text(
                 'Lista de Categorias',
                 style: AppTheme.textStyles.bodyTextStyle,
               ),
-              trailing: const Icon(
+              trailing: Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: Colors.white,
+                color: AppTheme.colors.hintColor,
               ),
             ),
           ),
           const SizedBox(height: 12),
           Container(
-            decoration: BoxDecoration(
-                color: AppTheme.colors.accentColor,
+             decoration: BoxDecoration(
+                color: AppTheme.colors.itemBackgroundColor,
                 borderRadius: BorderRadius.circular(10)),
             padding: const EdgeInsets.all(3),
+            width: mediaQuery.width * .85,
             child: ListTile(
-              onTap: () {
-                debugPrint('Lista de Rendas');
-              },
+              onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.revenueListPage),
+              
               title: Text(
                 'Lista de Rendas',
                 style: AppTheme.textStyles.bodyTextStyle,
               ),
-              trailing: const Icon(
+              trailing: Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: Colors.white,
+                color: AppTheme.colors.hintColor,
               ),
             ),
           ),

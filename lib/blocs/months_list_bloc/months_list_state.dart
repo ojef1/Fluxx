@@ -1,7 +1,7 @@
 import 'package:Fluxx/models/month_model.dart';
 import 'package:equatable/equatable.dart';
 
-enum GetMonthsResponse{initial, loaging, success, error}
+enum GetMonthsResponse{initial, loading, success, error}
 
 class MonthsListState extends Equatable {
   final double monthTotal;

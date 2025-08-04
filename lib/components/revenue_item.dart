@@ -1,6 +1,5 @@
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
-import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -8,83 +7,69 @@ import 'package:percent_indicator/linear_percent_indicator.dart';
 class RevenueItem extends StatelessWidget {
   final RevenueModel item;
   final double totalPercent;
-  const RevenueItem({super.key, required this.item, required this.totalPercent});
+  final double value;
+  const RevenueItem(
+      {super.key, required this.item, required this.totalPercent, required this.value});
 
   @override
   Widget build(BuildContext context) {
-    var mediaQuery = MediaQuery.of(context).size;  
-    print('total $totalPercent');  
-    return GestureDetector(
-      onTap: () => Navigator.pushNamed(
-        context,
-        AppRoutes.addRevenuePage,
-        arguments: item,
+    var mediaQuery = MediaQuery.of(context).size;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      margin: EdgeInsets.symmetric(
+        horizontal: mediaQuery.width * .02,
+        vertical: mediaQuery.height * .01,
       ),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        margin: EdgeInsets.symmetric(
-          horizontal: mediaQuery.width * .02,
-        ),
-        height: mediaQuery.height * .12,
-        width: mediaQuery.width * .48,
-        decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    textAlign: TextAlign.center,
-                    '${item.name}',
-                    style: AppTheme.textStyles.subTileTextStyle,
-                  ),
-                  Text(
-                    textAlign: TextAlign.center,
-                    'R\$ ${item.value}',
-                    style: AppTheme.textStyles.descTextStyle,
-                  ),
-                  LinearPercentIndicator(
-                    padding: EdgeInsets.zero,
-                    barRadius: const Radius.circular(50),
-                    lineHeight: 15,
-                    percent: totalPercent,
-                    progressColor: getBarColor(totalPercent),
-                  ),
-                ],
+      height: mediaQuery.height * .12,
+      decoration: BoxDecoration(
+          color: AppTheme.colors.itemBackgroundColor, borderRadius: BorderRadius.circular(10)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                '${item.name}',
+                style: AppTheme.textStyles.subTileTextStyle,
               ),
-            ),
-            Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.only(
-                    bottom: mediaQuery.width * .01,
-                    top: mediaQuery.width * .01,
-                  ),
-                  height: 1,
-                  color: AppTheme.colors.accentColor,
+            ],
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: LinearPercentIndicator(
+                  padding: EdgeInsets.zero,
+                  barRadius: const Radius.circular(50),
+                  lineHeight: 15,
+                  percent: totalPercent,
+                  progressColor: AppTheme.colors.hintColor,
+                  backgroundColor: AppTheme.colors.lightHintColor,
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        item.isPublic == 1 ? 'Público' : 'Privado',
-                        style: AppTheme.textStyles.subTileTextStyle,
-                      ),
-                    ),
-                    const Icon(
-                      Icons.arrow_forward_ios_rounded,
-                      size: 20,
-                    )
-                  ],
-                )
-              ],
-            )
-          ],
-        ),
+              ),
+              const SizedBox(width: 20),
+              Text(
+                textAlign: TextAlign.center,
+                '${(totalPercent * 100).toStringAsFixed(0)}%',
+                style: AppTheme.textStyles.subTileTextStyle,
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                textAlign: TextAlign.center,
+                'R\$${formatPrice(value)}',
+                style: AppTheme.textStyles.subTileTextStyle,
+              ),
+              Text(
+                item.isPublic == 1 ? 'Renda Mensal' : 'Renda Única',
+                style: AppTheme.textStyles.subTileTextStyle,
+              )
+            ],
+          ),
+        ],
       ),
     );
   }
