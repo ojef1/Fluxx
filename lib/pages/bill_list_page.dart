@@ -48,120 +48,127 @@ class _BillListPageState extends State<BillListPage> {
         resizeToAvoidBottomInset: true,
         appBar: CustomAppBar(title: monthInFocus!.name ?? ''),
         body: SafeArea(
-          child: BlocBuilder<ListBillCubit, ListBillState>(
-            bloc: GetIt.I(),
-            builder: (context, state) {
-              if (state.getBillsResponse == GetBillsResponse.loaging) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state.getBillsResponse == GetBillsResponse.error) {
-                return const Center(child: Text('Erro ao carregar as contas.'));
-              } else {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: Constants.topMargin),
-                    //TODO criar lógica de filtros e de pesquisa
+          child: SingleChildScrollView(
+            child: BlocBuilder<ListBillCubit, ListBillState>(
+              bloc: GetIt.I(),
+              builder: (context, state) {
+                if (state.getBillsResponse == GetBillsResponse.loaging) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state.getBillsResponse == GetBillsResponse.error) {
+                  return const Center(
+                      child: Text('Erro ao carregar as contas.'));
+                } else {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: Constants.topMargin),
+                      //TODO criar lógica de filtros e de pesquisa
 
-                    // Padding(
-                    //   padding: EdgeInsets.symmetric(
-                    //     horizontal: mediaQuery.width * .05,
-                    //   ),
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //     children: [
-                    //       const SearchBarWidget(),
-                    //       CircleAvatar(
-                    //         backgroundColor: AppTheme.colors.hintColor,
-                    //         child: IconButton(
-                    //           color: Colors.white,
-                    //           onPressed: () {},
-                    //           => _showBottomSheet(
-                    //             context,
-                    //             state.monthInFocus!.id ?? 0,1
-                    //              state.categoryInFocus.toInt(),
-                    //           ),
-                    //           icon: const Icon(Icons.filter_alt_off_rounded),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () => Navigator.pushNamed(
-                            context,
-                            AppRoutes.addBillPage,
-                            arguments: BillModel(
-                              monthId: monthInFocus!.id,
+                      // Padding(
+                      //   padding: EdgeInsets.symmetric(
+                      //     horizontal: mediaQuery.width * .05,
+                      //   ),
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      //       const SearchBarWidget(),
+                      //       CircleAvatar(
+                      //         backgroundColor: AppTheme.colors.hintColor,
+                      //         child: IconButton(
+                      //           color: Colors.white,
+                      //           onPressed: () {},
+                      //           => _showBottomSheet(
+                      //             context,
+                      //             state.monthInFocus!.id ?? 0,1
+                      //              state.categoryInFocus.toInt(),
+                      //           ),
+                      //           icon: const Icon(Icons.filter_alt_off_rounded),
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => Navigator.pushNamed(
+                              context,
+                              AppRoutes.addBillPage,
+                              arguments: BillModel(
+                                monthId: monthInFocus!.id,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    AppTheme.colors.itemBackgroundColor,
+                                minimumSize: const Size(50, 50),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadiusGeometry.circular(6))),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Icon(
+                                  Icons.add_rounded,
+                                  color: AppTheme.colors.hintColor,
+                                ),
+                                const SizedBox(width: 10),
+                                Text('Adicionar',
+                                    style: AppTheme.textStyles.bodyTextStyle),
+                              ],
                             ),
                           ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.colors.hintColor,
-                            minimumSize: const Size(50, 50),
+                          ElevatedButton(
+                            onPressed: () => Navigator.pushNamed(
+                                context, AppRoutes.statsPage),
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    AppTheme.colors.itemBackgroundColor,
+                                minimumSize: const Size(50, 50),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadiusGeometry.circular(6))),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Icon(
+                                  Icons.bar_chart_rounded,
+                                  color: AppTheme.colors.hintColor,
+                                ),
+                                const SizedBox(width: 10),
+                                Text('Estatísticas',
+                                    style: AppTheme.textStyles.bodyTextStyle),
+                              ],
+                            ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              const Icon(
-                                Icons.add_rounded,
-                                color: Colors.white,
-                              ),
-                              Text('Adicionar',
-                                  style: AppTheme.textStyles.bodyTextStyle),
-                            ],
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              Navigator.pushNamed(context, AppRoutes.statsPage),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.colors.hintColor,
-                            minimumSize: const Size(50, 50),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              const Icon(
-                                Icons.bar_chart_rounded,
-                                color: Colors.white,
-                              ),
-                              Text('Estatísticas',
-                                  style: AppTheme.textStyles.bodyTextStyle),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: mediaQuery.width * .04,
+                        ],
                       ),
-                      height: 1,
-                      color: Colors.white,
-                    ),
-                    state.bills.isEmpty
-                        ? EmptyBillList(onPressed: (){})
-                        : Expanded(
-                            child: ListView.builder(
+                      const SizedBox(height: 40),
+                      state.bills.isEmpty
+                          ? EmptyBillList(onPressed: () {})
+                          : ListView.builder(
                               padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
                               itemCount: state.bills.length,
                               itemBuilder: (context, index) {
                                 return Column(
                                   children: [
                                     BillItem(bill: state.bills[index]),
                                     if (index == state.bills.length)
-                                      SizedBox(height: mediaQuery.height * .5),
+                                      SizedBox(
+                                          height: mediaQuery.height * .5),
                                   ],
                                 );
+                                
                               },
-                            ),
-                          )
-                  ],
-                );
-              }
-            },
+                            )
+                    ],
+                  );
+                }
+              },
+            ),
           ),
         ),
       ),
