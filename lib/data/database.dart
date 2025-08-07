@@ -21,8 +21,16 @@ class Db {
       onCreate: (db, version) async {
         await db.execute('PRAGMA foreign_keys = ON');
         await db.execute(
+          //Criar tabela de anos
+          'CREATE TABLE ${Tables.years} (id INTEGER PRIMARY KEY AUTOINCREMENT,value INTEGER NOT NULL)',
+        );
+        await db.execute(
           // Criar tabela de meses
-          'CREATE TABLE ${Tables.months} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)',
+          'CREATE TABLE ${Tables.months} ('
+          'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+          'name TEXT, '
+          'year_id INTEGER NOT NULL, '
+          'FOREIGN KEY (year_id) REFERENCES ${Tables.years} (id))',
         );
         // Criar tabela de contas
         await db.execute(
@@ -69,24 +77,34 @@ class Db {
 
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      version: 12,
+      version: 15,
     );
   }
 
   static Future<void> constValues(sql.Database db) async {
-    // Inserir os 12 meses fixos
-    await db.insert(Tables.months, {'id': 1, 'name': 'Janeiro'});
-    await db.insert(Tables.months, {'id': 2, 'name': 'Fevereiro'});
-    await db.insert(Tables.months, {'id': 3, 'name': 'Março'});
-    await db.insert(Tables.months, {'id': 4, 'name': 'Abril'});
-    await db.insert(Tables.months, {'id': 5, 'name': 'Maio'});
-    await db.insert(Tables.months, {'id': 6, 'name': 'Junho'});
-    await db.insert(Tables.months, {'id': 7, 'name': 'Julho'});
-    await db.insert(Tables.months, {'id': 8, 'name': 'Agosto'});
-    await db.insert(Tables.months, {'id': 9, 'name': 'Setembro'});
-    await db.insert(Tables.months, {'id': 10, 'name': 'Outubro'});
-    await db.insert(Tables.months, {'id': 11, 'name': 'Novembro'});
-    await db.insert(Tables.months, {'id': 12, 'name': 'Dezembro'});
+    int yearId = await db.insert(Tables.years, {'value': DateTime.now().year});
+
+    List<String> monthNames = [
+      'Janeiro',
+      'Fevereiro',
+      'Março',
+      'Abril',
+      'Maio',
+      'Junho',
+      'Julho',
+      'Agosto',
+      'Setembro',
+      'Outubro',
+      'Novembro',
+      'Dezembro',
+    ];
+
+    for (int i = 0; i < monthNames.length; i++) {
+      await db.insert('months', {
+        'name': monthNames[i],
+        'year_id': yearId,
+      });
+    }
 
     // Caminho da imagem padrão
     String defaultImagePath = 'assets/images/default_user.jpeg';
@@ -100,6 +118,31 @@ class Db {
   static Future<List<Map<String, dynamic>>> getData(String table) async {
     final db = await Db.dataBase();
     return db.query(table);
+  }
+
+  static Future<List<Map<String, dynamic>>> getMonths() async {
+    final db = await Db.dataBase();
+    final currentYear = DateTime.now().year;
+
+    // Busca o id do ano atual na tabela 'years'
+    final yearResult = await db.query(
+      Tables.years,
+      where: 'value = ?',
+      whereArgs: [currentYear],
+      limit: 1,
+    );
+
+    // Se o ano não for encontrado, retorna lista vazia
+    if (yearResult.isEmpty) return [];
+
+    final yearId = yearResult.first['id'] as int;
+
+    // Busca os meses que pertencem ao ano atual
+    return await db.query(
+      Tables.months,
+      where: 'year_id = ?',
+      whereArgs: [yearId],
+    );
   }
 
   static Future<List<Map<String, dynamic>>> getUser() async {

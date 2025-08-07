@@ -52,15 +52,21 @@ class _MonthListPageState extends State<MonthListPage> {
                         child: Center(child: Text('Erro ao carregar meses.')),
                       );
                     } else {
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: state.months.length,
-                        itemBuilder: (context, index) {
-                          return Month(
-                            month: state.months[index],
-                          );
-                        },
+                      return Column(
+                        children: [
+                          Text('${DateTime.now().year}',style: AppTheme.textStyles.titleTextStyle,),
+                          const SizedBox(height: 30),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: state.months.length,
+                            itemBuilder: (context, index) {
+                              return Month(
+                                month: state.months[index],
+                              );
+                            },
+                          ),
+                        ],
                       );
                     }
                   },
