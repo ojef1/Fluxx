@@ -1,5 +1,7 @@
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:Fluxx/blocs/months_list_bloc/months__list_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_state.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
@@ -9,6 +11,8 @@ import 'package:Fluxx/blocs/user_cubit/user_state.dart';
 import 'package:Fluxx/components/available_revenues.dart';
 import 'package:Fluxx/components/shortcut_add_bottomsheet.dart';
 import 'package:Fluxx/components/shortcut_lists_bottomsheet.dart';
+import 'package:Fluxx/data/database.dart';
+import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
@@ -57,8 +61,9 @@ class _ResumePageState extends State<ResumePage> {
   Future<void> init() async {
     actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
 
-    GetIt. I<ResumeCubit>().updateMonthInFocus(actualMonth);
-    await GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth.id!);
+    GetIt.I<ResumeCubit>().updateMonthInFocus(actualMonth);
+    await GetIt.I<RevenueCubit>()
+        .calculateAvailableValue(actualMonth.id!);
     await GetIt.I<ResumeCubit>().getTotalSpent(actualMonth.id!);
     var totalRevenues = await GetIt.I<RevenueCubit>().calculateTotalRevenues();
     await GetIt.I<ResumeCubit>().calculatePercent(totalRevenues);

@@ -1,4 +1,3 @@
-
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
@@ -187,13 +186,13 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                                 padding: const EdgeInsets.all(3),
                                 width: mediaQuery.width * .85,
                                 child: ElevatedButton(
-                                  onPressed: () => _showDeleteDialog(
+                                  onPressed: () => _showDesactiveDialog(
                                       context, revenueModel!.id!),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.redAccent,
                                     minimumSize: const Size(50, 50),
                                   ),
-                                  child: Text('Excluir',
+                                  child: Text('Desativar',
                                       style: AppTheme.textStyles.bodyTextStyle),
                                 ),
                               ),
@@ -203,12 +202,10 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                                   previous.addRevenueResponse !=
                                   current.addRevenueResponse,
                               builder: (context, state) {
-                                bool isLoading = state.addRevenueResponse ==
-                                    AddRevenueResponse.loading;
                                 return PrimaryButton(
                                   text: isEditing ? 'Editar' : 'Adicionar',
                                   onPressed: () =>
-                                      _verifyData(revenueId: revenueModel?.id),
+                                      _verifyData(revenueId: revenueModel?.id,startMonthId: revenueModel?.startMonthId ),
                                   width: mediaQuery.width * .85,
                                   color: AppTheme.colors.itemBackgroundColor,
                                   textStyle: AppTheme.textStyles.bodyTextStyle,
@@ -245,9 +242,9 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                 elevation: 8,
                 child: Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    color: AppTheme.colors.appBackgroundColor,
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
                       bottomLeft: Radius.circular(20),
                       bottomRight: Radius.circular(20),
@@ -257,7 +254,8 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Text(
-                        'Tipo de renda que está sendo criada:',
+                        maxLines: 2,
+                        'Tipo de renda que está sendo criada: ',
                         style: AppTheme.textStyles.subTileTextStyle,
                         textAlign: TextAlign.center,
                       ),
@@ -272,7 +270,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                       SizedBox(
                           height: MediaQuery.of(context).size.height * .02),
                       Text(
-                        'Se ativado, ela será global e se aplicará automaticamente a todos os meses, ideal para rendas fixas como salário. ',
+                        'Se ativado, ela será mensal e se aplicará automaticamente a todos os meses, ideal para rendas fixas como salário. ',
                         style: AppTheme.textStyles.secondaryTextStyle,
                         maxLines: 4,
                         textAlign: TextAlign.center,
@@ -280,7 +278,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                       SizedBox(
                           height: MediaQuery.of(context).size.height * .02),
                       Text(
-                        'Se desativado, a renda será específica do mês atual, útil para ganhos pontuais como freelances.',
+                        'Se desativado, a renda será única do mês atual, útil para ganhos pontuais como freelances.',
                         style: AppTheme.textStyles.secondaryTextStyle,
                         maxLines: 4,
                         textAlign: TextAlign.center,
@@ -298,7 +296,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     );
   }
 
-  void _showDeleteDialog(BuildContext context, String revenueId) {
+  void _showDesactiveDialog(BuildContext context, String revenueId) {
     showDialog(
       context: context,
       builder: (context) {
@@ -306,13 +304,13 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: AppTheme.colors.appBackgroundColor,
           contentPadding: const EdgeInsets.all(16.0),
           title: Text(
-            maxLines: 4,
+            maxLines: 10,
             textAlign: TextAlign.center,
-            'Tem certeza de que deseja excluir este item?',
-            style: AppTheme.textStyles.tileTextStyle,
+            'Ao desativar esta renda, ela continuará disponível para uso no mês atual e a partir do próximo mês, não será mais exibida como uma renda ativa.\n\n Deseja confirmar o encerramento?',
+            style: AppTheme.textStyles.bodyTextStyle,
           ),
           actions: [
             TextButton(
@@ -322,7 +320,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
               child: Text(
                 'Cancelar',
                 style: AppTheme.textStyles.secondaryTextStyle.copyWith(
-                  color: Colors.grey,
+                  color: AppTheme.colors.white,
                 ),
               ),
             ),
@@ -338,7 +336,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                 ),
               ),
               child: Text(
-                'Excluir',
+                'Desativar',
                 style: AppTheme.textStyles.bodyTextStyle,
               ),
             ),
@@ -348,7 +346,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     );
   }
 
-  Future<void> _verifyData({String? revenueId}) async {
+  Future<void> _verifyData({String? revenueId,int? startMonthId}) async {
     if (nameController.text.isEmpty) {
       showFlushbar(context, 'preencha o campo do nome', true);
       return;
@@ -359,7 +357,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     }
     if (nameController.text.isNotEmpty && valueController.text.isNotEmpty) {
       if (isEditing) {
-        _editRevenue(revenueId!);
+        _editRevenue(revenueId!, startMonthId!);
       } else {
         _addNewRevenue();
       }
@@ -367,7 +365,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
   }
 
   Future<void> _editRevenue(
-    String revenueId,
+    String revenueId,int? startMonthId
   ) async {
     final String value = valueController.text.replaceAll(',', '.');
     final resumeState = GetIt.I<ResumeCubit>().state;
@@ -375,14 +373,15 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     var newRevenue = RevenueModel(
         id: revenueId,
         name: nameController.text,
-        monthId: resumeState.monthInFocus!.id!,
+        startMonthId: startMonthId,
+        endMonthId: isPublic ? null : resumeState.monthInFocus!.id!,
         value: double.parse(value),
         isPublic: isPublic ? 1 : 0);
     var result = await GetIt.I<RevenueCubit>().editRevenue(newRevenue);
     var state = GetIt.I<RevenueCubit>().state;
     if (result != -1) {
       showFlushbar(context, state.successMessage, false);
-      
+
       Navigator.pop(context);
     } else {
       showFlushbar(context, state.errorMessage, true);
@@ -396,7 +395,8 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     var newRevenue = RevenueModel(
         id: codeGenerate(),
         name: nameController.text,
-        monthId: resumeState.monthInFocus!.id!,
+        startMonthId: resumeState.monthInFocus!.id!,
+        endMonthId: isPublic ? null : resumeState.monthInFocus!.id!,
         value: double.parse(value),
         isPublic: isPublic ? 1 : 0);
     var result = await GetIt.I<RevenueCubit>().addNewRevenue(newRevenue);
@@ -412,7 +412,10 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
   }
 
   Future<void> _deleteRevenue(String revenueId) async {
-    var result = await GetIt.I<RevenueCubit>().removeRevenue(revenueId);
+    var result = await GetIt.I<RevenueCubit>().removeRevenue(
+      revenueId,
+      GetIt.I<ResumeCubit>().state.currentMonth!.id!,
+    );
     var state = GetIt.I<RevenueCubit>().state;
     if (result > 0) {
       await showFlushbar(context, state.successMessage, false);

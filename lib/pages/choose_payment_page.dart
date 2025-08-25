@@ -32,7 +32,8 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
   Future<void> init() async {
     debugPrint('caiu no init');
     var monthInFocus = GetIt.I<ResumeCubit>().state.monthInFocus;
-    GetIt.I<RevenueCubit>().calculateAvailableValue(monthInFocus!.id!);
+    GetIt.I<RevenueCubit>()
+        .calculateAvailableValue(monthInFocus!.id!);
   }
 
   @override
@@ -70,8 +71,9 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
                           onPressed: () {
                             var currentMonthId =
                                 GetIt.I<ResumeCubit>().state.currentMonth!.id!;
-                            RevenueModel revenue =
-                                RevenueModel(monthId: currentMonthId);
+                            RevenueModel revenue = RevenueModel(
+                                // monthId: currentMonthId,
+                                );
                             Navigator.pushNamed(
                                     context, AppRoutes.addRevenuePage,
                                     arguments: revenue)
@@ -139,7 +141,8 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
                                                 .currentMonth!
                                                 .id!;
                                         RevenueModel revenue = RevenueModel(
-                                            monthId: currentMonthId);
+                                          // monthId: currentMonthId,
+                                        );
                                         return Navigator.pushNamed(context,
                                                 AppRoutes.addRevenuePage,
                                                 arguments: revenue)
@@ -173,7 +176,7 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: AppTheme.colors.appBackgroundColor,
           contentPadding: const EdgeInsets.all(16.0),
           title: Text(
             maxLines: 4,
@@ -218,7 +221,7 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: AppTheme.colors.appBackgroundColor,
           contentPadding: const EdgeInsets.all(16.0),
           title: Text(
             maxLines: 4,

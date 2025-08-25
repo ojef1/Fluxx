@@ -45,7 +45,7 @@ class _DefaultTextStyles implements TextStylesInterface {
   TextStyle get bodyTextStyle => TextStyle(
         fontWeight: FontWeight.w700,
         fontSize: AppTheme.fontSizes.medium,
-        color: Colors.white,
+        color: AppTheme.colors.primaryTextColor,
         overflow: TextOverflow.ellipsis,
         fontFamily: 'Mulish',
       );

@@ -61,11 +61,14 @@ class Db {
         await db.execute(
           'CREATE TABLE ${Tables.revenue} ('
           'id TEXT PRIMARY KEY, '
-          'name TEXT, '
-          'value REAL, '
-          'month_id INTEGER, '
+          'name TEXT NOT NULL, '
+          'value REAL NOT NULL, '
+          'start_month_id INTEGER, '
+          'end_month_id INTEGER, '
+          'is_active INTEGER NOT NULL DEFAULT 1, ' // 1 = ativa, 0 = desativada
           'isPublic INTEGER, '
-          'FOREIGN KEY (month_id) REFERENCES ${Tables.months} (id))',
+          'FOREIGN KEY (start_month_id) REFERENCES ${Tables.months} (id), '
+          'FOREIGN KEY (end_month_id) REFERENCES ${Tables.months} (id))',
         );
 
         //criar a tabela de categorias
@@ -77,7 +80,7 @@ class Db {
 
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      version: 15,
+      version: 18,
     );
   }
 
@@ -199,17 +202,21 @@ class Db {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getPublicRevenues() async {
+  static Future<List<Map<String, dynamic>>> getPublicRevenues(
+      int monthId) async {
     final db = await Db.dataBase();
 
     try {
-      final result = await db.query(
-        Tables.revenue,
-        where: 'isPublic = 1',
-      );
+      final result = await db.rawQuery('''
+      SELECT * FROM ${Tables.revenue}
+      WHERE isPublic = 1
+        AND start_month_id <= ?
+        AND (end_month_id >= ? OR end_month_id IS NULL)
+    ''', [monthId, monthId]);
+
       return result;
     } catch (e) {
-      throw Exception('Erro ao consultar as receitas públicas : $e');
+      throw Exception('Erro ao consultar as receitas públicas: $e');
     }
   }
 
@@ -218,14 +225,17 @@ class Db {
     final db = await Db.dataBase();
 
     try {
-      final result = await db.query(
-        Tables.revenue,
-        where: 'isPublic = 0 AND month_id = ?',
-        whereArgs: [monthId],
-      );
+      final result = await db.rawQuery('''
+      SELECT * FROM ${Tables.revenue}
+      WHERE isPublic = 0
+        AND start_month_id <= ?
+        AND end_month_id >= ?
+        
+    ''', [monthId, monthId]);
+
       return result;
     } catch (e) {
-      throw Exception('Erro ao consultar as receitas exclusivas : $e');
+      throw Exception('Erro ao consultar as receitas exclusivas: $e');
     }
   }
 
@@ -404,17 +414,24 @@ class Db {
   //---------------------------FIM -> INSERIR-------------------------
 
   //---------------------------INICIO -> DELETAR-------------------------
-  static Future<int> deleteRevenue(String revenueId) async {
+  static Future<int> deactivateRevenue(
+      String revenueId, int endMonth) async {
     final db = await Db.dataBase();
+
     try {
-      int result = await db.delete(
+      int result = await db.update(
         Tables.revenue,
+        {
+          'is_active': 0,
+          'end_month_id': endMonth,
+        },
         where: 'id = ?',
         whereArgs: [revenueId],
       );
+
       return result;
     } catch (e) {
-      throw Exception('Erro ao remover a renda: $e');
+      throw Exception('Erro ao desativar a renda: $e');
     }
   }
 

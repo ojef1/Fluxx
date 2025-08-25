@@ -54,7 +54,9 @@ class StatsRevenues extends StatelessWidget {
             return EmptyRevenueList(onPressed: () {
               var currentMonthId =
                   GetIt.I<ResumeCubit>().state.currentMonth!.id;
-              RevenueModel revenue = RevenueModel(monthId: currentMonthId);
+              RevenueModel revenue = RevenueModel(
+                // monthId: currentMonthId,
+              );
               Navigator.pushNamed(context, AppRoutes.addRevenuePage,
                   arguments: revenue);
             });

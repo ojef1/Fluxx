@@ -57,7 +57,7 @@ class RevenueCubit extends Cubit<RevenueState> {
     updateGetRevenueResponse(GetRevenueResponse.loading);
     try {
       final results = await Future.wait([
-        _getPublicRevenue(),
+        _getPublicRevenue(monthId),
         _getExclusiveRevenue(monthId),
       ]);
 
@@ -76,19 +76,12 @@ class RevenueCubit extends Cubit<RevenueState> {
     }
   }
 
-  Future<List<RevenueModel>> _getPublicRevenue() async {
+  Future<List<RevenueModel>> _getPublicRevenue(int monthId) async {
     try {
-      final revenue = await Db.getPublicRevenues();
+      final revenue = await Db.getPublicRevenues(monthId);
 
-      final publicRevenuesList = revenue
-          .map((item) => RevenueModel(
-                id: item['id'],
-                name: item['name'],
-                monthId: item['month_id'],
-                value: item['value'],
-                isPublic: item['isPublic'],
-              ))
-          .toList();
+      final publicRevenuesList =
+          revenue.map((item) => RevenueModel.fromJson(item)).toList();
       return publicRevenuesList;
     } catch (error) {
       debugPrint('$error');
@@ -101,15 +94,8 @@ class RevenueCubit extends Cubit<RevenueState> {
     try {
       final revenue = await Db.getExclusiveRevenues(monthId);
 
-      final exclusiveRevenuesList = revenue
-          .map((item) => RevenueModel(
-                id: item['id'],
-                name: item['name'],
-                monthId: item['month_id'],
-                value: item['value'],
-                isPublic: item['isPublic'],
-              ))
-          .toList();
+      final exclusiveRevenuesList =
+          revenue.map((item) => RevenueModel.fromJson(item)).toList();
       return exclusiveRevenuesList;
     } catch (error) {
       debugPrint('$error');
@@ -117,10 +103,10 @@ class RevenueCubit extends Cubit<RevenueState> {
     }
   }
 
-  Future<int> removeRevenue(String revenueId) async {
+  Future<int> removeRevenue(String revenueId,int currentMonthId) async {
     updateRemoveRevenueResponse(RemoveRevenueResponse.loading);
     try {
-      var result = await Db.deleteRevenue(revenueId);
+      var result = await Db.deactivateRevenue(revenueId, currentMonthId);
       //função delete retorna quantas linhas foram removidas
       if (result > 0) {
         updateSuccessMessage('renda removida com sucesso.');
@@ -166,7 +152,8 @@ class RevenueCubit extends Cubit<RevenueState> {
     RevenueModel unselected = RevenueModel(
       id: '',
       name: '',
-      monthId: null,
+      startMonthId: null,
+      endMonthId: null,
       value: 0.0,
       isPublic: null,
     );
@@ -179,7 +166,6 @@ class RevenueCubit extends Cubit<RevenueState> {
       final bills = await Db.getBillsByMonth(monthId);
 
       final billsList = bills.map((item) => BillModel.fromJson(item)).toList();
-      
 
       // 2. Obter todas as rendas do mês
       await getRevenues(monthId);
@@ -203,7 +189,8 @@ class RevenueCubit extends Cubit<RevenueState> {
           id: revenue.id,
           name: revenue.name,
           isPublic: revenue.isPublic,
-          monthId: revenue.monthId,
+          startMonthId: revenue.startMonthId,
+          endMonthId: revenue.endMonthId,
           value: valorDisponivel,
         );
       }).toList(); // usar essa informação para bloquear opções de pagamentos
@@ -234,7 +221,6 @@ class RevenueCubit extends Cubit<RevenueState> {
     remaining = total - totalLinkedSpent;
     emit(state.copyWith(remainingRevenue: remaining));
   }
-
 
   void resetState() {
     emit(const RevenueState());

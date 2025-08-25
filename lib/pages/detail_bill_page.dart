@@ -206,7 +206,7 @@ class _DetailBillPageState extends State<DetailBillPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: AppTheme.colors.appBackgroundColor,
           contentPadding: const EdgeInsets.all(16.0),
           title: Text(
             maxLines: 4,

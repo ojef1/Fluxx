@@ -32,6 +32,7 @@ class ResumeCubit extends Cubit<ResumeState> {
     final totalSpent = await Db.sumPricesByMonth(actualMonth['id']);
     final monthModel = MonthModel(
       id: actualMonth['id'],
+      yearId: actualMonth['year_id'],
       name: actualMonth['name'],
       total: totalSpent,
     );

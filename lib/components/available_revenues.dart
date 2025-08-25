@@ -65,7 +65,8 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                         const SizedBox(height: 10),
                         ElevatedButton(
                           onPressed: () => GetIt.I<RevenueCubit>().getRevenues(
-                              GetIt.I<ResumeCubit>().state.currentMonth!.id!),
+                            GetIt.I<ResumeCubit>().state.currentMonth!.id!,
+                          ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.colors.hintColor,
                             minimumSize: const Size(50, 50),
@@ -84,8 +85,9 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                     onPressed: () {
                       var currentMonthId =
                           GetIt.I<ResumeCubit>().state.currentMonth!.id;
-                      RevenueModel revenue =
-                          RevenueModel(monthId: currentMonthId);
+                      RevenueModel revenue = RevenueModel(
+                          // monthId: currentMonthId,
+                          );
                       Navigator.pushNamed(context, AppRoutes.addRevenuePage,
                           arguments: revenue);
                     },
