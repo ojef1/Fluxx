@@ -228,7 +228,7 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
             textAlign: TextAlign.center,
             'Escolher $name?',
             style:
-                AppTheme.textStyles.tileTextStyle.copyWith(color: Colors.black),
+                AppTheme.textStyles.tileTextStyle,
           ),
           actions: [
             TextButton(
@@ -237,9 +237,7 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
               },
               child: Text(
                 'Não',
-                style: AppTheme.textStyles.itemTextStyle.copyWith(
-                  color: Colors.grey,
-                ),
+                style: AppTheme.textStyles.bodyTextStyle,
               ),
             ),
             ElevatedButton(

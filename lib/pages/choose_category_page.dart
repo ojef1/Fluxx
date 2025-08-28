@@ -121,14 +121,14 @@ class _ChooseCategoryPageState extends State<ChooseCategoryPage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: AppTheme.colors.appBackgroundColor,
           contentPadding: const EdgeInsets.all(16.0),
           title: Text(
             maxLines: 4,
             textAlign: TextAlign.center,
             'Escolher $categoryName?',
             style:
-                AppTheme.textStyles.tileTextStyle.copyWith(color: Colors.black),
+                AppTheme.textStyles.tileTextStyle,
           ),
           actions: [
             TextButton(
@@ -137,9 +137,7 @@ class _ChooseCategoryPageState extends State<ChooseCategoryPage> {
               },
               child: Text(
                 'Não',
-                style: AppTheme.textStyles.itemTextStyle.copyWith(
-                  color: Colors.grey,
-                ),
+                style: AppTheme.textStyles.bodyTextStyle,
               ),
             ),
             ElevatedButton(
