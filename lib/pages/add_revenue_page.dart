@@ -177,7 +177,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                         ),
                         Column(
                           children: [
-                            if (isEditing)
+                            if (isEditing && revenueModel!.isActive == 1) // 0 significa : ativado
                               Container(
                                 margin: const EdgeInsets.only(bottom: 15),
                                 decoration: BoxDecoration(
