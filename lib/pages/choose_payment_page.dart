@@ -30,7 +30,6 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
   }
 
   Future<void> init() async {
-    debugPrint('caiu no init');
     var monthInFocus = GetIt.I<ResumeCubit>().state.monthInFocus;
     GetIt.I<RevenueCubit>()
         .calculateAvailableValue(monthInFocus!.id!);

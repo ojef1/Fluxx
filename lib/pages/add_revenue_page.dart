@@ -121,58 +121,60 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
                               keyboardType: TextInputType.number,
                             ),
                             SizedBox(height: mediaQuery.height * .03),
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: mediaQuery.height * .04),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      maxLines: 2,
-                                      softWrap: true,
-                                      textAlign: TextAlign.start,
-                                      'Renda válida para todos os meses?',
-                                      style: AppTheme
-                                          .textStyles.secondaryTextStyle,
+                            if (!isEditing)
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: mediaQuery.height * .04),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        maxLines: 2,
+                                        softWrap: true,
+                                        textAlign: TextAlign.start,
+                                        'Renda válida para todos os meses?',
+                                        style: AppTheme
+                                            .textStyles.secondaryTextStyle,
+                                      ),
                                     ),
-                                  ),
-                                  AnimatedToggleSwitch<bool>.dual(
-                                    current: isPublic,
-                                    first: false,
-                                    second: true,
-                                    spacing: 4,
-                                    style: const ToggleStyle(
-                                      borderColor: Colors.transparent,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black26,
-                                          spreadRadius: 1,
-                                          blurRadius: 2,
-                                          offset: Offset(0, 1.5),
-                                        ),
-                                      ],
+                                    AnimatedToggleSwitch<bool>.dual(
+                                      current: isPublic,
+                                      first: false,
+                                      second: true,
+                                      spacing: 4,
+                                      style: const ToggleStyle(
+                                        borderColor: Colors.transparent,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black26,
+                                            spreadRadius: 1,
+                                            blurRadius: 2,
+                                            offset: Offset(0, 1.5),
+                                          ),
+                                        ],
+                                      ),
+                                      borderWidth: 5.0,
+                                      height: 55,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          isPublic = value;
+                                        });
+                                      },
+                                      styleBuilder: (b) => ToggleStyle(
+                                          backgroundColor: b
+                                              ? AppTheme.colors.hintColor
+                                              : AppTheme.colors.lightHintColor,
+                                          indicatorColor:
+                                              AppTheme.colors.white),
+                                      iconBuilder: (value) => value
+                                          ? const Icon(Icons.check_rounded)
+                                          : const Icon(Icons.close_rounded),
                                     ),
-                                    borderWidth: 5.0,
-                                    height: 55,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        isPublic = value;
-                                      });
-                                    },
-                                    styleBuilder: (b) => ToggleStyle(
-                                        backgroundColor: b
-                                            ? AppTheme.colors.hintColor
-                                            : AppTheme.colors.lightHintColor,
-                                        indicatorColor: AppTheme.colors.white),
-                                    iconBuilder: (value) => value
-                                        ? const Icon(Icons.check_rounded)
-                                        : const Icon(Icons.close_rounded),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
                           ],
                         ),
                         Column(
@@ -346,7 +348,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     );
   }
 
-  Future<void> _verifyData({String? revenueId,int? startMonthId}) async {
+  Future<void> _verifyData({String? revenueId, int? startMonthId}) async {
     if (nameController.text.isEmpty) {
       showFlushbar(context, 'preencha o campo do nome', true);
       return;
@@ -364,9 +366,7 @@ class _AddRevenuePageState extends State<AddRevenuePage> {
     }
   }
 
-  Future<void> _editRevenue(
-    String revenueId,int? startMonthId
-  ) async {
+  Future<void> _editRevenue(String revenueId, int? startMonthId) async {
     final String value = valueController.text.replaceAll(',', '.');
     final resumeState = GetIt.I<ResumeCubit>().state;
 
