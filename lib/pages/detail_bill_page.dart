@@ -39,150 +39,155 @@ class _DetailBillPageState extends State<DetailBillPage> {
     var mediaQuery = MediaQuery.of(context).size;
     return AnnotatedRegion(
       value: SystemUiOverlayStyle.light,
-      child: Scaffold(
-        backgroundColor: AppTheme.colors.appBackgroundColor,
-        resizeToAvoidBottomInset: true,
-        appBar: CustomAppBar(
-          title: 'Detalhes',
-          backButton: _exit,
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: mediaQuery.width * .05,
-              ),
-              child: BlocBuilder<BillCubit, BillState>(
-                bloc: GetIt.I(),
-                buildWhen: (previous, current) =>
-                    previous.detailBill != current.detailBill,
-                builder: (context, state) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 25),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        IconButton.filled(
-                          onPressed: () => Navigator.pushNamed(
-                            context,
-                            AppRoutes.addBillPage,
-                            arguments: state.detailBill,
+      child: PopScope(
+        onPopInvokedWithResult: (didPop, result) => _exit(didPop),
+        child: Scaffold(
+          backgroundColor: AppTheme.colors.appBackgroundColor,
+          resizeToAvoidBottomInset: true,
+          appBar: CustomAppBar(
+            title: 'Detalhes',
+            backButton: () => _exit(false),
+          ),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: mediaQuery.width * .05,
+                ),
+                child: BlocBuilder<BillCubit, BillState>(
+                  bloc: GetIt.I(),
+                  buildWhen: (previous, current) =>
+                      previous.detailBill != current.detailBill,
+                  builder: (context, state) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 25),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton.filled(
+                            onPressed: () => Navigator.pushNamed(
+                              context,
+                              AppRoutes.addBillPage,
+                              arguments: state.detailBill,
+                            ),
+                            icon: Icon(
+                              Icons.mode_edit_rounded,
+                              color: AppTheme.colors.white,
+                            ),
+                            style: IconButton.styleFrom(
+                                minimumSize: const Size(55, 55),
+                                backgroundColor: AppTheme.colors.hintColor),
                           ),
-                          icon: Icon(
-                            Icons.mode_edit_rounded,
-                            color: AppTheme.colors.white,
+                          const SizedBox(width: 5),
+                          IconButton.filled(
+                            // onPressed: () => _removeBill(state.detailBill!),
+                            onPressed: () =>
+                                _showDeleteDialog(context, state.detailBill!),
+                            icon: Icon(
+                              Icons.delete_forever_rounded,
+                              color: AppTheme.colors.white,
+                            ),
+                            style: IconButton.styleFrom(
+                                minimumSize: const Size(55, 55),
+                                backgroundColor: AppTheme.colors.hintColor),
                           ),
-                          style: IconButton.styleFrom(
-                              minimumSize: const Size(55, 55),
-                              backgroundColor: AppTheme.colors.hintColor),
-                        ),
-                        const SizedBox(width: 5),
-                        IconButton.filled(
-                          // onPressed: () => _removeBill(state.detailBill!),
-                          onPressed: () =>
-                              _showDeleteDialog(context, state.detailBill!),
-                          icon: Icon(
-                            Icons.delete_forever_rounded,
-                            color: AppTheme.colors.white,
+                          const SizedBox(width: 5),
+                          AnimatedToggleSwitch<bool>.dual(
+                            current: state.detailBill?.isPayed == 1,
+                            first: false,
+                            second: true,
+                            spacing: 55.0,
+                            style: const ToggleStyle(
+                              borderColor: Colors.transparent,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  spreadRadius: 1,
+                                  blurRadius: 2,
+                                  offset: Offset(0, 1.5),
+                                ),
+                              ],
+                            ),
+                            borderWidth: 5.0,
+                            height: 55,
+                            onChanged: (b) {
+                              setState(
+                                () {
+                                  b
+                                      ? state.detailBill?.isPayed = 1
+                                      : state.detailBill?.isPayed = 0;
+                                },
+                              );
+                            },
+                            styleBuilder: (b) => ToggleStyle(
+                                backgroundColor: b
+                                    ? AppTheme.colors.hintColor
+                                    : AppTheme.colors.lightHintColor,
+                                indicatorColor: AppTheme.colors.white),
+                            iconBuilder: (value) => value
+                                ? const Icon(Icons.check_rounded)
+                                : const Icon(Icons.close_rounded),
+                            textBuilder: (value) => value
+                                ? Center(
+                                    child: Text(
+                                    'Pago',
+                                    style: AppTheme.textStyles.bodyTextStyle,
+                                  ))
+                                : Center(
+                                    child: Text(
+                                    'Pendente',
+                                    style: AppTheme.textStyles.bodyTextStyle,
+                                  )),
                           ),
-                          style: IconButton.styleFrom(
-                              minimumSize: const Size(55, 55),
-                              backgroundColor: AppTheme.colors.hintColor),
-                        ),
-                        const SizedBox(width: 5),
-                        AnimatedToggleSwitch<bool>.dual(
-                          current: state.detailBill?.isPayed == 1,
-                          first: false,
-                          second: true,
-                          spacing: 55.0,
-                          style: const ToggleStyle(
-                            borderColor: Colors.transparent,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black26,
-                                spreadRadius: 1,
-                                blurRadius: 2,
-                                offset: Offset(0, 1.5),
-                              ),
-                            ],
-                          ),
-                          borderWidth: 5.0,
-                          height: 55,
-                          onChanged: (b) {
-                            setState(
-                              () {
-                                b
-                                    ? state.detailBill?.isPayed = 1
-                                    : state.detailBill?.isPayed = 0;
-                              },
-                            );
-                          },
-                          styleBuilder: (b) => ToggleStyle(
-                              backgroundColor: b
-                                  ? AppTheme.colors.hintColor
-                                  : AppTheme.colors.lightHintColor,
-                              indicatorColor: AppTheme.colors.white),
-                          iconBuilder: (value) => value
-                              ? const Icon(Icons.check_rounded)
-                              : const Icon(Icons.close_rounded),
-                          textBuilder: (value) => value
-                              ? Center(
-                                  child: Text(
-                                  'Pago',
-                                  style: AppTheme.textStyles.bodyTextStyle,
-                                ))
-                              : Center(
-                                  child: Text(
-                                  'Pendente',
-                                  style: AppTheme.textStyles.bodyTextStyle,
-                                )),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 35),
-                    Text(
-                      state.detailBill?.name ?? 'Nome não encontrado',
-                      style: AppTheme.textStyles.bodyTextStyle
-                          .copyWith(fontSize: AppTheme.fontSizes.xlarge),
-                    ),
-                    const SizedBox(height: 30),
-                    _DetailItem(
-                        icon: Icons.date_range_rounded,
-                        title: 'Data do pagamento',
-                        subtitle: state.detailBill?.paymentDate ?? 'Sem data'),
-                    const SizedBox(height: 15),
-                    _DetailItem(
-                        icon: Icons.monetization_on_outlined,
-                        title: 'Valor',
-                        subtitle:
-                            'R\$${formatPrice(state.detailBill?.price ?? 0.0)}'),
-                    const SizedBox(height: 15),
-                    _DetailItem(
-                        icon: Icons.wallet_rounded,
-                        title: 'Renda Usada',
-                        subtitle: state.detailBill?.paymentName ?? 'Sem Renda'),
-                    const SizedBox(height: 15),
-                    _DetailItem(
-                        icon: Icons.category_rounded,
-                        title: 'Categoria',
-                        subtitle:
-                            state.detailBill?.categoryName ?? 'Sem Categoria'),
-                    const SizedBox(height: 30),
-                    Text(
-                      'Descrição',
-                      style: AppTheme.textStyles.bodyTextStyle
-                          .copyWith(fontSize: AppTheme.fontSizes.xlarge),
-                    ),
-                    const SizedBox(height: 15),
-                    Text(
-                      state.detailBill?.description ?? '',
-                      style: AppTheme.textStyles.subTileTextStyle,
-                      softWrap: true,
-                      overflow: TextOverflow.visible,
-                    ),
-                    const SizedBox(height: 15),
-                  ],
+                        ],
+                      ),
+                      const SizedBox(height: 35),
+                      Text(
+                        state.detailBill?.name ?? 'Nome não encontrado',
+                        style: AppTheme.textStyles.bodyTextStyle
+                            .copyWith(fontSize: AppTheme.fontSizes.xlarge),
+                      ),
+                      const SizedBox(height: 30),
+                      _DetailItem(
+                          icon: Icons.date_range_rounded,
+                          title: 'Data do pagamento',
+                          subtitle:
+                              state.detailBill?.paymentDate ?? 'Sem data'),
+                      const SizedBox(height: 15),
+                      _DetailItem(
+                          icon: Icons.monetization_on_outlined,
+                          title: 'Valor',
+                          subtitle:
+                              'R\$${formatPrice(state.detailBill?.price ?? 0.0)}'),
+                      const SizedBox(height: 15),
+                      _DetailItem(
+                          icon: Icons.wallet_rounded,
+                          title: 'Renda Usada',
+                          subtitle:
+                              state.detailBill?.paymentName ?? 'Sem Renda'),
+                      const SizedBox(height: 15),
+                      _DetailItem(
+                          icon: Icons.category_rounded,
+                          title: 'Categoria',
+                          subtitle: state.detailBill?.categoryName ??
+                              'Sem Categoria'),
+                      const SizedBox(height: 30),
+                      Text(
+                        'Descrição',
+                        style: AppTheme.textStyles.bodyTextStyle
+                            .copyWith(fontSize: AppTheme.fontSizes.xlarge),
+                      ),
+                      const SizedBox(height: 15),
+                      Text(
+                        state.detailBill?.description ?? '',
+                        style: AppTheme.textStyles.subTileTextStyle,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                      ),
+                      const SizedBox(height: 15),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -192,10 +197,10 @@ class _DetailBillPageState extends State<DetailBillPage> {
     );
   }
 
-  Future<void> _exit() async {
+  Future<void> _exit(bool fromPopInvoked) async {
     var state = GetIt.I<BillCubit>().state;
     await GetIt.I<BillCubit>().editBill(state.detailBill!);
-    Navigator.pop(context);
+    if (!fromPopInvoked) Navigator.pop(context);
   }
 
   void _showDeleteDialog(BuildContext context, BillModel bill) {
