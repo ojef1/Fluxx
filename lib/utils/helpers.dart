@@ -1,4 +1,6 @@
+
 import 'package:Fluxx/components/custom_flushbar.dart';
+import 'package:Fluxx/models/month_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -25,12 +27,31 @@ Future<void> showFlushbar(
   );
 }
 
+List<DateTime> getNextMonthsUntilDecember(MonthModel focusedMonth) {
+  final List<DateTime> months = [];
+
+  final startMonth = focusedMonth.id! + 1;
+  final year = DateTime.now().year;
+
+  if (startMonth > 12) return months;
+
+  for (int m = startMonth; m <= 12; m++) {
+    months.add(DateTime(year, m));
+  }
+
+  return months;
+}
+
 String? formatDate(String? dateTime) {
   if (dateTime != null) {
-    DateTime date = DateTime.parse(dateTime);
-    final DateFormat formatter = DateFormat('dd/MM/yyyy', 'pt_BR');
+    try {
+      DateTime date = DateTime.parse(dateTime);
+      final DateFormat formatter = DateFormat('dd/MM/yyyy', 'pt_BR');
 
-    return formatter.format(date);
+      return formatter.format(date);
+    } catch (e) {
+      return dateTime;
+    }
   }
   return null;
 }

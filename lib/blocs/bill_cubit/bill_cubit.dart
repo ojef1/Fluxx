@@ -54,6 +54,7 @@ class BillCubit extends Cubit<BillState> {
     emit(state.copyWith(getBillResponse: getBillResponse));
   }
 
+  //TODO remover essas funções, já existem no add_bill_cubit
   void updateAddBillsResponse(AddBillsResponse addBillsResponse) {
     emit(state.copyWith(addBillsResponse: addBillsResponse));
   }
@@ -66,10 +67,13 @@ class BillCubit extends Cubit<BillState> {
     emit(state.copyWith(removeBillsResponse: removeBillsResponse));
   }
 
+  
+  //TODO remover essa função, já existe no add_bill_cubit
   Future<void> updateErrorMessage(String errorMessage) async {
     emit(state.copyWith(errorMessage: errorMessage));
   }
 
+  //TODO remover essa função, já existe no add_bill_cubit
   Future<void> updateSuccessMessage(String successMessage) async {
     emit(state.copyWith(successMessage: successMessage));
   }
@@ -80,6 +84,8 @@ class BillCubit extends Cubit<BillState> {
     return shortCode;
   }
 
+
+  //TODO remover essa função, já existe no add_bill_cubit
   Future<int> addNewBill(BillModel newBill) async {
     updateAddBillsResponse(AddBillsResponse.loaging);
     try {

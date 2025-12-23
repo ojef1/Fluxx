@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   final IconData? icon;
+  final bool showIcon;
   final double? height;
   final String hint;
   final TextEditingController controller;
@@ -16,7 +17,8 @@ class CustomTextField extends StatelessWidget {
       this.inputFormatters,
       this.keyboardType,
       required this.hint,
-      this.height});
+      this.height,
+      this.showIcon = true});
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,7 @@ class CustomTextField extends StatelessWidget {
               controller: controller,
               keyboardType: keyboardType ?? TextInputType.text,
               style: AppTheme.textStyles.bodyTextStyle,
+              textAlign: TextAlign.center,
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: hint,
@@ -49,13 +52,13 @@ class CustomTextField extends StatelessWidget {
               ),
             ),
           ),
-          if (icon != null)
+          if (showIcon)
             Container(
               margin: EdgeInsets.symmetric(horizontal: mediaQuery.width * .03),
               width: 1,
               color: AppTheme.colors.hintColor,
             ),
-          if (icon != null)
+          if (showIcon)
             Icon(
               icon,
               color: AppTheme.colors.hintColor,

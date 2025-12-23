@@ -115,7 +115,7 @@ class BillItem extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    '${(bill.paymentDate)}',
+                    formatDate(bill.paymentDate) ?? '',
                     style: AppTheme.textStyles.bodyTextStyle,
                   ),
                 ),

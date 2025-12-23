@@ -1,4 +1,6 @@
-class CategoryModel {
+import 'package:equatable/equatable.dart';
+
+class CategoryModel extends Equatable{
   String? id;
   String? categoryName;
   double? price;
@@ -24,6 +26,10 @@ class CategoryModel {
 
   @override
   String toString() {
-    return 'categoryName: $categoryName, id: $id';
+    return 'categoryName: $categoryName, id: $id, price: $price';
   }
+  
+  @override
+  // TODO: implement props
+  List<Object?> get props => [id, categoryName, price];
 }

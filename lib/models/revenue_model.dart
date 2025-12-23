@@ -1,4 +1,6 @@
-class RevenueModel {
+import 'package:equatable/equatable.dart';
+
+class RevenueModel extends Equatable {
   String? id;
   String? name;
   double? value;
@@ -44,4 +46,8 @@ class RevenueModel {
         'startMonthId: $startMonthId, endMonthId: $endMonthId, '
         'isPublic: $isPublic, isActive: $isActive}';
   }
+
+  @override
+  List<Object?> get props =>
+      [id, name, value, startMonthId, endMonthId, isPublic, isActive];
 }

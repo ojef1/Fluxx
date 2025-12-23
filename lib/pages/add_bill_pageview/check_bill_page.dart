@@ -1,0 +1,130 @@
+part of 'add_bill_pageview.dart';
+
+class CheckBillPage extends StatefulWidget {
+  final void Function(Future<bool> Function()) registerValidator;
+  final void Function(String) onError;
+  const CheckBillPage(
+      {super.key, required this.registerValidator, required this.onError});
+  @override
+  State<CheckBillPage> createState() => _CheckBillPageState();
+}
+
+class _CheckBillPageState extends State<CheckBillPage> {
+  @override
+  void initState() {
+    widget.registerValidator(_validate);
+    super.initState();
+  }
+
+  Future<bool> _validate() async {
+    var state = GetIt.I<AddBillCubit>().state;
+    if (state.name.isEmpty) {
+      showFlushbar(context, 'A conta precisa ter um nome', true);
+      return false;
+    }
+    if (state.price == 0.0) {
+      showFlushbar(context, 'A conta não pode ser R\$00,00', true);
+      return false;
+    }
+    if (state.date.isEmpty) {
+      showFlushbar(context, 'Escolha a data de pagamento', true);
+      return false;
+    }
+    if (state.categorySelected == null) {
+      showFlushbar(context, 'Escolha a categoria da conta', true);
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var mediaQuery = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          Text(
+            'Revise os dados da conta',
+            style: AppTheme.textStyles.subTileTextStyle,
+            softWrap: true,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.visible,
+          ),
+          SizedBox(height: mediaQuery.height * .05),
+          BlocBuilder<AddBillCubit, AddBillState>(
+              bloc: GetIt.I(),
+              builder: (context, state) {
+                return Container(
+                  padding: const EdgeInsets.all(8.0),
+                  width: mediaQuery.width * 0.8,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _DataItem(title: 'Nome da conta', subtitle: state.name),
+                      _DataItem(
+                          title: 'Data de Pagamento',
+                          subtitle: formatDate(state.date) ?? 'Nenhuma'),
+                      _DataItem(
+                          title: 'Valor',
+                          subtitle: 'R\$${formatPrice(state.price)}'),
+                      _DataItem(
+                          title: 'Renda usada',
+                          subtitle: state.revenueSelected!.name ?? 'Nenhuma'),
+                      _DataItem(
+                          title: 'Categoria',
+                          subtitle: state.categorySelected!.categoryName ??
+                              'Nenhuma'),
+                      if (state.repeatBill)
+                        _DataItem(
+                            title: 'Repetição',
+                            subtitle: 'até ${state.repeatMonthName}'),
+                      _DataItem(title: 'Descrição', subtitle: state.desc),
+                    ],
+                  ),
+                );
+              }),
+        ],
+      ),
+    );
+  }
+}
+
+//TODO próximo passo : definir regra para quando uma renda não existe no mes que a conta se repetir 
+//checar a conversa : gerar meses dinamicamente no chatGPT
+
+class _DataItem extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  const _DataItem({
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 2,
+      children: [
+        Text(
+          title,
+          style: AppTheme.textStyles.secondaryTextStyle
+              .copyWith(color: AppTheme.colors.hintTextColor.withAlpha(100)),
+          softWrap: true,
+          overflow: TextOverflow.visible,
+        ),
+        Text(
+          subtitle.isNotEmpty ? subtitle : 'sem ${title.toLowerCase()} informado(a)',
+          style: AppTheme.textStyles.subTileTextStyle,
+          softWrap: true,
+          overflow: TextOverflow.visible,
+        ),
+        Divider(
+          color: AppTheme.colors.hintTextColor,
+          thickness: 1,
+        ),
+      ],
+    );
+  }
+}

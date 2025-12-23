@@ -1,4 +1,4 @@
-import 'package:Fluxx/pages/add_bill_page.dart';
+import 'package:Fluxx/pages/add_bill_pageview/add_bill_pageview.dart';
 import 'package:Fluxx/pages/add_category_page.dart';
 import 'package:Fluxx/pages/add_revenue_page.dart';
 import 'package:Fluxx/pages/bill_list_page.dart';
@@ -11,6 +11,7 @@ import 'package:Fluxx/pages/profile_page.dart';
 import 'package:Fluxx/pages/resume_page.dart';
 import 'package:Fluxx/pages/revenue_list_page.dart';
 import 'package:Fluxx/pages/stats_page.dart';
+import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/setup_dependences.dart';
 import 'package:flashy_flushbar/flashy_flushbar_provider.dart';
@@ -44,6 +45,11 @@ class _MyAppState extends State<MyApp> {
       title: 'Fluxx',
       theme: ThemeData(
         useMaterial3: true,
+        textSelectionTheme: TextSelectionThemeData(
+          cursorColor: AppTheme.colors.hintColor,
+          selectionColor: AppTheme.colors.hintColor,
+          selectionHandleColor: AppTheme.colors.hintColor,
+        ),
       ),
       builder: FlashyFlushbarProvider.init(),
 
@@ -54,7 +60,8 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.revenueListPage: (ctx) => const RevenueListPage(),
         AppRoutes.detailPage: (ctx) => const BillListPage(),
         AppRoutes.statsPage: (ctx) => const StatsPage(),
-        AppRoutes.addBillPage: (ctx) => const AddBillPage(),
+        // AppRoutes.addBillPage: (ctx) => const AddBillPage(),
+        AppRoutes.addBillPage: (ctx) => const AddBillPageview(),
         AppRoutes.detailBillPage: (ctx) => const DetailBillPage(),
         AppRoutes.addCategoryPage: (ctx) => const AddCategoryPage(),
         AppRoutes.addRevenuePage: (ctx) => const AddRevenuePage(),
