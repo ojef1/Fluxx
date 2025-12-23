@@ -68,11 +68,7 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
                       if (state.availableRevenues.isEmpty) {
                         return EmptyRevenueList(
                           onPressed: () {
-                            var currentMonthId =
-                                GetIt.I<ResumeCubit>().state.currentMonth!.id!;
-                            RevenueModel revenue = RevenueModel(
-                                // monthId: currentMonthId,
-                                );
+                           RevenueModel revenue = RevenueModel();
                             Navigator.pushNamed(
                                     context, AppRoutes.addRevenuePage,
                                     arguments: revenue)
@@ -134,14 +130,7 @@ class _ChoosePaymentPageState extends State<ChoosePaymentPage> {
                                       width: mediaQuery.width * .85,
                                       text: 'Adicionar mais Rendas',
                                       onPressed: () {
-                                        var currentMonthId =
-                                            GetIt.I<ResumeCubit>()
-                                                .state
-                                                .currentMonth!
-                                                .id!;
-                                        RevenueModel revenue = RevenueModel(
-                                          // monthId: currentMonthId,
-                                        );
+                                        RevenueModel revenue = RevenueModel();
                                         return Navigator.pushNamed(context,
                                                 AppRoutes.addRevenuePage,
                                                 arguments: revenue)

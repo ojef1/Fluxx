@@ -67,7 +67,6 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
                   },
                 );
               } else {
-                log('Available Revenues: ${state.availableRevenues}', name: '_PaymentBillPageState');
                 return BlocBuilder<AddBillCubit, AddBillState>(
                     bloc: GetIt.I(),
                     buildWhen: (previous, current) =>

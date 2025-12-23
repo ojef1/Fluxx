@@ -30,6 +30,5 @@ class CategoryModel extends Equatable{
   }
   
   @override
-  // TODO: implement props
   List<Object?> get props => [id, categoryName, price];
 }

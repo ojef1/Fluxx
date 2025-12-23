@@ -33,7 +33,6 @@ class _NameBillPageState extends State<NameBillPage> {
       widget.onError('Preencha o nome');
       return false;
     }
-    log('Nome da conta: ${_nameController.text}');
     GetIt.I<AddBillCubit>().updateName(_nameController.text);
     return true;
   }

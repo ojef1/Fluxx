@@ -129,8 +129,6 @@ class _RepeatBillHandleState extends State<_RepeatBillHandle> {
   void initState() {
     _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
     monthsList = getNextMonthsUntilDecember(_currentMonth);
-    log('lista de meses: $monthsList',
-        name: '_RepeatBillHandleState.initState');
     super.initState();
   }
 
@@ -205,7 +203,6 @@ class _RepeatBillHandleState extends State<_RepeatBillHandle> {
   }
 
   void _updateStates(int repeatValue, DateTime month) {
-    log('atualizou os dados', name: '_RepeatBillHandleState._updateStates');
     GetIt.I<AddBillCubit>().updateRepeatCount(repeatValue);
     GetIt.I<AddBillCubit>()
         .updateRepeatMonthName(DateFormat('MMMM yyyy', 'pt_BR').format(month));

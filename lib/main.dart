@@ -60,7 +60,6 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.revenueListPage: (ctx) => const RevenueListPage(),
         AppRoutes.detailPage: (ctx) => const BillListPage(),
         AppRoutes.statsPage: (ctx) => const StatsPage(),
-        // AppRoutes.addBillPage: (ctx) => const AddBillPage(),
         AppRoutes.addBillPage: (ctx) => const AddBillPageview(),
         AppRoutes.detailBillPage: (ctx) => const DetailBillPage(),
         AppRoutes.addCategoryPage: (ctx) => const AddCategoryPage(),

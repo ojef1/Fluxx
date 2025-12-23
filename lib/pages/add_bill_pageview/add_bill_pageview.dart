@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:Fluxx/blocs/add_bill_cubit/add_bill_cubit.dart';
 import 'package:Fluxx/blocs/category_cubit/category_cubit.dart';
 import 'package:Fluxx/blocs/category_cubit/category_state.dart';
@@ -54,7 +52,6 @@ class _AddBillPageviewState extends State<AddBillPageview> {
   void initState() {
     _pageController = PageController();
     _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
-    log('Mês atual: ${_currentMonth.name}', name: '_AddBillPageviewState.initState');
     nextMonthsList = getNextMonthsUntilDecember(_currentMonth);
     super.initState();
   }

@@ -63,11 +63,7 @@ class ShortcutAddBottomsheet extends StatelessWidget {
             width: mediaQuery.width * .85,
             child: ListTile(
               onTap: () {
-                var currentMonthId =
-                    GetIt.I<ResumeCubit>().state.currentMonth!.id;
-                RevenueModel revenue = RevenueModel(
-                  // monthId: currentMonthId,
-                );
+                RevenueModel revenue = RevenueModel();
                 Navigator.pushReplacementNamed(
                     context, AppRoutes.addRevenuePage,
                     arguments: revenue);

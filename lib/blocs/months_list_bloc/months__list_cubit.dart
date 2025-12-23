@@ -1,10 +1,8 @@
-import 'dart:developer';
 
 import 'package:Fluxx/blocs/months_list_bloc/months_list_state.dart';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/month_model.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MonthsListCubit extends Cubit<MonthsListState> {

@@ -83,11 +83,7 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                 if (state.availableRevenues.isEmpty) {
                   return EmptyRevenueList(
                     onPressed: () {
-                      var currentMonthId =
-                          GetIt.I<ResumeCubit>().state.currentMonth!.id;
-                      RevenueModel revenue = RevenueModel(
-                          // monthId: currentMonthId,
-                          );
+                      RevenueModel revenue = RevenueModel();
                       Navigator.pushNamed(context, AppRoutes.addRevenuePage,
                           arguments: revenue);
                     },

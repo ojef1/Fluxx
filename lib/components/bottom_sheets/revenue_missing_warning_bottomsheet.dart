@@ -94,9 +94,7 @@ class RevenueMissingWarningBottomsheet extends StatelessWidget {
                   alignment: Alignment.center,
                   child: PrimaryButton(
                     text: 'Continuar',
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: () => Navigator.of(context).pop(),
                     width: mediaQuery.width * .85,
                     color: AppTheme.colors.hintColor,
                     textStyle: AppTheme.textStyles.bodyTextStyle,

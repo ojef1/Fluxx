@@ -90,8 +90,6 @@ class _CheckBillPageState extends State<CheckBillPage> {
   }
 }
 
-//TODO próximo passo : definir regra para quando uma renda não existe no mes que a conta se repetir 
-//checar a conversa : gerar meses dinamicamente no chatGPT
 
 class _DataItem extends StatelessWidget {
   final String title;

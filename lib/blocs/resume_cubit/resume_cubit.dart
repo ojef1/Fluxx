@@ -1,6 +1,3 @@
-
-import 'dart:developer';
-
 import 'package:Fluxx/blocs/resume_cubit/resume_state.dart';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/data/tables.dart';
@@ -41,7 +38,6 @@ class ResumeCubit extends Cubit<ResumeState> {
   }
 
   void updateMonthInFocus(MonthModel month) {
-    log('${month.name}', name : 'Mês em foco');
     emit(state.copyWith(monthInFocus: month));
   }
 
