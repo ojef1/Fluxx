@@ -1,4 +1,4 @@
-part of 'add_bill_pageview.dart';
+part of 'bill_form_page_view.dart';
 
 class NameBillPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
@@ -14,7 +14,7 @@ class _NameBillPageState extends State<NameBillPage> {
 
   @override
   void initState() {
-    final nameFromState = GetIt.I<AddBillCubit>().state.name;
+    final nameFromState = GetIt.I<BillFormCubit>().state.name;
 
     _nameController = TextEditingController(text: nameFromState);
 
@@ -33,7 +33,7 @@ class _NameBillPageState extends State<NameBillPage> {
       widget.onError('Preencha o nome');
       return false;
     }
-    GetIt.I<AddBillCubit>().updateName(_nameController.text);
+    GetIt.I<BillFormCubit>().updateName(_nameController.text);
     return true;
   }
 

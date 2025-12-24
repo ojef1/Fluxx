@@ -5,8 +5,8 @@ import 'package:equatable/equatable.dart';
 
 
 
-enum GetBillsResponse { initial, loaging, success, error }
-enum GetStatsResponse { initial, loaging, success, error }
+enum GetBillsResponse { initial, loading, success, error }
+enum GetStatsResponse { initial, loading, success, error }
 
 class ListBillState extends Equatable {
   final double monthTotalSpent;

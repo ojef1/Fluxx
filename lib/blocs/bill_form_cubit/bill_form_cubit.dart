@@ -1,3 +1,4 @@
+import 'dart:developer';
 
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/data/tables.dart';
@@ -9,10 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 
-part 'add_bill_state.dart';
+part 'bill_form_state.dart';
 
-class AddBillCubit extends Cubit<AddBillState> {
-  AddBillCubit() : super(const AddBillState());
+class BillFormCubit extends Cubit<BillFormState> {
+  BillFormCubit() : super(const BillFormState());
+
+  //variável necessária para pegar os dados que não são alterados na edição
+  //como monthId, isPayed e etc.
+  BillModel? _loadedBillToEdit;
 
   updateName(String name) {
     emit(state.copyWith(name: name));
@@ -51,10 +56,19 @@ class AddBillCubit extends Cubit<AddBillState> {
   }
 
   resetState() {
-    emit(const AddBillState());
+    emit(const BillFormState());
   }
 
-  Future<void> addNewBill(int currentMonthId) async {
+  Future<void> submitBill(int currentMonthId) async {
+    switch (state.billFormMode) {
+      case BillFormMode.adding:
+        await _addNewBill(currentMonthId);
+      case BillFormMode.editing:
+        await _editBill();
+    }
+  }
+
+  Future<void> _addNewBill(int currentMonthId) async {
     updateResponseStatus(ResponseStatus.loading);
 
     try {
@@ -100,10 +114,42 @@ class AddBillCubit extends Cubit<AddBillState> {
     }
   }
 
+  Future<void> _editBill() async {
+    updateResponseStatus(ResponseStatus.loading);
+    try {
+      var newBill = BillModel(
+        id: state.id,
+        name: state.name,
+        price: state.price,
+        paymentDate: state.date,
+        description: state.desc,
+        monthId: _loadedBillToEdit?.monthId,
+        categoryId: state.categorySelected!.id,
+        paymentId: state.revenueSelected!.id,
+        isPayed: _loadedBillToEdit?.isPayed,
+      );
+
+      final result = await Db.updateBill(Tables.bills, state.id, newBill);
+
+      if (result == -1) {
+        log('deu erro ', name : 'editBill');
+        updateResponseMessage('Erro ao atualizar conta');
+        updateResponseStatus(ResponseStatus.error);
+      }
+      updateResponseMessage('Conta editada com sucesso.');
+      updateResponseStatus(ResponseStatus.success);
+    } catch (e) {
+      debugPrint('$e');
+      log('deu erro $e ');
+      updateResponseStatus(ResponseStatus.error);
+    }
+  }
+
   bool revenueExistsInMonth(RevenueModel revenue, int targetMonthId) {
-  final endMonth = revenue.endMonthId ?? 12; // se não tem fim, considera dezembro
-  return targetMonthId >= revenue.startMonthId! && targetMonthId <= endMonth;
-}
+    final endMonth =
+        revenue.endMonthId ?? 12; // se não tem fim, considera dezembro
+    return targetMonthId >= revenue.startMonthId! && targetMonthId <= endMonth;
+  }
 
   void updateResponseStatus(ResponseStatus responseStatus) {
     emit(state.copyWith(responseStatus: responseStatus));
@@ -111,5 +157,27 @@ class AddBillCubit extends Cubit<AddBillState> {
 
   Future<void> updateResponseMessage(String responseMessage) async {
     emit(state.copyWith(responseMessage: responseMessage));
+  }
+
+  void updateFormMode(BillFormMode billFormMode) {
+    emit(state.copyWith(billFormMode: billFormMode));
+  }
+
+  void loadBillToEdit(BillModel bill) {
+    var category =
+        CategoryModel(id: bill.categoryId, categoryName: bill.categoryName);
+    var revenue =
+        RevenueModel(id: bill.paymentId, name: bill.paymentName, value: 0.0);
+    emit(state.copyWith(
+      id: bill.id,
+      name: bill.name,
+      price: bill.price,
+      date: bill.paymentDate,
+      desc: bill.description,
+      categorySelected: category,
+      revenueSelected: revenue,
+    ));
+
+    _loadedBillToEdit = bill;
   }
 }

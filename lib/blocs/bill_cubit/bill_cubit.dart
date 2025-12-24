@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:Fluxx/blocs/bill_cubit/bill_state.dart';
 import 'package:Fluxx/blocs/bill_list_cubit/bill_list_cubit.dart';
 import 'package:Fluxx/data/database.dart';
@@ -8,7 +10,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:uuid/uuid.dart';
 
 class BillCubit extends Cubit<BillState> {
   BillCubit() : super(const BillState());
@@ -25,8 +26,44 @@ class BillCubit extends Cubit<BillState> {
     }
   }
 
+  void updateBillPaymentStatus(int isPayed) {
+    //0 false -- 1 true
+    final detailBill = state.detailBill;
+    if (detailBill == null) return;
+
+    BillModel newBill = BillModel(
+      id: detailBill.id,
+      name: detailBill.name,
+      price: detailBill.price,
+      paymentDate: detailBill.paymentDate,
+      description: detailBill.description,
+      monthId: detailBill.monthId,
+      categoryId: detailBill.categoryId,
+      paymentId: detailBill.paymentId,
+      categoryName: detailBill.categoryName,
+      paymentName: detailBill.paymentName,
+      isPayed: isPayed,
+    );
+
+    emit(state.copyWith(detailBill: newBill));
+  }
+
+  Future<void> submitPaymentStatus(int isPayed) async {
+    updateEditBillsResponse(EditBillsResponse.loading);
+    try {
+      //esse função só deve ser chamada em cenários em que o id existe
+      await Db.updatePaymentStatus(state.detailBill!.id!, isPayed);
+      updateSuccessMessage('Conta editada com sucesso.');
+      updateEditBillsResponse(EditBillsResponse.success);
+    } catch (e) {
+      updateErrorMessage('Falha ao Editar a conta.');
+      log('$e', name: 'updateBillPaymentStatus');
+      updateEditBillsResponse(EditBillsResponse.error);
+    }
+  }
+
   Future<void> getBill(String billId, int monthId) async {
-    updateGetBillResponse(GetBillResponse.loaging);
+    updateGetBillResponse(GetBillResponse.loading);
 
     try {
       final bill = await Db.getBillById(billId, monthId);
@@ -54,7 +91,7 @@ class BillCubit extends Cubit<BillState> {
     emit(state.copyWith(getBillResponse: getBillResponse));
   }
 
-  //TODO remover essas funções, já existem no add_bill_cubit
+  //TODO remover essas funções, já existem no bill_form_cubit
   void updateAddBillsResponse(AddBillsResponse addBillsResponse) {
     emit(state.copyWith(addBillsResponse: addBillsResponse));
   }
@@ -67,27 +104,19 @@ class BillCubit extends Cubit<BillState> {
     emit(state.copyWith(removeBillsResponse: removeBillsResponse));
   }
 
-  
-  //TODO remover essa função, já existe no add_bill_cubit
+  //TODO remover essa função, já existe no bill_form_cubit
   Future<void> updateErrorMessage(String errorMessage) async {
     emit(state.copyWith(errorMessage: errorMessage));
   }
 
-  //TODO remover essa função, já existe no add_bill_cubit
+  //TODO remover essa função, já existe no bill_form_cubit
   Future<void> updateSuccessMessage(String successMessage) async {
     emit(state.copyWith(successMessage: successMessage));
   }
 
-  String codeVoucherGenerate() {
-    var code = const Uuid().v4();
-    var shortCode = code.substring(0, 8);
-    return shortCode;
-  }
-
-
-  //TODO remover essa função, já existe no add_bill_cubit
+  //TODO remover essa função, já existe no bill_form_cubit
   Future<int> addNewBill(BillModel newBill) async {
-    updateAddBillsResponse(AddBillsResponse.loaging);
+    updateAddBillsResponse(AddBillsResponse.loading);
     try {
       var result = await Db.insertBill(Tables.bills, newBill);
       if (result != -1) {
@@ -110,7 +139,7 @@ class BillCubit extends Cubit<BillState> {
   }
 
   Future<int> removeBill(String billId, int monthId) async {
-    updateRemoveBillsResponse(RemoveBillsResponse.loaging);
+    updateRemoveBillsResponse(RemoveBillsResponse.loading);
     try {
       var result = await Db.deleteBill(Tables.bills, billId);
       //função delete retorna quantas linhas foram removidas
@@ -133,12 +162,11 @@ class BillCubit extends Cubit<BillState> {
   }
 
   Future<int> editBill(BillModel bill) async {
-    updateEditBillsResponse(EditBillsResponse.loaging);
+    updateEditBillsResponse(EditBillsResponse.loading);
     try {
       var result = await Db.updateBill(Tables.bills, bill.id!, bill);
       if (result > 0) {
         updateSuccessMessage('Conta editada com sucesso.');
-        debugPrint('editBill : Conta editada com sucesso.');
         updateEditBillsResponse(EditBillsResponse.success);
         _updateMonthTotalValues(bill.monthId!);
         await GetIt.I<ListBillCubit>().getAllBills(bill.monthId!);

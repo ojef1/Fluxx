@@ -1,4 +1,4 @@
-import 'package:Fluxx/pages/add_bill_pageview/add_bill_pageview.dart';
+import 'package:Fluxx/pages/bill_form_pageView/bill_form_page_view.dart';
 import 'package:Fluxx/pages/add_category_page.dart';
 import 'package:Fluxx/pages/add_revenue_page.dart';
 import 'package:Fluxx/pages/bill_list_page.dart';
@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.revenueListPage: (ctx) => const RevenueListPage(),
         AppRoutes.detailPage: (ctx) => const BillListPage(),
         AppRoutes.statsPage: (ctx) => const StatsPage(),
-        AppRoutes.addBillPage: (ctx) => const AddBillPageview(),
+        AppRoutes.addBillPage: (ctx) => const BillFormPageview(),
         AppRoutes.detailBillPage: (ctx) => const DetailBillPage(),
         AppRoutes.addCategoryPage: (ctx) => const AddCategoryPage(),
         AppRoutes.addRevenuePage: (ctx) => const AddRevenuePage(),

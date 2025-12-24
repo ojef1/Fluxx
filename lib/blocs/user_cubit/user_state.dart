@@ -1,7 +1,7 @@
 import 'package:Fluxx/models/user_model.dart';
 import 'package:equatable/equatable.dart';
 
-enum GetUserResponse { initial, loaging, success, error }
+enum GetUserResponse { initial, loading, success, error }
 
 class UserState extends Equatable {
   final GetUserResponse getUserResponse;

@@ -10,7 +10,7 @@ class ListBillCubit extends Cubit<ListBillState> {
   ListBillCubit() : super(const ListBillState());
 
   Future<void> getMonthTotalSpent(int monthId) async {
-    // updateGetBillsResponse(GetBillsResponse.loaging);
+    // updateGetBillsResponse(GetBillsResponse.loading);
     try {
       final totalSpent = await Db.sumPricesByMonth(monthId);
       _updateMonthTotalSpent(totalSpent);
@@ -22,7 +22,7 @@ class ListBillCubit extends Cubit<ListBillState> {
   }
 
   Future<void> getMonthTotalPayed(int monthId) async {
-    // updateGetBillsResponse(GetBillsResponse.loaging);
+    // updateGetBillsResponse(GetBillsResponse.loading);
     try {
       final totalSpent = await Db.sumPricesByMonthPayed(monthId);
       _updateMonthTotalPaid(totalSpent);
@@ -60,7 +60,7 @@ class ListBillCubit extends Cubit<ListBillState> {
   }
 
   // Future<void> getBillsByCategory(int monthId, int categoryId) async {
-  //   updateGetBillsResponse(GetBillsResponse.loaging);
+  //   updateGetBillsResponse(GetBillsResponse.loading);
   //   try {
   //     final bills = await Db.getBillsByMonthAndCategory(
   //       Tables.bills,
@@ -90,7 +90,7 @@ class ListBillCubit extends Cubit<ListBillState> {
   
 
   Future<void> getAllBills(int monthId) async {
-    updateGetBillsResponse(GetBillsResponse.loaging);
+    updateGetBillsResponse(GetBillsResponse.loading);
     try {
       final bills = await Db.getBillsByMonth(monthId);
 

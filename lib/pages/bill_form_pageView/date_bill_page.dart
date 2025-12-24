@@ -1,4 +1,4 @@
-part of 'add_bill_pageview.dart';
+part of 'bill_form_page_view.dart';
 
 class DateBillPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
@@ -58,19 +58,19 @@ class _DateSelectorState extends State<DateSelector> {
     DateTime? selectedDateFromState;
     try {
       selectedDateFromState =
-          DateFormat('dd/MM/yyyy').parse(GetIt.I<AddBillCubit>().state.date);
+          DateFormat('dd/MM/yyyy').parse(GetIt.I<BillFormCubit>().state.date);
     } catch (_) {
       // Em caso de erro, só deixa null mesmo
       selectedDateFromState = null;
     }
     var selectedDate = selectedDateFromState ?? DateTime.now();
-    GetIt.I<AddBillCubit>().updateDate(selectedDate.toString());
+    GetIt.I<BillFormCubit>().updateDate(selectedDate.toString());
     return selectedDate;
   }();
 
   void _selectDay(DateTime date) {
     setState(() => selectedDate = date);
-    GetIt.I<AddBillCubit>().updateDate(date.toString());
+    GetIt.I<BillFormCubit>().updateDate(date.toString());
     widget.onDateSelected(date);
   }
 

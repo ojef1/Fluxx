@@ -1,4 +1,4 @@
-part of 'add_bill_pageview.dart';
+part of 'bill_form_page_view.dart';
 
 class DescBillPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
@@ -14,7 +14,7 @@ class _DescBillPageState extends State<DescBillPage> {
 
   @override
   void initState() {
-    final descFromState = GetIt.I<AddBillCubit>().state.desc;
+    final descFromState = GetIt.I<BillFormCubit>().state.desc;
     _descController = TextEditingController(text: descFromState);
     widget.registerValidator(_validate);
     super.initState();
@@ -22,7 +22,7 @@ class _DescBillPageState extends State<DescBillPage> {
 
   Future<bool> _validate() async {
     //a descrição é opcional então não precisa validar nada
-    GetIt.I<AddBillCubit>().updateDesc(_descController.text);
+    GetIt.I<BillFormCubit>().updateDesc(_descController.text);
     return true;
   }
 

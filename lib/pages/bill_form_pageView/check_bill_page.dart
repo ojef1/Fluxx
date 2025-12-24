@@ -1,4 +1,4 @@
-part of 'add_bill_pageview.dart';
+part of 'bill_form_page_view.dart';
 
 class CheckBillPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
@@ -17,7 +17,7 @@ class _CheckBillPageState extends State<CheckBillPage> {
   }
 
   Future<bool> _validate() async {
-    var state = GetIt.I<AddBillCubit>().state;
+    var state = GetIt.I<BillFormCubit>().state;
     if (state.name.isEmpty) {
       showFlushbar(context, 'A conta precisa ter um nome', true);
       return false;
@@ -52,7 +52,7 @@ class _CheckBillPageState extends State<CheckBillPage> {
             overflow: TextOverflow.visible,
           ),
           SizedBox(height: mediaQuery.height * .05),
-          BlocBuilder<AddBillCubit, AddBillState>(
+          BlocBuilder<BillFormCubit, BillFormState>(
               bloc: GetIt.I(),
               builder: (context, state) {
                 return Container(

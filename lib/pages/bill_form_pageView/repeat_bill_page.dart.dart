@@ -1,4 +1,4 @@
-part of 'add_bill_pageview.dart';
+part of 'bill_form_page_view.dart';
 
 class RepeatBillPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
@@ -44,7 +44,7 @@ class _RepeatBillPageState extends State<RepeatBillPage> {
             overflow: TextOverflow.visible,
           ),
           SizedBox(height: mediaQuery.height * .05),
-          BlocBuilder<AddBillCubit, AddBillState>(
+          BlocBuilder<BillFormCubit, BillFormState>(
             bloc: GetIt.I(),
             buildWhen: (previous, current) =>
                 previous.repeatBill != current.repeatBill,
@@ -75,7 +75,7 @@ class _RepeatBillPageState extends State<RepeatBillPage> {
                     borderWidth: 5.0,
                     height: 55,
                     onChanged: (value) =>
-                        GetIt.I<AddBillCubit>().updateRepeatBill(value),
+                        GetIt.I<BillFormCubit>().updateRepeatBill(value),
                     styleBuilder: (b) => ToggleStyle(
                         backgroundColor: b
                             ? AppTheme.colors.hintColor
@@ -153,7 +153,7 @@ class _RepeatBillHandleState extends State<_RepeatBillHandle> {
           overflow: TextOverflow.visible,
         ),
         const SizedBox(height: 20),
-        BlocBuilder<AddBillCubit, AddBillState>(
+        BlocBuilder<BillFormCubit, BillFormState>(
             bloc: GetIt.I(),
             buildWhen: (previous, current) =>
                 previous.repeatCount != current.repeatCount,
@@ -193,7 +193,7 @@ class _RepeatBillHandleState extends State<_RepeatBillHandle> {
       RevenueModel revenue, int repeatValue) async {
     var targetMonthId = _currentMonth.id! + repeatValue;
     bool hasRevenues =
-        GetIt.I<AddBillCubit>().revenueExistsInMonth(revenue, targetMonthId);
+        GetIt.I<BillFormCubit>().revenueExistsInMonth(revenue, targetMonthId);
 
     if (hasRevenues) {
       return;
@@ -203,8 +203,8 @@ class _RepeatBillHandleState extends State<_RepeatBillHandle> {
   }
 
   void _updateStates(int repeatValue, DateTime month) {
-    GetIt.I<AddBillCubit>().updateRepeatCount(repeatValue);
-    GetIt.I<AddBillCubit>()
+    GetIt.I<BillFormCubit>().updateRepeatCount(repeatValue);
+    GetIt.I<BillFormCubit>()
         .updateRepeatMonthName(DateFormat('MMMM yyyy', 'pt_BR').format(month));
   }
 

@@ -414,8 +414,7 @@ class Db {
   //---------------------------FIM -> INSERIR-------------------------
 
   //---------------------------INICIO -> DELETAR-------------------------
-  static Future<int> deactivateRevenue(
-      String revenueId, int endMonth) async {
+  static Future<int> deactivateRevenue(String revenueId, int endMonth) async {
     final db = await Db.dataBase();
 
     try {
@@ -537,6 +536,20 @@ class Db {
       return result;
     } catch (e) {
       throw Exception("Erro ao atualizar a conta: $e");
+    }
+  }
+
+  static Future<int> updatePaymentStatus(String billId, int status) async {
+    final db = await Db.dataBase();
+    try {
+      return await db.update(
+        Tables.bills,
+        {'isPayed': status},
+        where: 'id = ?',
+        whereArgs: [billId],
+      );
+    } catch (e) {
+      throw Exception('Erro ao atualizar o status da conta : $e');
     }
   }
 

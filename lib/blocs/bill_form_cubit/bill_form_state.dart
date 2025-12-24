@@ -1,8 +1,11 @@
-part of 'add_bill_cubit.dart';
+part of 'bill_form_cubit.dart';
 
 enum ResponseStatus { initial, loading, success, error }
 
-class AddBillState extends Equatable {
+enum BillFormMode { adding, editing }
+
+class BillFormState extends Equatable {
+  final String id; // só será preenchida no modo editing
   final String name;
   final double price;
   final String date;
@@ -14,8 +17,10 @@ class AddBillState extends Equatable {
   final String repeatMonthName;
   final ResponseStatus responseStatus;
   final String responseMessage;
+  final BillFormMode billFormMode;
 
-  const AddBillState({
+  const BillFormState({
+    this.id = '',
     this.name = '',
     this.price = 0.0,
     this.date = '',
@@ -27,9 +32,11 @@ class AddBillState extends Equatable {
     this.repeatMonthName = '',
     this.responseStatus = ResponseStatus.initial,
     this.responseMessage = '',
+    this.billFormMode = BillFormMode.adding,
   });
 
-  AddBillState copyWith({
+  BillFormState copyWith({
+    String? id,
     String? name,
     double? price,
     String? date,
@@ -41,8 +48,10 @@ class AddBillState extends Equatable {
     String? repeatMonthName,
     ResponseStatus? responseStatus,
     String? responseMessage,
+    BillFormMode? billFormMode,
   }) {
-    return AddBillState(
+    return BillFormState(
+      id: id ?? this.id,
       name: name ?? this.name,
       price: price ?? this.price,
       date: date ?? this.date,
@@ -54,11 +63,13 @@ class AddBillState extends Equatable {
       repeatMonthName: repeatMonthName ?? this.repeatMonthName,
       responseStatus: responseStatus ?? this.responseStatus,
       responseMessage: responseMessage ?? this.responseMessage,
+      billFormMode: billFormMode ?? this.billFormMode,
     );
   }
 
   @override
   List<Object?> get props => [
+        id,
         name,
         price,
         date,
@@ -70,5 +81,6 @@ class AddBillState extends Equatable {
         repeatMonthName,
         responseStatus,
         responseMessage,
+        billFormMode,
       ];
 }

@@ -1,4 +1,4 @@
-part of 'add_bill_pageview.dart';
+part of 'bill_form_page_view.dart';
 
 class CategoryBillPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
@@ -19,7 +19,7 @@ class _CategoryBillPageState extends State<CategoryBillPage> {
 
   Future<bool> _validate() async {
     bool hasCategorySelected =
-        GetIt.I<AddBillCubit>().state.categorySelected != null;
+        GetIt.I<BillFormCubit>().state.categorySelected != null;
     if (hasCategorySelected) {
       return true;
     } else {
@@ -59,7 +59,7 @@ class _CategoryBillPageState extends State<CategoryBillPage> {
                 subTitle: 'Clique aqui para criar',
               );
             } else {
-              return BlocBuilder<AddBillCubit, AddBillState>(
+              return BlocBuilder<BillFormCubit, BillFormState>(
                   bloc: GetIt.I(),
                   buildWhen: (previous, current) =>
                       previous.categorySelected != current.categorySelected,
@@ -90,7 +90,7 @@ class _CategoryBillPageState extends State<CategoryBillPage> {
                                     var category = CategoryModel(
                                         id: categoryId,
                                         categoryName: categoryName);
-                                    GetIt.I<AddBillCubit>()
+                                    GetIt.I<BillFormCubit>()
                                         .updateCategory(category);
                                   }),
                               if (state.categories.length - 1 == index)

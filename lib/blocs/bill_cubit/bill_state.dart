@@ -2,13 +2,13 @@
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:equatable/equatable.dart';
 
-enum AddBillsResponse { initial, loaging, success, error }
+enum AddBillsResponse { initial, loading, success, error }
 
-enum RemoveBillsResponse { initial, loaging, success, error }
+enum RemoveBillsResponse { initial, loading, success, error }
 
-enum EditBillsResponse { initial, loaging, success, error }
+enum EditBillsResponse { initial, loading, success, error }
 
-enum GetBillResponse { initial, loaging, success, error }
+enum GetBillResponse { initial, loading, success, error }
 
 class BillState extends Equatable {
   final AddBillsResponse addBillsResponse;
@@ -18,7 +18,6 @@ class BillState extends Equatable {
   final BillModel? detailBill;
   final String successMessage;
   final String errorMessage;
-  final int billIsPayed;
   final String paymentDate;
   // final 
 
@@ -30,7 +29,6 @@ class BillState extends Equatable {
     this.detailBill,
     this.successMessage = '',
     this.errorMessage = '',
-    this.billIsPayed = 0,
     this.paymentDate = '',
   });
 
@@ -42,7 +40,6 @@ class BillState extends Equatable {
     BillModel? detailBill,
     String? successMessage,
     String? errorMessage,
-    int? billIsPayed,
     String? paymentDate,
   }) {
     return BillState(
@@ -53,8 +50,6 @@ class BillState extends Equatable {
       detailBill: detailBill ?? this.detailBill,
       successMessage: successMessage ?? this.successMessage,
       errorMessage: errorMessage ?? this.errorMessage,
-      
-      billIsPayed: billIsPayed ?? this.billIsPayed,
       paymentDate: paymentDate ?? this.paymentDate,
     );
   }
@@ -68,7 +63,6 @@ class BillState extends Equatable {
         detailBill,
         successMessage,
         errorMessage,
-        billIsPayed,
         paymentDate,
       ];
 }

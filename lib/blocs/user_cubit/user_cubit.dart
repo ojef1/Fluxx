@@ -12,7 +12,7 @@ class UserCubit extends Cubit<UserState> {
   }
 
   Future<void> getUserInfos() async {
-    updateGetUserResponse(GetUserResponse.loaging);
+    updateGetUserResponse(GetUserResponse.loading);
     try {
       final List<Map<String, dynamic>> userData = await Db.getUser();
 

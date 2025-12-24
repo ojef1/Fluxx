@@ -1,4 +1,4 @@
-part of 'add_bill_pageview.dart';
+part of 'bill_form_page_view.dart';
 
 class PaymentBillPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
@@ -67,7 +67,7 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
                   },
                 );
               } else {
-                return BlocBuilder<AddBillCubit, AddBillState>(
+                return BlocBuilder<BillFormCubit, BillFormState>(
                     bloc: GetIt.I(),
                     buildWhen: (previous, current) =>
                         previous.revenueSelected != current.revenueSelected,
@@ -79,8 +79,8 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
                           itemBuilder: (context, index) {
                             bool available = _verifyAvailability(addState.price,
                                 state.availableRevenues[index].value ?? 0.0);
-                            bool isSelected = state.availableRevenues[index] ==
-                                addState.revenueSelected;
+                            bool isSelected = state.availableRevenues[index].id ==
+                                addState.revenueSelected?.id;
                              return Column(
                               children: [
                                 PrimaryButton(
@@ -181,7 +181,7 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
   }
 
   void _selectRevenue(RevenueModel revenue) {
-    GetIt.I<AddBillCubit>().updateRevenue(revenue);
+    GetIt.I<BillFormCubit>().updateRevenue(revenue);
   }
 
   bool _verifyAvailability(double billValue, double revenueValue) {

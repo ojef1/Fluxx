@@ -3,8 +3,8 @@ import 'package:Fluxx/blocs/bill_cubit/bill_state.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
-import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/helpers.dart';
+import 'package:Fluxx/utils/navigations.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,7 +52,7 @@ class _DetailBillPageState extends State<DetailBillPage> {
             child: SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: mediaQuery.width * .05,
+                  horizontal: mediaQuery.width * .08,
                 ),
                 child: BlocBuilder<BillCubit, BillState>(
                   bloc: GetIt.I(),
@@ -66,11 +66,8 @@ class _DetailBillPageState extends State<DetailBillPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           IconButton.filled(
-                            onPressed: () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.addBillPage,
-                              arguments: state.detailBill,
-                            ),
+                            onPressed: () => goToBillForm(
+                                context: context, bill: state.detailBill),
                             icon: Icon(
                               Icons.mode_edit_rounded,
                               color: AppTheme.colors.white,
@@ -81,7 +78,6 @@ class _DetailBillPageState extends State<DetailBillPage> {
                           ),
                           const SizedBox(width: 5),
                           IconButton.filled(
-                            // onPressed: () => _removeBill(state.detailBill!),
                             onPressed: () =>
                                 _showDeleteDialog(context, state.detailBill!),
                             icon: Icon(
@@ -112,13 +108,8 @@ class _DetailBillPageState extends State<DetailBillPage> {
                             borderWidth: 5.0,
                             height: 55,
                             onChanged: (b) {
-                              setState(
-                                () {
-                                  b
-                                      ? state.detailBill?.isPayed = 1
-                                      : state.detailBill?.isPayed = 0;
-                                },
-                              );
+                              GetIt.I<BillCubit>()
+                                  .updateBillPaymentStatus(b ? 1 : 0);
                             },
                             styleBuilder: (b) => ToggleStyle(
                                 backgroundColor: b
@@ -142,50 +133,27 @@ class _DetailBillPageState extends State<DetailBillPage> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 35),
-                      Text(
-                        state.detailBill?.name ?? 'Nome não encontrado',
-                        style: AppTheme.textStyles.bodyTextStyle
-                            .copyWith(fontSize: AppTheme.fontSizes.xlarge),
-                      ),
-                      const SizedBox(height: 30),
-                      _DetailItem(
-                          icon: Icons.date_range_rounded,
-                          title: 'Data do pagamento',
+                      const SizedBox(height: 65),
+                      _DataItem(
+                          title: 'Nome da conta',
+                          subtitle: state.detailBill?.name ?? ''),
+                      _DataItem(
+                          title: 'Data de Pagamento',
                           subtitle:
-                              state.detailBill?.paymentDate ?? 'Sem data'),
-                      const SizedBox(height: 15),
-                      _DetailItem(
-                          icon: Icons.monetization_on_outlined,
+                              formatDate(state.detailBill?.paymentDate) ?? ''),
+                      _DataItem(
                           title: 'Valor',
                           subtitle:
                               'R\$${formatPrice(state.detailBill?.price ?? 0.0)}'),
-                      const SizedBox(height: 15),
-                      _DetailItem(
-                          icon: Icons.wallet_rounded,
-                          title: 'Renda Usada',
-                          subtitle:
-                              state.detailBill?.paymentName ?? 'Sem Renda'),
-                      const SizedBox(height: 15),
-                      _DetailItem(
-                          icon: Icons.category_rounded,
+                      _DataItem(
+                          title: 'Renda usada',
+                          subtitle: state.detailBill?.paymentName ?? ''),
+                      _DataItem(
                           title: 'Categoria',
-                          subtitle: state.detailBill?.categoryName ??
-                              'Sem Categoria'),
-                      const SizedBox(height: 30),
-                      Text(
-                        'Descrição',
-                        style: AppTheme.textStyles.bodyTextStyle
-                            .copyWith(fontSize: AppTheme.fontSizes.xlarge),
-                      ),
-                      const SizedBox(height: 15),
-                      Text(
-                        state.detailBill?.description ?? '',
-                        style: AppTheme.textStyles.subTileTextStyle,
-                        softWrap: true,
-                        overflow: TextOverflow.visible,
-                      ),
-                      const SizedBox(height: 15),
+                          subtitle: state.detailBill?.categoryName ?? ''),
+                      _DataItem(
+                          title: 'Descrição',
+                          subtitle: state.detailBill?.description ?? ''),
                     ],
                   ),
                 ),
@@ -198,8 +166,8 @@ class _DetailBillPageState extends State<DetailBillPage> {
   }
 
   Future<void> _exit(bool fromPopInvoked) async {
-    var state = GetIt.I<BillCubit>().state;
-    await GetIt.I<BillCubit>().editBill(state.detailBill!);
+    var isPayedStatus = GetIt.I<BillCubit>().state.detailBill?.isPayed;
+    await GetIt.I<BillCubit>().submitPaymentStatus(isPayedStatus!);
     if (!fromPopInvoked) Navigator.pop(context);
   }
 
@@ -265,54 +233,38 @@ class _DetailBillPageState extends State<DetailBillPage> {
   }
 }
 
-class _DetailItem extends StatefulWidget {
+class _DataItem extends StatelessWidget {
   final String title;
   final String subtitle;
-  final IconData icon;
-  const _DetailItem(
-      {required this.subtitle, required this.title, required this.icon});
+  const _DataItem({
+    required this.title,
+    required this.subtitle,
+  });
 
-  @override
-  State<_DetailItem> createState() => _DetailItemState();
-}
-
-class _DetailItemState extends State<_DetailItem> {
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 2,
       children: [
-        Expanded(
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: AppTheme.colors.hintColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                widget.icon,
-                color: AppTheme.colors.white,
-                size: 30,
-                shadows: [
-                  BoxShadow(
-                    color: AppTheme.colors.black,
-                    offset: const Offset(1, 1),
-                    blurRadius: 5,
-                  ),
-                ],
-              ),
-            ),
-            title: Text(
-              widget.title,
-              style: AppTheme.textStyles.bodyTextStyle,
-            ),
-            subtitle: Text(
-              widget.subtitle,
-              style: AppTheme.textStyles.subTileTextStyle,
-            ),
-          ),
+        Text(
+          title,
+          style: AppTheme.textStyles.secondaryTextStyle
+              .copyWith(color: AppTheme.colors.hintTextColor.withAlpha(100)),
+          softWrap: true,
+          overflow: TextOverflow.visible,
+        ),
+        Text(
+          subtitle.isNotEmpty
+              ? subtitle
+              : 'sem ${title.toLowerCase()} informado(a)',
+          style: AppTheme.textStyles.subTileTextStyle,
+          softWrap: true,
+          overflow: TextOverflow.visible,
+        ),
+        Divider(
+          color: AppTheme.colors.hintTextColor,
+          thickness: 1,
         ),
       ],
     );

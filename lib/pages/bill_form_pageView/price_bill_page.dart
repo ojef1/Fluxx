@@ -1,4 +1,4 @@
-part of 'add_bill_pageview.dart';
+part of 'bill_form_page_view.dart';
 
 class PriceBillPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
@@ -14,7 +14,7 @@ class _PriceBillPageState extends State<PriceBillPage> {
 
   @override
   void initState() {
-    final priceFromState = GetIt.I<AddBillCubit>().state.price;
+    final priceFromState = GetIt.I<BillFormCubit>().state.price;
     _moneyController = MoneyMaskedTextController(
       decimalSeparator: ',',
       thousandSeparator: '.',
@@ -31,7 +31,7 @@ class _PriceBillPageState extends State<PriceBillPage> {
     }
     final String billValueFormatted = _moneyController.text.replaceAll(',', '.');
     final double billValueDouble = double.parse(billValueFormatted);
-    GetIt.I<AddBillCubit>().updatePrice(billValueDouble);
+    GetIt.I<BillFormCubit>().updatePrice(billValueDouble);
     return true;
   }
 

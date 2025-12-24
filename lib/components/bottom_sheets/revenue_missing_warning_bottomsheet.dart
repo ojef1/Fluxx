@@ -1,4 +1,4 @@
-import 'package:Fluxx/blocs/add_bill_cubit/add_bill_cubit.dart';
+import 'package:Fluxx/blocs/bill_form_cubit/bill_form_cubit.dart';
 import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class RevenueMissingWarningBottomsheet extends StatelessWidget {
           topRight: Radius.circular(20),
         ),
       ),
-      child: BlocBuilder<AddBillCubit, AddBillState>(
+      child: BlocBuilder<BillFormCubit, BillFormState>(
           bloc: GetIt.I(),
           buildWhen: (previous, current) =>
               previous.revenueSelected != current.revenueSelected ||
