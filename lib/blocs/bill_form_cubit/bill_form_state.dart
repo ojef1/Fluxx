@@ -18,6 +18,7 @@ class BillFormState extends Equatable {
   final ResponseStatus responseStatus;
   final String responseMessage;
   final BillFormMode billFormMode;
+  final List<MonthModel> monthsWithoutBalance;
 
   const BillFormState({
     this.id = '',
@@ -33,6 +34,7 @@ class BillFormState extends Equatable {
     this.responseStatus = ResponseStatus.initial,
     this.responseMessage = '',
     this.billFormMode = BillFormMode.adding,
+    this.monthsWithoutBalance = const [],
   });
 
   BillFormState copyWith({
@@ -49,6 +51,7 @@ class BillFormState extends Equatable {
     ResponseStatus? responseStatus,
     String? responseMessage,
     BillFormMode? billFormMode,
+    List<MonthModel>? monthsWithoutBalance,
   }) {
     return BillFormState(
       id: id ?? this.id,
@@ -64,6 +67,7 @@ class BillFormState extends Equatable {
       responseStatus: responseStatus ?? this.responseStatus,
       responseMessage: responseMessage ?? this.responseMessage,
       billFormMode: billFormMode ?? this.billFormMode,
+      monthsWithoutBalance: monthsWithoutBalance ?? this.monthsWithoutBalance,
     );
   }
 
@@ -82,5 +86,6 @@ class BillFormState extends Equatable {
         responseStatus,
         responseMessage,
         billFormMode,
+        monthsWithoutBalance,
       ];
 }

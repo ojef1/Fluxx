@@ -4,6 +4,7 @@ import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/category_model.dart';
+import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +76,10 @@ class BillFormCubit extends Cubit<BillFormState> {
       if (state.repeatBill) {
         await _addMultipleBills(currentMonthId);
       } else {
-        await _addSingleBill(currentMonthId);
+        await _addSingleBill(
+          currentMonthId,
+          paymentId: state.revenueSelected?.id,
+        );
       }
 
       updateResponseMessage('Conta adicionada com sucesso.');
@@ -88,14 +92,28 @@ class BillFormCubit extends Cubit<BillFormState> {
 
   Future<void> _addMultipleBills(int currentMonthId) async {
     final repeatTimes = state.repeatCount;
+    final revenue = state.revenueSelected;
 
     for (int i = 0; i <= repeatTimes; i++) {
       final monthId = currentMonthId + i;
-      await _addSingleBill(monthId);
+      //só irá passar a renda, se ela existir no mês
+      bool canUseRevenue = false;
+
+      if (revenue != null && revenueExistsInMonth(revenue, monthId)) {
+        //só verifica se tem saldo se a renda existir no mês
+        canUseRevenue = await _hasBalace(monthId);
+      }
+      await _addSingleBill(
+        monthId,
+        paymentId: canUseRevenue ? revenue!.id : null,
+      );
     }
   }
 
-  Future<void> _addSingleBill(int currentMonthId) async {
+  Future<void> _addSingleBill(
+    int currentMonthId, {
+    String? paymentId,
+  }) async {
     var newBill = BillModel(
       id: codeGenerate(),
       name: state.name,
@@ -104,7 +122,7 @@ class BillFormCubit extends Cubit<BillFormState> {
       description: state.desc,
       monthId: currentMonthId,
       categoryId: state.categorySelected!.id,
-      paymentId: state.revenueSelected!.id,
+      paymentId: paymentId,
       isPayed: 0,
     );
     final result = await Db.insertBill(Tables.bills, newBill);
@@ -132,7 +150,7 @@ class BillFormCubit extends Cubit<BillFormState> {
       final result = await Db.updateBill(Tables.bills, state.id, newBill);
 
       if (result == -1) {
-        log('deu erro ', name : 'editBill');
+        log('deu erro ', name: 'editBill');
         updateResponseMessage('Erro ao atualizar conta');
         updateResponseStatus(ResponseStatus.error);
       }
@@ -146,9 +164,62 @@ class BillFormCubit extends Cubit<BillFormState> {
   }
 
   bool revenueExistsInMonth(RevenueModel revenue, int targetMonthId) {
-    final endMonth =
-        revenue.endMonthId ?? 12; // se não tem fim, considera dezembro
-    return targetMonthId >= revenue.startMonthId! && targetMonthId <= endMonth;
+    final endMonth = revenue.endMonthId;
+    if (endMonth == null) {
+      //se não tem mês final definido significa que a renda existe para todos os meses
+      return true;
+    } else {
+      return targetMonthId >= revenue.startMonthId! &&
+          targetMonthId <= endMonth;
+    }
+  }
+
+  Future<bool> balanceValidation(int currentMonthId) async {
+    final repeatTimes = state.repeatCount;
+    final List<MonthModel> insufficientBalance = [];
+
+    for (int i = 0; i <= repeatTimes; i++) {
+      final monthId = currentMonthId + i;
+
+      bool hasBalance = await _hasBalace(monthId);
+      if (!hasBalance) {
+        final month = await Db.getMonthById(monthId);
+        if (month != null) {
+          final withoutBalance = MonthModel.fromJson(month);
+          insufficientBalance.add(withoutBalance);
+        }
+      }
+    }
+
+    emit(state.copyWith(monthsWithoutBalance: insufficientBalance));
+
+    return insufficientBalance.isEmpty;
+  }
+
+  Future<bool> _hasBalace(int monthId) async {
+    try {
+      // 1. Obter todas as contas do mês
+      final bills = await Db.getBillsByMonth(monthId);
+
+      final billsList = bills.map((item) => BillModel.fromJson(item)).toList();
+
+      final selectedRevenue = state.revenueSelected;
+
+      if (selectedRevenue == null) return false;
+
+      double valorUsado = 0;
+      for (var bill in billsList) {
+        if (bill.paymentId == selectedRevenue.id) {
+          valorUsado += bill.price ?? 0;
+        }
+      }
+
+      double valorDisponivel = selectedRevenue.value! - valorUsado;
+      return valorDisponivel >= state.price;
+    } catch (e) {
+      log('e', name: '_hasBalace');
+      return false;
+    }
   }
 
   void updateResponseStatus(ResponseStatus responseStatus) {

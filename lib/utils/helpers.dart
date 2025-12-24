@@ -56,6 +56,16 @@ String? formatDate(String? dateTime) {
   return null;
 }
 
+String getMonthName(DateTime month, {bool withYear = false}){
+  String monthName = DateFormat('MMMM', 'pt_BR').format(month);
+  if(withYear){
+    String year = DateFormat('yyyy', 'pt_BR').format(month);
+    return '$monthName de $year';
+  }else{
+    return monthName;
+  }
+}
+
 String codeGenerate() {
   var code = const Uuid().v4();
   var shortCode = code.substring(0, 8);

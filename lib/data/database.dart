@@ -148,6 +148,19 @@ class Db {
     );
   }
 
+  static Future<Map<String, dynamic>?> getMonthById(int monthId) async {
+    final db = await Db.dataBase();
+
+    final result = await db.query(
+      Tables.months,
+      where: 'id = ?',
+      whereArgs: [monthId],
+      limit: 1,
+    );
+
+    return result.isEmpty ? null : result.first;
+  }
+
   static Future<List<Map<String, dynamic>>> getUser() async {
     final db = await Db.dataBase();
     return db.query(Tables.user);

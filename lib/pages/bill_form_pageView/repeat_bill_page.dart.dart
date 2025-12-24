@@ -174,13 +174,14 @@ class _RepeatBillHandleState extends State<_RepeatBillHandle> {
                           : AppTheme.colors.itemBackgroundColor,
                       textStyle: AppTheme.textStyles.bodyTextStyle,
                       width: mediaQuery.width * .85,
-                      text: DateFormat('MMMM yyyy', 'pt_BR').format(month),
+                      text: getMonthName(month, withYear: true),
                       onPressed: () async {
                         if (state.revenueSelected != null) {
                           await _validateSelectedMonth(
-                              state.revenueSelected!, repeatValue);
+                              state.revenueSelected!, repeatValue, month);
+                        } else {
+                          _updateStates(repeatValue, month);
                         }
-                        _updateStates(repeatValue, month);
                       });
                 },
               );
@@ -190,27 +191,31 @@ class _RepeatBillHandleState extends State<_RepeatBillHandle> {
   }
 
   Future<void> _validateSelectedMonth(
-      RevenueModel revenue, int repeatValue) async {
+      RevenueModel revenue, int repeatValue, DateTime month) async {
+    _updateStates(repeatValue, month);
     var targetMonthId = _currentMonth.id! + repeatValue;
     bool hasRevenues =
         GetIt.I<BillFormCubit>().revenueExistsInMonth(revenue, targetMonthId);
 
     if (hasRevenues) {
-      return;
+      bool hasBalance =
+          await GetIt.I<BillFormCubit>().balanceValidation(_currentMonth.id!);
+      if (hasBalance) return;
+      _showRevenueWarning(MissingRevenueType.insufficientBalance);
     } else {
-      _showRevenueWarning();
+      _showRevenueWarning(MissingRevenueType.revenueNotFound);
     }
   }
 
   void _updateStates(int repeatValue, DateTime month) {
     GetIt.I<BillFormCubit>().updateRepeatCount(repeatValue);
     GetIt.I<BillFormCubit>()
-        .updateRepeatMonthName(DateFormat('MMMM yyyy', 'pt_BR').format(month));
+        .updateRepeatMonthName(getMonthName(month, withYear: true));
   }
 
-  void _showRevenueWarning() {
+  void _showRevenueWarning(MissingRevenueType type) {
     showModalBottomSheet(
         context: context,
-        builder: (context) => const RevenueMissingWarningBottomsheet());
+        builder: (context) => RevenueMissingWarningBottomsheet(type: type));
   }
 }

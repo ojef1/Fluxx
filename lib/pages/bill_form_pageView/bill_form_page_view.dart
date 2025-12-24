@@ -155,7 +155,8 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                       if (_currentIndex != 0)
                         IconButton(
                           icon: Icon(
-                            Icons.delete_rounded,
+                            Icons.close_rounded,
+                            size: 28,
                             color: AppTheme.colors.hintColor,
                           ),
                           onPressed: () => Navigator.pop(context),

@@ -37,6 +37,7 @@ abstract class CustomFlushbar {
         },
       ),
       isDismissible: true,
+      dismissDirection: DismissDirection.vertical,
     ).show();
   }
 }

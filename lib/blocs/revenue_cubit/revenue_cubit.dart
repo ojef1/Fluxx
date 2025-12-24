@@ -196,7 +196,6 @@ class RevenueCubit extends Cubit<RevenueState> {
       }).toList(); // usar essa informação para bloquear opções de pagamentos
 
       // exibição dos valores disponíveis
-
       emit(state.copyWith(availableRevenues: valoresDisponiveis));
     } catch (error) {
       debugPrint('$error');

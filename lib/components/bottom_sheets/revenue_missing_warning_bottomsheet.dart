@@ -1,12 +1,16 @@
 import 'package:Fluxx/blocs/bill_form_cubit/bill_form_cubit.dart';
 import 'package:Fluxx/components/primary_button.dart';
+import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+enum MissingRevenueType { revenueNotFound, insufficientBalance }
+
 class RevenueMissingWarningBottomsheet extends StatelessWidget {
-  const RevenueMissingWarningBottomsheet({super.key});
+  final MissingRevenueType type;
+  const RevenueMissingWarningBottomsheet({super.key, required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +50,7 @@ class RevenueMissingWarningBottomsheet extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  'º A renda “${state.revenueSelected?.name}” não existe até o mês de “${state.repeatMonthName}”.',
+                  _getFirstMessage(state),
                   style: AppTheme.textStyles.subTileTextStyle,
                   textAlign: TextAlign.start,
                   softWrap: true,
@@ -80,12 +84,16 @@ class RevenueMissingWarningBottomsheet extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(width: 12),
-                    Text(
-                      'Dica: rendas podem ser criadas\n apenas para meses específicos',
-                      style: AppTheme.textStyles.subTileTextStyle.copyWith(
-                          color: AppTheme.colors.hintTextColor.withAlpha(100)),
-                      softWrap: true,
-                      textAlign: TextAlign.center,
+                    Expanded(
+                      child: Text(
+                        _gettipMessage(),
+                        style: AppTheme.textStyles.subTileTextStyle.copyWith(
+                            color:
+                                AppTheme.colors.hintTextColor.withAlpha(100)),
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                        textAlign: TextAlign.justify,
+                      ),
                     ),
                   ],
                 ),
@@ -104,5 +112,51 @@ class RevenueMissingWarningBottomsheet extends StatelessWidget {
             );
           }),
     );
+  }
+
+  String _getFirstMessage(BillFormState state) {
+    switch (type) {
+      case MissingRevenueType.revenueNotFound:
+        return 'º A renda “${state.revenueSelected?.name}” não existe até o mês de “${state.repeatMonthName}.';
+      case MissingRevenueType.insufficientBalance:
+        final monthsText = _formatMonths(state.monthsWithoutBalance);
+
+        if (monthsText.isEmpty) {
+          return 'º A renda “${state.revenueSelected?.name}” '
+              'não possui saldo suficiente.';
+        }
+
+        final plural = state.monthsWithoutBalance.length > 1;
+
+        return 'º A renda “${state.revenueSelected?.name}” '
+            'não possui saldo suficiente para '
+            '${plural ? 'os meses : ' : 'o mês de'} "$monthsText".';
+    }
+  }
+
+  String _gettipMessage() {
+    switch (type) {
+      case MissingRevenueType.revenueNotFound:
+        return 'Dica: rendas podem ser criadas apenas para meses específicos';
+      case MissingRevenueType.insufficientBalance:
+        return 'Dica: você pode ajustar o valor da renda ou criar uma renda extra para os próximos meses';
+    }
+  }
+
+  String _formatMonths(List<MonthModel> months) {
+    if (months.isEmpty) return '';
+
+    final names = months.map((m) => m.name).whereType<String>().toList();
+
+    if (names.length == 1) {
+      return names.first;
+    }
+
+    if (names.length == 2) {
+      return '${names.first} e ${names.last}';
+    }
+
+    final allButLast = names.sublist(0, names.length - 1).join(', ');
+    return '$allButLast e ${names.last}';
   }
 }
