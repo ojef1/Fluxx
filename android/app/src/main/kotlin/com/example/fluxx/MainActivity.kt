@@ -1,4 +1,4 @@
-package com.example.fluxx
+package com.fluxx.app
 
 import io.flutter.embedding.android.FlutterActivity
 
