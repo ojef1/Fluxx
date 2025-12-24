@@ -5,7 +5,6 @@ import 'package:Fluxx/blocs/bill_list_cubit/bill_list_cubit.dart';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/bill_model.dart';
-import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,18 +12,6 @@ import 'package:get_it/get_it.dart';
 
 class BillCubit extends Cubit<BillState> {
   BillCubit() : super(const BillState());
-
-  void updatePaymentDate(String? date, bool isEditing) {
-    //na edição, a data já vem formatada
-    if (isEditing) {
-      emit(state.copyWith(paymentDate: date));
-    } else {
-      if (date != null) {
-        var formattedDate = formatDate(date);
-        emit(state.copyWith(paymentDate: formattedDate));
-      }
-    }
-  }
 
   void updateBillPaymentStatus(int isPayed) {
     //0 false -- 1 true
@@ -91,10 +78,6 @@ class BillCubit extends Cubit<BillState> {
     emit(state.copyWith(getBillResponse: getBillResponse));
   }
 
-  //TODO remover essas funções, já existem no bill_form_cubit
-  void updateAddBillsResponse(AddBillsResponse addBillsResponse) {
-    emit(state.copyWith(addBillsResponse: addBillsResponse));
-  }
 
   void updateEditBillsResponse(EditBillsResponse editBillsResponse) {
     emit(state.copyWith(editBillsResponse: editBillsResponse));
@@ -104,38 +87,12 @@ class BillCubit extends Cubit<BillState> {
     emit(state.copyWith(removeBillsResponse: removeBillsResponse));
   }
 
-  //TODO remover essa função, já existe no bill_form_cubit
   Future<void> updateErrorMessage(String errorMessage) async {
     emit(state.copyWith(errorMessage: errorMessage));
   }
 
-  //TODO remover essa função, já existe no bill_form_cubit
   Future<void> updateSuccessMessage(String successMessage) async {
     emit(state.copyWith(successMessage: successMessage));
-  }
-
-  //TODO remover essa função, já existe no bill_form_cubit
-  Future<int> addNewBill(BillModel newBill) async {
-    updateAddBillsResponse(AddBillsResponse.loading);
-    try {
-      var result = await Db.insertBill(Tables.bills, newBill);
-      if (result != -1) {
-        await updateSuccessMessage('Conta adicionada com sucesso.');
-        updateAddBillsResponse(AddBillsResponse.success);
-        _updateMonthTotalValues(newBill.monthId!);
-
-        await GetIt.I<ListBillCubit>().getAllBills(newBill.monthId!);
-        return result;
-      } else {
-        await updateErrorMessage('Falha ao adicionar a conta.');
-        updateAddBillsResponse(AddBillsResponse.error);
-        return result;
-      }
-    } catch (error) {
-      debugPrint('$error');
-      updateAddBillsResponse(AddBillsResponse.error);
-      return -1;
-    }
   }
 
   Future<int> removeBill(String billId, int monthId) async {
@@ -157,29 +114,6 @@ class BillCubit extends Cubit<BillState> {
     } catch (error) {
       debugPrint('$error');
       updateRemoveBillsResponse(RemoveBillsResponse.error);
-      return 0;
-    }
-  }
-
-  Future<int> editBill(BillModel bill) async {
-    updateEditBillsResponse(EditBillsResponse.loading);
-    try {
-      var result = await Db.updateBill(Tables.bills, bill.id!, bill);
-      if (result > 0) {
-        updateSuccessMessage('Conta editada com sucesso.');
-        updateEditBillsResponse(EditBillsResponse.success);
-        _updateMonthTotalValues(bill.monthId!);
-        await GetIt.I<ListBillCubit>().getAllBills(bill.monthId!);
-        return result;
-      } else {
-        updateErrorMessage('Falha ao Editar a conta.');
-        debugPrint('editBill : Falha ao Editar a conta.');
-        updateEditBillsResponse(EditBillsResponse.error);
-        return result;
-      }
-    } catch (error) {
-      debugPrint('$error');
-      updateEditBillsResponse(EditBillsResponse.error);
       return 0;
     }
   }

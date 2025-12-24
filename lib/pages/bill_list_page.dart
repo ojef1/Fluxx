@@ -1,5 +1,6 @@
 import 'package:Fluxx/blocs/bill_cubit/bill_cubit.dart';
 import 'package:Fluxx/blocs/bill_cubit/bill_state.dart';
+import 'package:Fluxx/blocs/bill_form_cubit/bill_form_cubit.dart';
 import 'package:Fluxx/blocs/bill_list_cubit/bill_list_cubit.dart';
 import 'package:Fluxx/blocs/bill_list_cubit/bill_list_state.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
@@ -43,19 +44,7 @@ class _BillListPageState extends State<BillListPage> {
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
-    return BlocListener<BillCubit, BillState>(
-      listenWhen: (previous, current) =>
-          previous.editBillsResponse != current.editBillsResponse,
-      bloc: GetIt.I(),
-      listener: (context, state) {
-        //sempre que o editBillsResponse mudar para sucesso,deve-se fazer o get
-        //da lista de novo para atualizar com as edições
-        if (state.editBillsResponse == EditBillsResponse.success) {
-          GetIt.I<ListBillCubit>().getAllBills(
-            monthInFocus!.id!,
-          );
-        }
-      },
+    return ListenerWrapper(
       child: AnnotatedRegion(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
@@ -198,4 +187,45 @@ class _BillListPageState extends State<BillListPage> {
   //       isScrollControlled: true,
   //       builder: (context) => const FilterBottomsheet());
   // }
+}
+
+class ListenerWrapper extends StatelessWidget {
+  final Widget child;
+  const ListenerWrapper({super.key, required this.child});
+
+  void _getBills() {
+    var monthInFocus = GetIt.I<ResumeCubit>().state.monthInFocus;
+    GetIt.I<ListBillCubit>().getAllBills(
+      monthInFocus!.id!,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<BillCubit, BillState>(
+          listenWhen: (previous, current) =>
+              previous.editBillsResponse != current.editBillsResponse,
+          bloc: GetIt.I(),
+          listener: (context, state) {
+            if (state.editBillsResponse == EditBillsResponse.success) {
+              _getBills();
+            }
+          },
+        ),
+        BlocListener<BillFormCubit, BillFormState>(
+          listenWhen: (previous, current) =>
+              previous.responseStatus != current.responseStatus,
+          bloc: GetIt.I(),
+          listener: (context, state) {
+            if (state.responseStatus == ResponseStatus.success) {
+              _getBills();
+            }
+          },
+        ),
+      ],
+      child: child,
+    );
+  }
 }
