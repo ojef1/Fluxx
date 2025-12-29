@@ -5,6 +5,7 @@ import 'package:Fluxx/components/empty_list_placeholder/empty_category_list.dart
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/constants.dart';
+import 'package:Fluxx/utils/navigations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,7 +51,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
                       return EmptyCategoryList(
                         onPressed: () => Navigator.pushNamed(
                           context,
-                          AppRoutes.addCategoryPage,
+                          AppRoutes.categoryFormPage,
                         ).then(
                           (value) => GetIt.I<CategoryCubit>().getCategorys(),
                         ),
@@ -80,9 +81,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
                                   size: 18,
                                   color: AppTheme.colors.hintColor,
                                 ),
-                                onTap: () => Navigator.pushNamed(
-                                    context, AppRoutes.addCategoryPage,
-                                    arguments: state.categories[index]),
+                                onTap: () => goToCategoryForm(context: context,category: state.categories[index]),
                               ),
                             );
                           },

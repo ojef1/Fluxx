@@ -84,7 +84,7 @@ class _AvailableRevenuesState extends State<AvailableRevenues> {
                   return EmptyRevenueList(
                     onPressed: () {
                       RevenueModel revenue = RevenueModel();
-                      Navigator.pushNamed(context, AppRoutes.addRevenuePage,
+                      Navigator.pushNamed(context, AppRoutes.revenueFormPage,
                           arguments: revenue);
                     },
                   );

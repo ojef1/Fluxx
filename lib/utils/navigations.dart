@@ -1,6 +1,8 @@
 import 'package:Fluxx/blocs/bill_form_cubit/bill_form_cubit.dart';
+import 'package:Fluxx/blocs/category_form_cubit/category_form_cubit.dart';
 import 'package:Fluxx/blocs/revenue_form_cubit/revenue_form_cubit.dart';
 import 'package:Fluxx/models/bill_model.dart';
+import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,7 +19,7 @@ void goToBillForm({required BuildContext context, BillModel? bill}) {
   }
   Navigator.pushNamed(
     context,
-    AppRoutes.addBillPage,
+    AppRoutes.billFormPage,
   );
 }
 
@@ -32,6 +34,21 @@ void goToRevenueForm({required BuildContext context, RevenueModel? revenue}) {
   }
   Navigator.pushNamed(
     context,
-    AppRoutes.addRevenuePage,
+    AppRoutes.revenueFormPage,
   );
 }
+
+void goToCategoryForm({required BuildContext context, CategoryModel? category}) {
+  if (category != null) {
+    //se existe dados da categoria significa que será editado
+    //portanto o modo do formulário será para edição
+    GetIt.I<CategoryFormCubit>().updateCategoryFormMode(CategoryFormMode.editing);
+    GetIt.I<CategoryFormCubit>().loadCategoryToEdit(category);
+  } else {
+    GetIt.I<CategoryFormCubit>().updateCategoryFormMode(CategoryFormMode.adding);
+  }
+  Navigator.pushNamed(
+    context,
+    AppRoutes.categoryFormPage,
+  );
+} 

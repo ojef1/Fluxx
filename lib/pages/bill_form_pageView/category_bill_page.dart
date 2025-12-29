@@ -51,7 +51,7 @@ class _CategoryBillPageState extends State<CategoryBillPage> {
               return EmptyCategoryList(
                 onPressed: () => Navigator.pushNamed(
                   context,
-                  AppRoutes.addCategoryPage,
+                  AppRoutes.categoryFormPage,
                 ).then(
                   (value) => GetIt.I<CategoryCubit>().getCategorys(),
                 ),
@@ -104,7 +104,7 @@ class _CategoryBillPageState extends State<CategoryBillPage> {
                                   width: mediaQuery.width * .85,
                                   text: 'Adicionar mais categorias',
                                   onPressed: () => Navigator.pushNamed(
-                                          context, AppRoutes.addCategoryPage)
+                                          context, AppRoutes.categoryFormPage)
                                       .then(
                                     (value) =>
                                         GetIt.I<CategoryCubit>().getCategorys(),

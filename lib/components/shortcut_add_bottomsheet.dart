@@ -3,6 +3,7 @@ import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
+import 'package:Fluxx/utils/navigations.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -40,7 +41,7 @@ class ShortcutAddBottomsheet extends StatelessWidget {
                 BillModel billModel = BillModel(monthId: currentMonthId);
                 Navigator.pushReplacementNamed(
                   context,
-                  AppRoutes.addBillPage,
+                  AppRoutes.billFormPage,
                   arguments: billModel,
                 );
               },
@@ -65,7 +66,7 @@ class ShortcutAddBottomsheet extends StatelessWidget {
               onTap: () {
                 RevenueModel revenue = RevenueModel();
                 Navigator.pushReplacementNamed(
-                    context, AppRoutes.addRevenuePage,
+                    context, AppRoutes.revenueFormPage,
                     arguments: revenue);
               },
               title: Text(
@@ -86,8 +87,7 @@ class ShortcutAddBottomsheet extends StatelessWidget {
             padding: const EdgeInsets.all(3),
             width: mediaQuery.width * .85,
             child: ListTile(
-              onTap: () => Navigator.pushReplacementNamed(
-                  context, AppRoutes.addCategoryPage),
+              onTap: () => goToCategoryForm(context: context),
               title: Text(
                 'Adicionar Categoria',
                 style: AppTheme.textStyles.bodyTextStyle,

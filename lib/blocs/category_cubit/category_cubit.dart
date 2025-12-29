@@ -25,19 +25,6 @@ class CategoryCubit extends Cubit<CategoryState> {
     }
   }
 
-  void updateAddCategorysResponse(AddCategoriesResponse addCategorysResponse) {
-    emit(state.copyWith(addCategoriesResponse: addCategorysResponse));
-  }
-
-  void updateEditCategorysResponse(
-      EditCategoriesResponse editCategorysResponse) {
-    emit(state.copyWith(editCategoriesResponse: editCategorysResponse));
-  }
-
-  void updateRemoveCategorysResponse(
-      RemoveCategoriesResponse removeCategorysResponse) {
-    emit(state.copyWith(removeCategoriesResponse: removeCategorysResponse));
-  }
 
   void updateGetCategorysResponse(GetCategoriesResponse getCategorysResponse) {
     emit(state.copyWith(getCategoriesResponse: getCategorysResponse));
@@ -76,70 +63,6 @@ class CategoryCubit extends Cubit<CategoryState> {
     } catch (error) {
       debugPrint('$error');
       updateGetTotalByCategoryResponse(GetTotalResponse.error);
-    }
-  }
-
-  Future<int> addCategory(CategoryModel category) async {
-    updateAddCategorysResponse(AddCategoriesResponse.loading);
-    try {
-      var result = await Db.insertCategory(category);
-      if (result != -1) {
-        await updateSuccessMessage('Categoria adicionada com sucesso.');
-        updateAddCategorysResponse(AddCategoriesResponse.success);
-        return result;
-      } else {
-        await updateErrorMessage('Falha ao adicionar a categoria.');
-        updateAddCategorysResponse(AddCategoriesResponse.error);
-        return result;
-      }
-    } catch (error) {
-      debugPrint('$error');
-      updateAddCategorysResponse(AddCategoriesResponse.error);
-      return -1;
-    }
-  }
-
-  Future<int> editCategory(CategoryModel category) async {
-    updateEditCategorysResponse(EditCategoriesResponse.loading);
-    try {
-      var result = await Db.updateCategory(category);
-      if (result > 0) {
-        await updateSuccessMessage('Categoria editada com sucesso.');
-        updateEditCategorysResponse(EditCategoriesResponse.success);
-        return result;
-      } else {
-        await updateErrorMessage('Falha ao editar a categoria.');
-        updateEditCategorysResponse(EditCategoriesResponse.error);
-        return result;
-      }
-    } catch (error) {
-      debugPrint('$error');
-      updateEditCategorysResponse(EditCategoriesResponse.error);
-      return 0;
-    }
-  }
-
-  Future<int> removeCategory(String categoryId) async {
-    updateRemoveCategorysResponse(RemoveCategoriesResponse.loading);
-    try {
-      var result = await Db.deleteCategory(categoryId);
-      if (result > 0) {
-        await updateSuccessMessage('Categoria removida com sucesso.');
-        updateRemoveCategorysResponse(RemoveCategoriesResponse.success);
-        return result;
-      } else {
-        await updateErrorMessage('Falha ao remover a categoria.');
-        updateRemoveCategorysResponse(RemoveCategoriesResponse.error);
-        return result;
-      }
-    } catch (error) {
-      debugPrint('$error');
-      if (error.toString().contains('FOREIGN KEY constraint failed')) {
-        await updateErrorMessage(
-            'Não é possível excluir esta categoria porque existem contas vinculadas a ela.');
-      }
-      updateRemoveCategorysResponse(RemoveCategoriesResponse.error);
-      return 0;
     }
   }
 

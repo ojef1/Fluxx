@@ -1,9 +1,7 @@
 import 'package:Fluxx/pages/bill_form_pageView/bill_form_page_view.dart';
-import 'package:Fluxx/pages/add_category_page.dart';
 import 'package:Fluxx/pages/bill_list_page.dart';
+import 'package:Fluxx/pages/category_form_pageView/category_form_page_view.dart';
 import 'package:Fluxx/pages/category_list_page.dart';
-import 'package:Fluxx/pages/choose_category_page.dart';
-import 'package:Fluxx/pages/choose_payment_page.dart';
 import 'package:Fluxx/pages/detail_bill_page.dart';
 import 'package:Fluxx/pages/month_list_page.dart';
 import 'package:Fluxx/pages/profile_page.dart';
@@ -60,12 +58,10 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.revenueListPage: (ctx) => const RevenueListPage(),
         AppRoutes.detailPage: (ctx) => const BillListPage(),
         AppRoutes.statsPage: (ctx) => const StatsPage(),
-        AppRoutes.addBillPage: (ctx) => const BillFormPageview(),
+        AppRoutes.billFormPage: (ctx) => const BillFormPageview(),
         AppRoutes.detailBillPage: (ctx) => const DetailBillPage(),
-        AppRoutes.addCategoryPage: (ctx) => const AddCategoryPage(),
-        AppRoutes.addRevenuePage: (ctx) => const RevenueFormPageview(),
-        AppRoutes.chooseCategoryPage: (ctx) => const ChooseCategoryPage(),
-        AppRoutes.choosePaymentPage: (ctx) => const ChoosePaymentPage(),
+        AppRoutes.categoryFormPage: (ctx) => const CategoryFormPageview(),
+        AppRoutes.revenueFormPage: (ctx) => const RevenueFormPageview(),
         AppRoutes.profilePage: (ctx) => const ProfilePage(),
       },
     );

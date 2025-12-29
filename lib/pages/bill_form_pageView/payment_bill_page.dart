@@ -59,7 +59,7 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
                 return EmptyRevenueList(
                   onPressed: () {
                       RevenueModel revenue = RevenueModel();
-                    Navigator.pushNamed(context, AppRoutes.addRevenuePage,
+                    Navigator.pushNamed(context, AppRoutes.revenueFormPage,
                             arguments: revenue)
                         .then(
                       (value) => init(),
@@ -115,7 +115,7 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
                                     onPressed: () {
                                       RevenueModel revenue = RevenueModel();
                                       return Navigator.pushNamed(
-                                              context, AppRoutes.addRevenuePage,
+                                              context, AppRoutes.revenueFormPage,
                                               arguments: revenue)
                                           .then(
                                         (value) => init(),

@@ -75,7 +75,7 @@ class _RevenueListPageState extends State<RevenueListPage> {
                           onPressed: () {
                             RevenueModel revenue = RevenueModel();
                             Navigator.pushNamed(
-                                    context, AppRoutes.addRevenuePage,
+                                    context, AppRoutes.revenueFormPage,
                                     arguments: revenue)
                                 .then(
                               (value) {

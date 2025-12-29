@@ -98,7 +98,7 @@ class _BillListPageState extends State<BillListPage> {
                             ElevatedButton(
                               onPressed: () => Navigator.pushNamed(
                                 context,
-                                AppRoutes.addBillPage,
+                                AppRoutes.billFormPage,
                                 arguments: BillModel(
                                   monthId: monthInFocus!.id,
                                 ),
