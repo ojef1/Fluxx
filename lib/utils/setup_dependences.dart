@@ -6,6 +6,7 @@ import 'package:Fluxx/blocs/category_cubit/category_cubit.dart';
 import 'package:Fluxx/blocs/months_list_bloc/months__list_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
+import 'package:Fluxx/blocs/revenue_form_cubit/revenue_form_cubit.dart';
 import 'package:Fluxx/blocs/user_cubit/user_cubit.dart';
 import 'package:get_it/get_it.dart';
 
@@ -15,6 +16,7 @@ void setupDependencies() {
   getIt.registerLazySingleton<MonthsListCubit>(() => MonthsListCubit());
   getIt.registerLazySingleton<ListBillCubit>(() => ListBillCubit());
   getIt.registerLazySingleton<BillFormCubit>(() => BillFormCubit());
+  getIt.registerLazySingleton<RevenueFormCubit>(() => RevenueFormCubit());
   getIt.registerLazySingleton<BillCubit>(() => BillCubit());
   getIt.registerLazySingleton<UserCubit>(() => UserCubit());
   getIt.registerLazySingleton<RevenueCubit>(() => RevenueCubit());

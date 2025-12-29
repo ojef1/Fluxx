@@ -8,18 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class RevenueCubit extends Cubit<RevenueState> {
   RevenueCubit() : super(const RevenueState());
 
-  void updateAddRevenueResponse(AddRevenueResponse addRevenueResponse) {
-    emit(state.copyWith(addRevenueResponse: addRevenueResponse));
-  }
-
-  void updateEditRevenueResponse(EditRevenueResponse editRevenueResponse) {
-    emit(state.copyWith(editRevenueResponse: editRevenueResponse));
-  }
-
-  void updateRemoveRevenueResponse(
-      RemoveRevenueResponse removeRevenueResponse) {
-    emit(state.copyWith(removeRevenueResponse: removeRevenueResponse));
-  }
 
   void updateGetRevenueResponse(GetRevenueResponse getRevenueResponse) {
     emit(state.copyWith(getRevenueResponse: getRevenueResponse));
@@ -31,26 +19,6 @@ class RevenueCubit extends Cubit<RevenueState> {
 
   Future<void> updateSuccessMessage(String successMessage) async {
     emit(state.copyWith(successMessage: successMessage));
-  }
-
-  Future<int> addNewRevenue(RevenueModel newRevenue) async {
-    updateAddRevenueResponse(AddRevenueResponse.loading);
-    try {
-      var result = await Db.insertRevenue(newRevenue);
-      if (result != -1) {
-        await updateSuccessMessage('renda adicionada com sucesso.');
-        updateAddRevenueResponse(AddRevenueResponse.success);
-        return result;
-      } else {
-        await updateErrorMessage('Falha ao adicionar a renda.');
-        updateAddRevenueResponse(AddRevenueResponse.error);
-        return result;
-      }
-    } catch (error) {
-      debugPrint('$error');
-      updateAddRevenueResponse(AddRevenueResponse.error);
-      return -1;
-    }
   }
 
   Future<void> getRevenues(int monthId) async {
@@ -100,47 +68,6 @@ class RevenueCubit extends Cubit<RevenueState> {
     } catch (error) {
       debugPrint('$error');
       return [];
-    }
-  }
-
-  Future<int> removeRevenue(String revenueId,int currentMonthId) async {
-    updateRemoveRevenueResponse(RemoveRevenueResponse.loading);
-    try {
-      var result = await Db.deactivateRevenue(revenueId, currentMonthId);
-      //função delete retorna quantas linhas foram removidas
-      if (result > 0) {
-        updateSuccessMessage('renda removida com sucesso.');
-        updateRemoveRevenueResponse(RemoveRevenueResponse.success);
-        return result;
-      } else {
-        updateErrorMessage('Falha ao remover a renda.');
-        updateRemoveRevenueResponse(RemoveRevenueResponse.error);
-        return result;
-      }
-    } catch (error) {
-      debugPrint('$error');
-      updateRemoveRevenueResponse(RemoveRevenueResponse.error);
-      return 0;
-    }
-  }
-
-  Future<int> editRevenue(RevenueModel revenue) async {
-    updateEditRevenueResponse(EditRevenueResponse.loading);
-    try {
-      var result = await Db.updateRevenue(revenue);
-      if (result > 0) {
-        updateSuccessMessage('Conta editada com sucesso.');
-        updateEditRevenueResponse(EditRevenueResponse.success);
-        return result;
-      } else {
-        updateErrorMessage('Falha ao Editar a conta.');
-        updateEditRevenueResponse(EditRevenueResponse.error);
-        return result;
-      }
-    } catch (error) {
-      debugPrint('$error');
-      updateEditRevenueResponse(EditRevenueResponse.error);
-      return 0;
     }
   }
 

@@ -1,6 +1,5 @@
 import 'package:Fluxx/pages/bill_form_pageView/bill_form_page_view.dart';
 import 'package:Fluxx/pages/add_category_page.dart';
-import 'package:Fluxx/pages/add_revenue_page.dart';
 import 'package:Fluxx/pages/bill_list_page.dart';
 import 'package:Fluxx/pages/category_list_page.dart';
 import 'package:Fluxx/pages/choose_category_page.dart';
@@ -9,6 +8,7 @@ import 'package:Fluxx/pages/detail_bill_page.dart';
 import 'package:Fluxx/pages/month_list_page.dart';
 import 'package:Fluxx/pages/profile_page.dart';
 import 'package:Fluxx/pages/resume_page.dart';
+import 'package:Fluxx/pages/revenue_form_pageView/revenue_form_page_view.dart';
 import 'package:Fluxx/pages/revenue_list_page.dart';
 import 'package:Fluxx/pages/stats_page.dart';
 import 'package:Fluxx/themes/app_theme.dart';
@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.addBillPage: (ctx) => const BillFormPageview(),
         AppRoutes.detailBillPage: (ctx) => const DetailBillPage(),
         AppRoutes.addCategoryPage: (ctx) => const AddCategoryPage(),
-        AppRoutes.addRevenuePage: (ctx) => const AddRevenuePage(),
+        AppRoutes.addRevenuePage: (ctx) => const RevenueFormPageview(),
         AppRoutes.chooseCategoryPage: (ctx) => const ChooseCategoryPage(),
         AppRoutes.choosePaymentPage: (ctx) => const ChoosePaymentPage(),
         AppRoutes.profilePage: (ctx) => const ProfilePage(),

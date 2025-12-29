@@ -48,7 +48,9 @@ class CustomTextField extends StatelessWidget {
               decoration: InputDecoration(
                 border: InputBorder.none,
                 hintText: hint,
-                hintStyle: AppTheme.textStyles.bodyTextStyle,
+                hintStyle: AppTheme.textStyles.bodyTextStyle.copyWith(
+                      color: AppTheme.colors.primaryTextColor.withValues(alpha: 0.5),
+                    ),
               ),
             ),
           ),

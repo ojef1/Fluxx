@@ -11,6 +11,7 @@ abstract class ColorsInterface {
   Color get grayD4;
   Color get white;
   Color get black;
+  Color get red;
 }
 
 class _DefaultColors implements ColorsInterface {
@@ -42,4 +43,6 @@ class _DefaultColors implements ColorsInterface {
   Color get white => const Color(0xffffffff);
   @override
   Color get black => const Color(0xff000000);
+  @override
+  Color get red => const Color(0xffff4242);
 }
