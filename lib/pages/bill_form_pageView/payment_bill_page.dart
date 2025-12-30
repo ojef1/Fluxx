@@ -23,8 +23,8 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
   }
 
   Future<void> init() async {
-    var monthInFocus = GetIt.I<ResumeCubit>().state.monthInFocus;
-    GetIt.I<RevenueCubit>().calculateAvailableValue(monthInFocus!.id!);
+    var selectedMonthId = GetIt.I<BillFormCubit>().state.selectedMonth!.id!;
+    GetIt.I<RevenueCubit>().calculateAvailableValue(selectedMonthId);
   }
 
   @override

@@ -3,6 +3,7 @@ class MonthModel {
   int? yearId;
   String? name;
   double? total;
+  int? monthNumber;
   String? categoryMostUsed; 
   String? revenueMostUsed; 
 
@@ -11,6 +12,7 @@ class MonthModel {
     this.yearId,
     this.name,
     this.total,
+    this.monthNumber,
     this.categoryMostUsed,
     this.revenueMostUsed,
   });
@@ -20,12 +22,13 @@ class MonthModel {
     yearId = json['year_id'] ?? json['yearId'];
     name = json['name'];
     total = json['total'];
+    monthNumber = json['month_number'];
     categoryMostUsed = json['categoryMostUsed'];
     revenueMostUsed = json['revenueMostUsed'];
   }
 
   @override
   String toString() {
-    return 'MonthModel{id: $id, yearId: $yearId, name: $name, total: $total, categoryMostUsed: $categoryMostUsed, revenueMostUsed: $revenueMostUsed}';
+    return 'MonthModel{id: $id, yearId: $yearId, name: $name, total: $total, categoryMostUsed: $categoryMostUsed, revenueMostUsed: $revenueMostUsed, monthNumber: $monthNumber}';
   }
 }

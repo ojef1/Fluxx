@@ -71,6 +71,7 @@ class _DateSelectorState extends State<DateSelector> {
   void _selectDay(DateTime date) {
     setState(() => selectedDate = date);
     GetIt.I<BillFormCubit>().updateDate(date.toString());
+    GetIt.I<BillFormCubit>().getMonthIdFromDate(selectedDate);
     widget.onDateSelected(date);
   }
 
@@ -159,10 +160,6 @@ class _CalendarWidgetState extends State<_CalendarWidget> {
 
   void _changeMonth(int offset) {
     final nextMonth = DateTime(focusedMonth.year, focusedMonth.month + offset);
-
-    final int currentYear = DateTime.now().year;
-
-    if (nextMonth.year != currentYear) return;
 
     setState(() => focusedMonth = nextMonth);
   }

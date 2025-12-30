@@ -1,4 +1,4 @@
-
+import 'package:Fluxx/blocs/bill_form_cubit/bill_form_cubit.dart' as bill_cubit;
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/revenue_form_cubit/revenue_form_cubit.dart';
 import 'package:Fluxx/components/app_bar.dart';
@@ -40,7 +40,11 @@ class _RevenueFormPageviewState extends State<RevenueFormPageview> {
   @override
   void initState() {
     _pageController = PageController();
-    _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
+    //Nos casos em que esse formulário é chamado por meio da criação de conta
+    //deve-se usar a data do mês selecionado no formulário de conta
+    //se for null é porque veio de outro fluxo, então pega o mês em foco do resumo
+    _currentMonth = GetIt.I<bill_cubit.BillFormCubit>().state.selectedMonth ??
+        GetIt.I<ResumeCubit>().state.monthInFocus!;
     revenueFormMode = GetIt.I<RevenueFormCubit>().state.revenueFormMode;
     isEditingMode = revenueFormMode == RevenueFormMode.editing;
     canDesactive = GetIt.I<RevenueFormCubit>().canDesactive;
@@ -72,6 +76,7 @@ class _RevenueFormPageviewState extends State<RevenueFormPageview> {
         RecurrenceRevenuePage(
           registerValidator: _registerValidator,
           onError: (p0) => _showError(p0),
+          currentMonth: _currentMonth,
         ),
       );
     }
@@ -174,7 +179,6 @@ class _RevenueFormPageviewState extends State<RevenueFormPageview> {
                             width: mediaQuery.width * .85,
                             child: ElevatedButton(
                               onPressed: () => _showRevenueWarning(),
-                              
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.redAccent,
                                 minimumSize: const Size(50, 50),

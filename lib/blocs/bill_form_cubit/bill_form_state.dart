@@ -9,6 +9,7 @@ class BillFormState extends Equatable {
   final String name;
   final double price;
   final String date;
+  final MonthModel? selectedMonth;
   final String desc;
   final CategoryModel? categorySelected;
   final RevenueModel? revenueSelected;
@@ -25,6 +26,7 @@ class BillFormState extends Equatable {
     this.name = '',
     this.price = 0.0,
     this.date = '',
+    this.selectedMonth,
     this.desc = '',
     this.categorySelected,
     this.revenueSelected,
@@ -42,6 +44,7 @@ class BillFormState extends Equatable {
     String? name,
     double? price,
     String? date,
+    MonthModel? selectedMonth,
     String? desc,
     CategoryModel? categorySelected,
     RevenueModel? revenueSelected,
@@ -58,6 +61,7 @@ class BillFormState extends Equatable {
       name: name ?? this.name,
       price: price ?? this.price,
       date: date ?? this.date,
+      selectedMonth: selectedMonth ?? this.selectedMonth,
       desc: desc ?? this.desc,
       categorySelected: categorySelected ?? this.categorySelected,
       revenueSelected: revenueSelected ?? this.revenueSelected,
@@ -77,6 +81,7 @@ class BillFormState extends Equatable {
         name,
         price,
         date,
+        selectedMonth,
         desc,
         categorySelected,
         revenueSelected,

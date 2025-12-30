@@ -3,17 +3,16 @@ part of 'revenue_form_page_view.dart';
 class RecurrenceRevenuePage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
   final void Function(String) onError;
+  final MonthModel currentMonth;
   const RecurrenceRevenuePage(
-      {super.key, required this.registerValidator, required this.onError});
+      {super.key, required this.registerValidator, required this.onError, required this.currentMonth});
   @override
   State<RecurrenceRevenuePage> createState() => _RecurrenceRevenuePageState();
 }
 
 class _RecurrenceRevenuePageState extends State<RecurrenceRevenuePage> {
-  late final MonthModel _currentMonth;
   @override
   void initState() {
-    _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
     widget.registerValidator(_validate);
     super.initState();
   }
@@ -113,6 +112,16 @@ class _RecurrenceRevenuePageState extends State<RecurrenceRevenuePage> {
                                   overflow: TextOverflow.visible,
                                 ),
                                 Text(
+                                  'Elas começarão a valer a partir desse mês (${widget.currentMonth.name}).',
+                                  style: AppTheme.textStyles.subTileTextStyle
+                                      .copyWith(
+                                          color: AppTheme.colors.hintTextColor
+                                              .withAlpha(100)),
+                                  softWrap: true,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.visible,
+                                ),
+                                Text(
                                   'Não se preocupe, se precisar você pode desativar a renda a qualquer momento e ela não aparecerá mais para os meses seguintes.',
                                   style: AppTheme.textStyles.subTileTextStyle
                                       .copyWith(
@@ -124,16 +133,31 @@ class _RecurrenceRevenuePageState extends State<RecurrenceRevenuePage> {
                                 ),
                               ],
                             )
-                          : Text(
-                              'Rendas únicas servirão apenas para o mês atual (${_currentMonth.name})',
-                              style: AppTheme.textStyles.subTileTextStyle
-                                  .copyWith(
-                                      color: AppTheme.colors.hintTextColor
-                                          .withAlpha(100)),
-                              softWrap: true,
-                              textAlign: TextAlign.center,
-                              overflow: TextOverflow.visible,
-                            ),
+                          : Column(
+                            spacing: 10,
+                            children: [
+                              Text(
+                                  'Rendas únicas servirão apenas para o mês em questão.',
+                                  style: AppTheme.textStyles.subTileTextStyle
+                                      .copyWith(
+                                          color: AppTheme.colors.hintTextColor
+                                              .withAlpha(100)),
+                                  softWrap: true,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.visible,
+                                ),
+                              Text(
+                                  'Nesse caso ela existirá apenas para o mês de ${widget.currentMonth.name}.',
+                                  style: AppTheme.textStyles.subTileTextStyle
+                                      .copyWith(
+                                          color: AppTheme.colors.hintTextColor
+                                              .withAlpha(100)),
+                                  softWrap: true,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.visible,
+                                ),
+                            ],
+                          ),
                     ),
                   ),
                 ],
@@ -145,109 +169,3 @@ class _RecurrenceRevenuePageState extends State<RecurrenceRevenuePage> {
     );
   }
 }
-
-// class _RepeatBillHandle extends StatefulWidget {
-//   const _RepeatBillHandle();
-
-//   @override
-//   State<_RepeatBillHandle> createState() => _RepeatBillHandleState();
-// }
-
-// class _RepeatBillHandleState extends State<_RepeatBillHandle> {
-//   late final List<DateTime> monthsList;
-//   late final MonthModel _currentMonth;
-
-//   @override
-//   void initState() {
-//     _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
-//     monthsList = getNextMonthsUntilDecember(_currentMonth);
-//     super.initState();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     var mediaQuery = MediaQuery.of(context).size;
-//     return Column(
-//       children: [
-//         Text(
-//           'Até quando?',
-//           style: AppTheme.textStyles.subTileTextStyle,
-//           softWrap: true,
-//           textAlign: TextAlign.center,
-//           overflow: TextOverflow.visible,
-//         ),
-//         Text(
-//           '(Isso não poderá ser editado depois)',
-//           style: AppTheme.textStyles.subTileTextStyle
-//               .copyWith(color: AppTheme.colors.hintTextColor.withAlpha(100)),
-//           softWrap: true,
-//           textAlign: TextAlign.center,
-//           overflow: TextOverflow.visible,
-//         ),
-//         const SizedBox(height: 20),
-//         BlocBuilder<BillFormCubit, BillFormState>(
-//             bloc: GetIt.I(),
-//             buildWhen: (previous, current) =>
-//                 previous.repeatCount != current.repeatCount,
-//             builder: (context, state) {
-//               return ListView.builder(
-//                 padding: const EdgeInsets.symmetric(horizontal: 30),
-//                 itemCount: monthsList.length,
-//                 shrinkWrap: true,
-//                 physics: const NeverScrollableScrollPhysics(),
-//                 itemBuilder: (context, index) {
-//                   final month = monthsList[index];
-//                   final repeatValue = index + 1;
-//                   var isSelected = state.repeatCount == repeatValue;
-
-//                   return PrimaryButton(
-//                       color: isSelected
-//                           ? AppTheme.colors.hintColor
-//                           : AppTheme.colors.itemBackgroundColor,
-//                       textStyle: AppTheme.textStyles.bodyTextStyle,
-//                       width: mediaQuery.width * .85,
-//                       text: getMonthName(month, withYear: true),
-//                       onPressed: () async {
-//                         if (state.revenueSelected != null) {
-//                           await _validateSelectedMonth(
-//                               state.revenueSelected!, repeatValue, month);
-//                         } else {
-//                           _updateStates(repeatValue, month);
-//                         }
-//                       });
-//                 },
-//               );
-//             }),
-//       ],
-//     );
-//   }
-
-//   Future<void> _validateSelectedMonth(
-//       RevenueModel revenue, int repeatValue, DateTime month) async {
-//     _updateStates(repeatValue, month);
-//     var targetMonthId = _currentMonth.id! + repeatValue;
-//     bool hasRevenues =
-//         GetIt.I<BillFormCubit>().revenueExistsInMonth(revenue, targetMonthId);
-
-//     if (hasRevenues) {
-//       bool hasBalance =
-//           await GetIt.I<BillFormCubit>().balanceValidation(_currentMonth.id!);
-//       if (hasBalance) return;
-//       _showRevenueWarning(MissingRevenueType.insufficientBalance);
-//     } else {
-//       _showRevenueWarning(MissingRevenueType.revenueNotFound);
-//     }
-//   }
-
-//   void _updateStates(int repeatValue, DateTime month) {
-//     GetIt.I<BillFormCubit>().updateRepeatCount(repeatValue);
-//     GetIt.I<BillFormCubit>()
-//         .updateRepeatMonthName(getMonthName(month, withYear: true));
-//   }
-
-//   void _showRevenueWarning(MissingRevenueType type) {
-//     showModalBottomSheet(
-//         context: context,
-//         builder: (context) => RevenueMissingWarningBottomsheet(type: type));
-//   }
-// }

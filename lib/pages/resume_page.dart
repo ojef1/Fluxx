@@ -116,7 +116,7 @@ class _ResumePageState extends State<ResumePage> {
                                         errorBuilder:
                                             (context, error, stackTrace) =>
                                                 Image.asset(
-                                          state.user?.picture ?? '',
+                                          Constants.defaultPicture,
                                           fit: BoxFit.cover,
                                         ),
                                       ),

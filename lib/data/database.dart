@@ -3,6 +3,7 @@ import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/models/user_model.dart';
+import 'package:Fluxx/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
@@ -29,6 +30,7 @@ class Db {
           'CREATE TABLE ${Tables.months} ('
           'id INTEGER PRIMARY KEY AUTOINCREMENT, '
           'name TEXT, '
+          'month_number INTEGER NOT NULL, '
           'year_id INTEGER NOT NULL, '
           'FOREIGN KEY (year_id) REFERENCES ${Tables.years} (id))',
         );
@@ -80,34 +82,69 @@ class Db {
 
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      version: 18,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 20) {
+          await db.transaction((txn) async {
+            // 1️⃣ Criar nova tabela months com month_number
+            await txn.execute('''
+        CREATE TABLE months_new (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT,
+          month_number INTEGER NOT NULL,
+          year_id INTEGER NOT NULL,
+          FOREIGN KEY (year_id) REFERENCES years (id)
+        )
+      ''');
+
+            // 2️⃣ Buscar meses antigos
+            final oldMonths = await txn.query('months');
+
+            // 3️⃣ Mapa seguro de nome → número
+            final monthMap = {
+              'Janeiro': 1,
+              'Fevereiro': 2,
+              'Março': 3,
+              'Abril': 4,
+              'Maio': 5,
+              'Junho': 6,
+              'Julho': 7,
+              'Agosto': 8,
+              'Setembro': 9,
+              'Outubro': 10,
+              'Novembro': 11,
+              'Dezembro': 12,
+            };
+
+            // 4️⃣ Migrar mantendo o MESMO ID
+            for (final month in oldMonths) {
+              final String name = month['name'] as String;
+              final int monthNumber = monthMap[name]!;
+
+              await txn.insert(
+                'months_new',
+                {
+                  'id': month['id'], // mantém o ID!
+                  'name': name,
+                  'month_number': monthNumber,
+                  'year_id': month['year_id'],
+                },
+              );
+            }
+
+            // 5️⃣ Dropar tabela antiga
+            await txn.execute('DROP TABLE months');
+
+            // 6️⃣ Renomear tabela nova
+            await txn.execute('ALTER TABLE months_new RENAME TO months');
+          });
+        }
+      },
+      version: 20,
     );
   }
 
   static Future<void> constValues(sql.Database db) async {
-    int yearId = await db.insert(Tables.years, {'value': DateTime.now().year});
-
-    List<String> monthNames = [
-      'Janeiro',
-      'Fevereiro',
-      'Março',
-      'Abril',
-      'Maio',
-      'Junho',
-      'Julho',
-      'Agosto',
-      'Setembro',
-      'Outubro',
-      'Novembro',
-      'Dezembro',
-    ];
-
-    for (int i = 0; i < monthNames.length; i++) {
-      await db.insert('months', {
-        'name': monthNames[i],
-        'year_id': yearId,
-      });
-    }
+    _insertYear(DateTime.now().year);
 
     // Caminho da imagem padrão
     String defaultImagePath = 'assets/images/default_user.jpeg';
@@ -118,20 +155,61 @@ class Db {
   //---------------------------FIM -> CRIAR BANCO-------------------------
 
   //---------------------------INICIO -> PEGAR-------------------------
+  static Future<int> getYearId(int year) async {
+    final db = await Db.dataBase();
+    final result = await db.query(
+      Tables.years,
+      where: 'value = ?',
+      whereArgs: [year],
+      limit: 1,
+    );
+
+    if (result.isNotEmpty) {
+      return result.first['id'] as int;
+    } else {
+      // Se o ano não existir, insere um novo ano e retorna o ID
+      return await _insertYear(year);
+    }
+  }
+
+  static Future<int> getMonthId({
+    required int yearId,
+    required int month,
+  }) async {
+    final db = await Db.dataBase();
+
+    final result = await db.query(
+      Tables.months,
+      where: 'year_id = ? AND month_number = ?',
+      whereArgs: [yearId, month],
+      limit: 1,
+    );
+
+    if (result.isNotEmpty) {
+      return result.first['id'] as int;
+    } else {
+      return await _insertMonth(month, yearId);
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getYears() async {
+    final db = await Db.dataBase();
+    return db.query(Tables.years);
+  }
+
   static Future<List<Map<String, dynamic>>> getData(String table) async {
     final db = await Db.dataBase();
     return db.query(table);
   }
 
-  static Future<List<Map<String, dynamic>>> getMonths() async {
+  static Future<List<Map<String, dynamic>>> getMonths(int year) async {
     final db = await Db.dataBase();
-    final currentYear = DateTime.now().year;
 
     // Busca o id do ano atual na tabela 'years'
     final yearResult = await db.query(
       Tables.years,
       where: 'value = ?',
-      whereArgs: [currentYear],
+      whereArgs: [year],
       limit: 1,
     );
 
@@ -367,6 +445,47 @@ class Db {
   //---------------------------FIM -> PEGAR TOTAL-------------------------
 
   //---------------------------INICIO -> INSERIR-------------------------
+
+  static Future<int> _insertYear(int yearValue) async {
+    final db = await Db.dataBase();
+    try {
+      int result = await db.insert(
+        Tables.years,
+        {'value': yearValue},
+        conflictAlgorithm: sql.ConflictAlgorithm.ignore,
+      );
+
+      for (final month in AppMonths.all) {
+        await _insertMonth(month.monthNumber!, result);
+      }
+
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao inserir ano: $e');
+    }
+  }
+
+  static _insertMonth(int monthNumber, int yearId) async {
+    final db = await Db.dataBase();
+    try {
+      final monthName = AppMonths.all
+          .firstWhere((month) => month.monthNumber == monthNumber)
+          .name;
+      int result = await db.insert(
+        Tables.months,
+        {
+          'name': monthName,
+          'month_number': monthNumber,
+          'year_id': yearId,
+        },
+        conflictAlgorithm: sql.ConflictAlgorithm.ignore,
+      );
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao inserir mês: $e');
+    }
+  }
+
   static Future<int> insertRevenue(RevenueModel data) async {
     final db = await Db.dataBase();
     final revenueData = data.toJson();

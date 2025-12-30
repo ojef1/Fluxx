@@ -24,20 +24,28 @@ class _MonthListPageState extends State<MonthListPage> {
   @override
   void initState() {
     _pageScrollController = ScrollController();
-    GetIt.I<MonthsListCubit>().getMonths();
+    GetIt.I<MonthsListCubit>().init();
     super.initState();
   }
 
-  void jumpToCurrentMonth(List<MonthModel>months, Size mediaQuery) {
+  @override
+  void dispose() {
+    _pageScrollController.dispose();
+    GetIt.I<MonthsListCubit>().resetState();
+    super.dispose();
+  }
+
+  void jumpToCurrentMonth(List<MonthModel> months, Size mediaQuery) {
     final currentMonthName = DateFormat.MMMM('pt_BR').format(DateTime.now());
-    final currentMonthIndex = months.indexWhere((m) => m.name!.toLowerCase() == currentMonthName.toLowerCase());
+    final currentMonthIndex = months.indexWhere(
+        (m) => m.name!.toLowerCase() == currentMonthName.toLowerCase());
     final monthHeight = mediaQuery.height * .2;
 
     if (currentMonthIndex != -1) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _pageScrollController.jumpTo(currentMonthIndex * monthHeight);
-    });
-  }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _pageScrollController.jumpTo(currentMonthIndex * monthHeight);
+      });
+    }
   }
 
   @override
@@ -70,7 +78,7 @@ class _MonthListPageState extends State<MonthListPage> {
                       jumpToCurrentMonth(state.months, mediaQuery);
                       return Column(
                         children: [
-                          Text('${DateTime.now().year}',style: AppTheme.textStyles.titleTextStyle,),
+                          const yearHandleWidget(),
                           const SizedBox(height: 30),
                           ListView.builder(
                             shrinkWrap: true,
@@ -93,5 +101,56 @@ class _MonthListPageState extends State<MonthListPage> {
         ),
       ),
     );
+  }
+}
+
+class yearHandleWidget extends StatelessWidget {
+  const yearHandleWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<MonthsListCubit, MonthsListState>(
+        bloc: GetIt.I(),
+        buildWhen: (previous, current) =>
+            previous.yearInFocus != current.yearInFocus,
+        builder: (context, state) {
+          final currentYearIndex =
+              state.years.indexWhere((y) => y.value == state.yearInFocus);
+          final hasPreviousYear = currentYearIndex > 0;
+          final hasNextYear = currentYearIndex < state.years.length - 1;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                hasPreviousYear
+                 ? IconButton(
+                    onPressed: () {
+                      final previousYear =
+                          state.years[currentYearIndex - 1].value;
+                      GetIt.I<MonthsListCubit>().changeYear(previousYear);
+                    },
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
+                    color: AppTheme.colors.hintColor,
+                  ) : const SizedBox(width: 48),
+                Text(
+                  '${state.yearInFocus}',
+                  style: AppTheme.textStyles.titleTextStyle,
+                ),
+                hasNextYear
+                 ? IconButton(
+                    onPressed: () {
+                      final nextYear = state.years[currentYearIndex + 1].value;
+                      GetIt.I<MonthsListCubit>().changeYear(nextYear);
+                    },
+                    icon: const Icon(Icons.arrow_forward_ios_rounded),
+                    color: AppTheme.colors.hintColor,
+                  ) : const SizedBox(width: 48),
+              ],
+            ),
+          );
+        });
   }
 }

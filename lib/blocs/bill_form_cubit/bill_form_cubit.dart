@@ -20,6 +20,21 @@ class BillFormCubit extends Cubit<BillFormState> {
   //como monthId, isPayed e etc.
   BillModel? _loadedBillToEdit;
 
+  Future<void> getMonthIdFromDate(DateTime date) async {
+    final yearId = await Db.getYearId(date.year);
+
+    final monthId = await Db.getMonthId(
+      yearId: yearId,
+      month: date.month,
+    );
+
+    final getMonth = await Db.getMonthById(monthId);
+    MonthModel? month = getMonth != null ? MonthModel.fromJson(getMonth) : null;
+    log('monthId: $monthId, e YearId : $yearId',
+        name: 'resolveMonthIdFromDate');
+    emit(state.copyWith(selectedMonth: month));
+  }
+
   updateName(String name) {
     emit(state.copyWith(name: name));
   }
@@ -60,24 +75,25 @@ class BillFormCubit extends Cubit<BillFormState> {
     emit(const BillFormState());
   }
 
-  Future<void> submitBill(int currentMonthId) async {
+  Future<void> submitBill() async {
+    int targetMonthId = state.selectedMonth!.id!;
     switch (state.billFormMode) {
       case BillFormMode.adding:
-        await _addNewBill(currentMonthId);
+        await _addNewBill(targetMonthId);
       case BillFormMode.editing:
         await _editBill();
     }
   }
 
-  Future<void> _addNewBill(int currentMonthId) async {
+  Future<void> _addNewBill(int targetMonthId) async {
     updateResponseStatus(ResponseStatus.loading);
 
     try {
       if (state.repeatBill) {
-        await _addMultipleBills(currentMonthId);
+        await _addMultipleBills(targetMonthId);
       } else {
         await _addSingleBill(
-          currentMonthId,
+          targetMonthId,
           paymentId: state.revenueSelected?.id,
         );
       }
@@ -90,12 +106,12 @@ class BillFormCubit extends Cubit<BillFormState> {
     }
   }
 
-  Future<void> _addMultipleBills(int currentMonthId) async {
+  Future<void> _addMultipleBills(int targetMonthId) async {
     final repeatTimes = state.repeatCount;
     final revenue = state.revenueSelected;
 
     for (int i = 0; i <= repeatTimes; i++) {
-      final monthId = currentMonthId + i;
+      final monthId = targetMonthId + i;
       //só irá passar a renda, se ela existir no mês
       bool canUseRevenue = false;
 
@@ -111,7 +127,7 @@ class BillFormCubit extends Cubit<BillFormState> {
   }
 
   Future<void> _addSingleBill(
-    int currentMonthId, {
+    int targetMonthId, {
     String? paymentId,
   }) async {
     var newBill = BillModel(
@@ -120,11 +136,12 @@ class BillFormCubit extends Cubit<BillFormState> {
       price: state.price,
       paymentDate: state.date,
       description: state.desc,
-      monthId: currentMonthId,
+      monthId: targetMonthId,
       categoryId: state.categorySelected!.id,
       paymentId: paymentId,
       isPayed: 0,
     );
+    log('Adicionando conta: ${newBill.toJson()}', name: '_addSingleBill');
     final result = await Db.insertBill(Tables.bills, newBill);
 
     if (result == -1) {

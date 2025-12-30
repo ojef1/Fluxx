@@ -206,7 +206,7 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                             bloc: GetIt.I(),
                             buildWhen: (previous, current) =>
                                 previous.responseStatus !=
-                                current.responseStatus,
+                                    current.responseStatus,
                             builder: (context, state) {
                               bool isLoading = state.responseStatus ==
                                   ResponseStatus.loading;
@@ -226,7 +226,7 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                                             _listPageWidgets.length - 1) {
                                           //se for a ultima página, salva a conta
                                           await GetIt.I<BillFormCubit>()
-                                              .submitBill(_currentMonth.id!);
+                                              .submitBill();
                                         } else {
                                           _pageController.nextPage(
                                             duration: Durations.medium2,
