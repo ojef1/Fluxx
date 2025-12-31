@@ -53,7 +53,7 @@ class _RevenueListPageState extends State<RevenueListPage> {
         child: Scaffold(
           backgroundColor: AppTheme.colors.appBackgroundColor,
           resizeToAvoidBottomInset: true,
-          appBar: const CustomAppBar(title: 'Lista de Rendas'),
+          appBar: const CustomAppBar(title: 'Lista de Receitas'),
           body: SafeArea(
             child: Padding(
               padding: EdgeInsets.symmetric(

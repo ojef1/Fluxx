@@ -94,7 +94,7 @@ class ShortcutListsBottomsheet extends StatelessWidget {
               onTap: () => Navigator.pushReplacementNamed(context, AppRoutes.revenueListPage),
               
               title: Text(
-                'Lista de Rendas',
+                'Lista de Receitas',
                 style: AppTheme.textStyles.bodyTextStyle,
               ),
               trailing: Icon(

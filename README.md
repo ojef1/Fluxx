@@ -30,13 +30,13 @@ Um aplicativo completo de **gestão financeira pessoal**, focado em organizaçã
 <img src="assets/screenshots/tela_detalhes_conta.png" alt="Tela Detalhes da Conta" width="250"/>
 
 > ### Tela de Adicionar Conta
-<img src="assets/screenshots/tela_adicionar_conta.png" alt="Tela de Adicionar Conta" width="250"/> <img src="assets/screenshots/lista_categorias.png" alt="Tela para Escolher a Categoria da Conta" width="250"/> <img src="assets/screenshots/lista_rendas.png" alt="Tela para Escolher a Receita da Conta" width="250"/>
+<img src="assets/screenshots/tela_adicionar_conta.png" alt="Tela de Adicionar Conta" width="250"/> <img src="assets/screenshots/lista_categorias.png" alt="Tela para Escolher a Categoria da Conta" width="250"/> <img src="assets/screenshots/lista_receitas.png" alt="Tela para Escolher a Receita da Conta" width="250"/>
 
 > ### Tela de Adicionar Categoria
 <img src="assets/screenshots/tela_adicionar_categoria.png" alt="Tela de Adicionar Categoria" width="250"/>
 
 > ### Tela de Adicionar Receita
-<img src="assets/screenshots/tela_adicionar_renda.png" alt="Tela de Adicionar Receita" width="250"/> <img src="assets/screenshots/descricao_add_renda.png" alt="Descrição de como funciona a adição de rendas" width="250"/>
+<img src="assets/screenshots/tela_adicionar_receita.png" alt="Tela de Adicionar Receita" width="250"/> <img src="assets/screenshots/descricao_add_receita.png" alt="Descrição de como funciona a adição de receitas" width="250"/>
 
 ## 🛠️ Tecnologias Utilizadas
 

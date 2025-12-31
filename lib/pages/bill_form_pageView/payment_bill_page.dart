@@ -111,7 +111,7 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
                                         .copyWith(
                                             color: AppTheme.colors.hintColor),
                                     width: mediaQuery.width * .85,
-                                    text: 'Adicionar mais Rendas',
+                                    text: 'Adicionar mais Receitas',
                                     onPressed: () {
                                       RevenueModel revenue = RevenueModel();
                                       return Navigator.pushNamed(

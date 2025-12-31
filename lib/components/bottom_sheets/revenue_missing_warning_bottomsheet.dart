@@ -137,7 +137,7 @@ class RevenueMissingWarningBottomsheet extends StatelessWidget {
   String _gettipMessage() {
     switch (type) {
       case MissingRevenueType.revenueNotFound:
-        return 'Dica: rendas podem ser criadas apenas para meses específicos';
+        return 'Dica: receitas podem ser criadas apenas para meses específicos';
       case MissingRevenueType.insufficientBalance:
         return 'Dica: você pode ajustar o valor da receita ou criar uma receita extra para os próximos meses';
     }

@@ -137,7 +137,7 @@ class _ExpandedContent extends StatelessWidget {
           ),
           _RowItem(
             icon: Icons.wallet_rounded,
-            label: 'Renda usada:',
+            label: 'Receita usada:',
             value: bill.paymentName ?? '—',
           ),
           const Padding(

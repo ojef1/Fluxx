@@ -102,7 +102,7 @@ class _RecurrenceRevenuePageState extends State<RecurrenceRevenuePage> {
                               spacing: 10,
                               children: [
                                 Text(
-                                  'Rendas mensais são aquelas que você provavelmente terá até o fim do ano.',
+                                  'Receitas mensais são aquelas que você provavelmente terá até o fim do ano.',
                                   style: AppTheme.textStyles.subTileTextStyle
                                       .copyWith(
                                           color: AppTheme.colors.hintTextColor
@@ -137,7 +137,7 @@ class _RecurrenceRevenuePageState extends State<RecurrenceRevenuePage> {
                             spacing: 10,
                             children: [
                               Text(
-                                  'Rendas únicas servirão apenas para o mês em questão.',
+                                  'Receitas únicas servirão apenas para o mês em questão.',
                                   style: AppTheme.textStyles.subTileTextStyle
                                       .copyWith(
                                           color: AppTheme.colors.hintTextColor
