@@ -3,6 +3,7 @@ import 'package:Fluxx/pages/bill_list_page.dart';
 import 'package:Fluxx/pages/category_form_pageView/category_form_page_view.dart';
 import 'package:Fluxx/pages/category_list_page.dart';
 import 'package:Fluxx/pages/detail_bill_page.dart';
+import 'package:Fluxx/pages/intro_page.dart';
 import 'package:Fluxx/pages/month_list_page.dart';
 import 'package:Fluxx/pages/profile_page.dart';
 import 'package:Fluxx/pages/resume_page.dart';
@@ -50,9 +51,10 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
       builder: FlashyFlushbarProvider.init(),
-
+      initialRoute: AppRoutes.intro,
       routes: {
-        AppRoutes.home: (ctx) => const ResumePage(),
+        AppRoutes.intro: (ctx) => const IntroPage(),
+        AppRoutes.homePage: (ctx) => const ResumePage(),
         AppRoutes.monthListPage: (ctx) => const MonthListPage(),
         AppRoutes.categoryListPage: (ctx) => const CategoryListPage(),
         AppRoutes.revenueListPage: (ctx) => const RevenueListPage(),

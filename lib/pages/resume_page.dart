@@ -57,8 +57,7 @@ class _ResumePageState extends State<ResumePage> {
     actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
 
     GetIt.I<ResumeCubit>().updateMonthInFocus(actualMonth);
-    await GetIt.I<RevenueCubit>()
-        .calculateAvailableValue(actualMonth.id!);
+    await GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth.id!);
     await GetIt.I<ResumeCubit>().getTotalSpent(actualMonth.id!);
     var totalRevenues = await GetIt.I<RevenueCubit>().calculateTotalRevenues();
     await GetIt.I<ResumeCubit>().calculatePercent(totalRevenues);
@@ -84,14 +83,18 @@ class _ResumePageState extends State<ResumePage> {
                 ),
                 child: BlocBuilder<UserCubit, UserState>(
                   bloc: GetIt.I(),
-                  builder: (context, state) => Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () =>
-                            Navigator.pushNamed(context, AppRoutes.profilePage)
-                                .then((value) => init()),
-                        child: Container(
+                  builder: (context, state) => GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      AppRoutes.profilePage,
+                    ).then(
+                      (value) => init(),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
                           width: 50,
                           height: 50,
                           decoration: BoxDecoration(
@@ -122,15 +125,15 @@ class _ResumePageState extends State<ResumePage> {
                                       ),
                           ),
                         ),
-                      ),
-                      SizedBox(width: mediaQuery.width * .07),
-                      Expanded(
-                        child: Text(
-                          '$greeting ${state.user?.name ?? 'Usuário'}',
-                          style: AppTheme.textStyles.titleTextStyle,
+                        SizedBox(width: mediaQuery.width * .07),
+                        Expanded(
+                          child: Text(
+                            '$greeting ${state.user?.name ?? 'Usuário'}',
+                            style: AppTheme.textStyles.titleTextStyle,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

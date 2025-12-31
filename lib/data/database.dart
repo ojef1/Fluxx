@@ -24,7 +24,7 @@ class Db {
         await db.execute('PRAGMA foreign_keys = ON');
       },
       onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 21) {
+        if (oldVersion < 23) {
           await db.transaction((txn) async {
             // =======================
             // 🔁 REVENUE
@@ -153,7 +153,7 @@ class Db {
         await db.execute(
           'CREATE TABLE ${Tables.category} ('
           'id TEXT PRIMARY KEY, '
-          'name TEXT)'
+          'name TEXT, '
           'start_month_id INTEGER, '
           'end_month_id INTEGER, '
           'is_monthly INTEGER, '
@@ -163,7 +163,7 @@ class Db {
 
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      version: 21,
+      version: 23,
     );
     return _db!;
   }
