@@ -9,12 +9,16 @@ import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
 
 class Db {
+  static sql.Database? _db;
+
   //--------------------------INICIO -> CRIAR BANCO-----------------------------------------------
   static Future<sql.Database> dataBase() async {
+    if (_db != null) return _db!;
+
     final dbPath = await sql.getDatabasesPath();
     // await sql.deleteDatabase(path.join(dbPath, 'Fluxx.db'));
 
-    return await sql.openDatabase(
+    _db = await sql.openDatabase(
       path.join(dbPath, 'Fluxx.db'),
       onOpen: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
@@ -82,69 +86,13 @@ class Db {
 
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 20) {
-          await db.transaction((txn) async {
-            // 1️⃣ Criar nova tabela months com month_number
-            await txn.execute('''
-        CREATE TABLE months_new (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          name TEXT,
-          month_number INTEGER NOT NULL,
-          year_id INTEGER NOT NULL,
-          FOREIGN KEY (year_id) REFERENCES years (id)
-        )
-      ''');
-
-            // 2️⃣ Buscar meses antigos
-            final oldMonths = await txn.query('months');
-
-            // 3️⃣ Mapa seguro de nome → número
-            final monthMap = {
-              'Janeiro': 1,
-              'Fevereiro': 2,
-              'Março': 3,
-              'Abril': 4,
-              'Maio': 5,
-              'Junho': 6,
-              'Julho': 7,
-              'Agosto': 8,
-              'Setembro': 9,
-              'Outubro': 10,
-              'Novembro': 11,
-              'Dezembro': 12,
-            };
-
-            // 4️⃣ Migrar mantendo o MESMO ID
-            for (final month in oldMonths) {
-              final String name = month['name'] as String;
-              final int monthNumber = monthMap[name]!;
-
-              await txn.insert(
-                'months_new',
-                {
-                  'id': month['id'], // mantém o ID!
-                  'name': name,
-                  'month_number': monthNumber,
-                  'year_id': month['year_id'],
-                },
-              );
-            }
-
-            // 5️⃣ Dropar tabela antiga
-            await txn.execute('DROP TABLE months');
-
-            // 6️⃣ Renomear tabela nova
-            await txn.execute('ALTER TABLE months_new RENAME TO months');
-          });
-        }
-      },
       version: 20,
     );
+    return _db!;
   }
 
   static Future<void> constValues(sql.Database db) async {
-    _insertYear(DateTime.now().year);
+    await _insertYear(db, DateTime.now().year);
 
     // Caminho da imagem padrão
     String defaultImagePath = 'assets/images/default_user.jpeg';
@@ -168,7 +116,7 @@ class Db {
       return result.first['id'] as int;
     } else {
       // Se o ano não existir, insere um novo ano e retorna o ID
-      return await _insertYear(year);
+      return await _insertYear(db, year);
     }
   }
 
@@ -188,7 +136,7 @@ class Db {
     if (result.isNotEmpty) {
       return result.first['id'] as int;
     } else {
-      return await _insertMonth(month, yearId);
+      return await _insertMonth(db, month, yearId);
     }
   }
 
@@ -446,8 +394,7 @@ class Db {
 
   //---------------------------INICIO -> INSERIR-------------------------
 
-  static Future<int> _insertYear(int yearValue) async {
-    final db = await Db.dataBase();
+  static Future<int> _insertYear(sql.Database db, int yearValue) async {
     try {
       int result = await db.insert(
         Tables.years,
@@ -456,7 +403,7 @@ class Db {
       );
 
       for (final month in AppMonths.all) {
-        await _insertMonth(month.monthNumber!, result);
+        await _insertMonth(db, month.monthNumber!, result);
       }
 
       return result;
@@ -465,8 +412,7 @@ class Db {
     }
   }
 
-  static _insertMonth(int monthNumber, int yearId) async {
-    final db = await Db.dataBase();
+  static _insertMonth(sql.Database db, int monthNumber, int yearId) async {
     try {
       final monthName = AppMonths.all
           .firstWhere((month) => month.monthNumber == monthNumber)
