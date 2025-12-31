@@ -1,12 +1,14 @@
 import 'package:Fluxx/blocs/category_form_cubit/category_form_cubit.dart';
+import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
-class CategoryDeleteWarningBottomsheet extends StatelessWidget {
+class CategoryDisableWarningBottomsheet extends StatelessWidget {
   final String categoryId;
-  const CategoryDeleteWarningBottomsheet({super.key, required this.categoryId});
+  const CategoryDisableWarningBottomsheet(
+      {super.key, required this.categoryId});
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +64,10 @@ class CategoryDeleteWarningBottomsheet extends StatelessWidget {
             child: PrimaryButton(
               text: 'Tenho certeza',
               onPressed: () async {
+                var currentMonthId =
+                    GetIt.I<ResumeCubit>().state.monthInFocus!.id;
                 Navigator.of(context).pop();
-                await GetIt.I<CategoryFormCubit>().deleteCategory(categoryId);
+                await GetIt.I<CategoryFormCubit>().disableCategory(currentMonthId!);
               },
               width: mediaQuery.width * .85,
               color: AppTheme.colors.red,

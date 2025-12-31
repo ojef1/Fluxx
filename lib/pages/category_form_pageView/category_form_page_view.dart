@@ -1,4 +1,3 @@
-
 import 'package:Fluxx/blocs/category_form_cubit/category_form_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/components/app_bar.dart';
@@ -8,12 +7,14 @@ import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/helpers.dart';
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 part 'name_category_page.dart';
+part 'recurrence_category_page.dart';
 
 class CategoryFormPageview extends StatefulWidget {
   const CategoryFormPageview({super.key});
@@ -29,6 +30,9 @@ class _CategoryFormPageviewState extends State<CategoryFormPageview> {
   late final MonthModel _currentMonth;
   late final CategoryFormMode categoryFormMode;
   late final bool isEditingMode;
+  //variavel de contexto existente apenas no modo edição
+  //é referente a categoria que está sendo editada
+  late final bool canDesactive;
 
   @override
   void initState() {
@@ -36,6 +40,7 @@ class _CategoryFormPageviewState extends State<CategoryFormPageview> {
     _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
     categoryFormMode = GetIt.I<CategoryFormCubit>().state.categoryFormMode;
     isEditingMode = categoryFormMode == CategoryFormMode.editing;
+    canDesactive = GetIt.I<CategoryFormCubit>().canDesactive(_currentMonth.id!);
     super.initState();
   }
 
@@ -48,11 +53,23 @@ class _CategoryFormPageviewState extends State<CategoryFormPageview> {
 
   List<Widget> get _listPageWidgets {
     List<Widget> pages = [
-      NameRevenuePage(
+      NameCategoryPage(
         registerValidator: _registerValidator,
         onError: (p0) => _showError(p0),
       ),
     ];
+
+    //Não é possível alterar se a receita é mensal ou única na edição
+    if (!isEditingMode) {
+      pages.add(
+        RecurrenceRevenuePage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+          currentMonth: _currentMonth,
+        ),
+      );
+    }
+
     return pages;
   }
 
@@ -82,7 +99,8 @@ class _CategoryFormPageviewState extends State<CategoryFormPageview> {
                   backgroundColor: AppTheme.colors.appBackgroundColor,
                   resizeToAvoidBottomInset: true,
                   appBar: CustomAppBar(
-                    title: isEditing ? 'Editar Categoria' : 'Adicionar Categoria',
+                    title:
+                        isEditing ? 'Editar Categoria' : 'Adicionar Categoria',
                     backButton: () {
                       if (_currentIndex == 0) {
                         Navigator.pop(context);
@@ -143,7 +161,7 @@ class _CategoryFormPageviewState extends State<CategoryFormPageview> {
                             children: _listPageWidgets,
                           ),
                         ),
-                        if (isEditingMode)
+                        if (canDesactive)
                           Container(
                             margin: const EdgeInsets.only(bottom: 5),
                             decoration: BoxDecoration(
@@ -153,12 +171,11 @@ class _CategoryFormPageviewState extends State<CategoryFormPageview> {
                             width: mediaQuery.width * .85,
                             child: ElevatedButton(
                               onPressed: () => _showCategoryWarning(state.id),
-                              
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.redAccent,
                                 minimumSize: const Size(50, 50),
                               ),
-                              child: Text('Excluir',
+                              child: Text('Desativar',
                                   style: AppTheme.textStyles.bodyTextStyle),
                             ),
                           ),
@@ -186,7 +203,8 @@ class _CategoryFormPageviewState extends State<CategoryFormPageview> {
                                             _listPageWidgets.length - 1) {
                                           //se for a ultima página, salva a conta
                                           await GetIt.I<CategoryFormCubit>()
-                                              .submitCategory(_currentMonth.id!);
+                                              .submitCategory(
+                                                  _currentMonth.id!);
                                         } else {
                                           _pageController.nextPage(
                                             duration: Durations.medium2,
@@ -219,6 +237,8 @@ class _CategoryFormPageviewState extends State<CategoryFormPageview> {
   void _showCategoryWarning(String categoryId) {
     showModalBottomSheet(
         context: context,
-        builder: (context) => CategoryDeleteWarningBottomsheet(categoryId: categoryId,));
+        builder: (context) => CategoryDisableWarningBottomsheet(
+              categoryId: categoryId,
+            ));
   }
 }

@@ -6,8 +6,7 @@ class RevenueModel extends Equatable {
   double? value;
   int? startMonthId;
   int? endMonthId;
-  int isActive;
-  int? isPublic;
+  int? isMonthly;
 
   RevenueModel({
     this.id,
@@ -15,8 +14,7 @@ class RevenueModel extends Equatable {
     this.value,
     this.startMonthId,
     this.endMonthId,
-    this.isPublic,
-    this.isActive = 1, // por padrão ativa
+    this.isMonthly,
   });
 
   RevenueModel.fromJson(Map<String, dynamic> json)
@@ -25,8 +23,7 @@ class RevenueModel extends Equatable {
         value = (json['value'] as num?)?.toDouble(),
         startMonthId = json['start_month_id'] as int?,
         endMonthId = json['end_month_id'] as int?,
-        isPublic = json['isPublic'] as int?,
-        isActive = (json['is_active'] as int?) ?? 1;
+        isMonthly = json['is_monthly'] as int?;
 
   Map<String, dynamic> toJson() {
     return {
@@ -35,8 +32,7 @@ class RevenueModel extends Equatable {
       'value': value,
       'start_month_id': startMonthId,
       'end_month_id': endMonthId,
-      'isPublic': isPublic,
-      'is_active': isActive,
+      'is_monthly': isMonthly,
     };
   }
 
@@ -44,10 +40,10 @@ class RevenueModel extends Equatable {
   String toString() {
     return 'RevenueModel{id: $id, name: $name, value: $value, '
         'startMonthId: $startMonthId, endMonthId: $endMonthId, '
-        'isPublic: $isPublic, isActive: $isActive}';
+        'isMonthly: $isMonthly';
   }
 
   @override
   List<Object?> get props =>
-      [id, name, value, startMonthId, endMonthId, isPublic, isActive];
+      [id, name, value, startMonthId, endMonthId, isMonthly];
 }

@@ -1,15 +1,15 @@
 part of 'category_form_page_view.dart';
 
-class NameRevenuePage extends StatefulWidget {
+class NameCategoryPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
   final void Function(String) onError;
-  const NameRevenuePage(
+  const NameCategoryPage(
       {super.key, required this.registerValidator, required this.onError});
   @override
-  State<NameRevenuePage> createState() => _NameRevenuePageState();
+  State<NameCategoryPage> createState() => _NameCategoryPageState();
 }
 
-class _NameRevenuePageState extends State<NameRevenuePage> {
+class _NameCategoryPageState extends State<NameCategoryPage> {
   late TextEditingController _nameController;
 
   @override

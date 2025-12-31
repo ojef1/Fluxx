@@ -23,6 +23,79 @@ class Db {
       onOpen: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 21) {
+          await db.transaction((txn) async {
+            // =======================
+            // 🔁 REVENUE
+            // =======================
+            await txn.execute('''
+        CREATE TABLE revenue_new (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          value REAL NOT NULL,
+          start_month_id INTEGER,
+          end_month_id INTEGER,
+          is_monthly INTEGER,
+          FOREIGN KEY (start_month_id) REFERENCES months (id),
+          FOREIGN KEY (end_month_id) REFERENCES months (id)
+        )
+      ''');
+
+            final oldRevenues = await txn.query('revenue');
+
+            for (final revenue in oldRevenues) {
+              await txn.insert(
+                'revenue_new',
+                {
+                  'id': revenue['id'],
+                  'name': revenue['name'],
+                  'value': revenue['value'],
+                  'start_month_id': revenue['start_month_id'],
+                  'end_month_id': revenue['end_month_id'],
+                  'is_monthly': 1, // valor padrão
+                },
+              );
+            }
+
+            await txn.execute('DROP TABLE revenue');
+            await txn.execute('ALTER TABLE revenue_new RENAME TO revenue');
+
+            // =======================
+            // ➕ CATEGORY
+            // =======================
+            await txn.execute('''
+        CREATE TABLE category_new (
+          id TEXT PRIMARY KEY,
+          name TEXT,
+          start_month_id INTEGER,
+          end_month_id INTEGER,
+          is_monthly INTEGER,
+          FOREIGN KEY (start_month_id) REFERENCES months (id),
+          FOREIGN KEY (end_month_id) REFERENCES months (id)
+        )
+      ''');
+
+            final oldCategories = await txn.query('category');
+
+            for (final category in oldCategories) {
+              await txn.insert(
+                'category_new',
+                {
+                  'id': category['id'],
+                  'name': category['name'],
+                  'start_month_id': null,
+                  'end_month_id': null,
+                  'is_monthly': 1, // valor padrão
+                },
+              );
+            }
+
+            await txn.execute('DROP TABLE category');
+            await txn.execute('ALTER TABLE category_new RENAME TO category');
+          });
+        }
+      },
       onCreate: (db, version) async {
         await db.execute('PRAGMA foreign_keys = ON');
         await db.execute(
@@ -71,8 +144,7 @@ class Db {
           'value REAL NOT NULL, '
           'start_month_id INTEGER, '
           'end_month_id INTEGER, '
-          'is_active INTEGER NOT NULL DEFAULT 1, ' // 1 = ativa, 0 = desativada
-          'isPublic INTEGER, '
+          'is_monthly INTEGER, '
           'FOREIGN KEY (start_month_id) REFERENCES ${Tables.months} (id), '
           'FOREIGN KEY (end_month_id) REFERENCES ${Tables.months} (id))',
         );
@@ -81,12 +153,17 @@ class Db {
         await db.execute(
           'CREATE TABLE ${Tables.category} ('
           'id TEXT PRIMARY KEY, '
-          'name TEXT)',
+          'name TEXT)'
+          'start_month_id INTEGER, '
+          'end_month_id INTEGER, '
+          'is_monthly INTEGER, '
+          'FOREIGN KEY (start_month_id) REFERENCES ${Tables.months} (id), '
+          'FOREIGN KEY (end_month_id) REFERENCES ${Tables.months} (id))',
         );
 
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      version: 20,
+      version: 21,
     );
     return _db!;
   }
@@ -241,14 +318,14 @@ class Db {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getPublicRevenues(
+  static Future<List<Map<String, dynamic>>> getMonthlyRevenues(
       int monthId) async {
     final db = await Db.dataBase();
 
     try {
       final result = await db.rawQuery('''
       SELECT * FROM ${Tables.revenue}
-      WHERE isPublic = 1
+      WHERE is_monthly = 1
         AND start_month_id <= ?
         AND (end_month_id >= ? OR end_month_id IS NULL)
     ''', [monthId, monthId]);
@@ -259,14 +336,14 @@ class Db {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getExclusiveRevenues(
+  static Future<List<Map<String, dynamic>>> getSingleRevenues(
       int monthId) async {
     final db = await Db.dataBase();
 
     try {
       final result = await db.rawQuery('''
       SELECT * FROM ${Tables.revenue}
-      WHERE isPublic = 0
+      WHERE is_monthly = 0
         AND start_month_id <= ?
         AND end_month_id >= ?
         
@@ -278,13 +355,35 @@ class Db {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getCategories() async {
+  static Future<List<Map<String, dynamic>>> getMonthlyCategories(int monthId) async{
     final db = await Db.dataBase();
     try {
-      final result = await db.query(Tables.category);
+      final result = await db.rawQuery('''
+      SELECT * FROM ${Tables.category}
+      WHERE is_monthly = 1
+        AND start_month_id <= ?
+        AND (end_month_id >= ? OR end_month_id IS NULL)
+    ''', [monthId, monthId]);
+
       return result;
     } catch (e) {
-      throw Exception('Erro ao consultar as categorias: $e');
+      throw Exception('Erro ao consultar as categorias públicas: $e');
+    }
+  } 
+
+  static Future<List<Map<String, dynamic>>> getSingleCategories(int monthId) async {
+    final db = await Db.dataBase();
+    try {
+      final result = await db.rawQuery('''
+      SELECT * FROM ${Tables.category}
+      WHERE is_monthly = 0
+        AND start_month_id <= ?
+        AND end_month_id >= ?
+    ''', [monthId, monthId]);
+
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao consultar as categorias exclusivas: $e');
     }
   }
 
@@ -492,14 +591,13 @@ class Db {
   //---------------------------FIM -> INSERIR-------------------------
 
   //---------------------------INICIO -> DELETAR-------------------------
-  static Future<int> deactivateRevenue(String revenueId, int endMonth) async {
+  static Future<int> disableRevenue(String revenueId, int endMonth) async {
     final db = await Db.dataBase();
 
     try {
       int result = await db.update(
         Tables.revenue,
         {
-          'is_active': 0,
           'end_month_id': endMonth,
         },
         where: 'id = ?',
@@ -512,17 +610,22 @@ class Db {
     }
   }
 
-  static Future<int> deleteCategory(String categoryId) async {
+  static Future<int> disableCategory(String categoryId, int endMonth) async {
     final db = await Db.dataBase();
+
     try {
-      int result = await db.delete(
+      int result = await db.update(
         Tables.category,
+        {
+          'end_month_id': endMonth,
+        },
         where: 'id = ?',
         whereArgs: [categoryId],
       );
+
       return result;
     } catch (e) {
-      throw Exception('Erro ao remover a receita: $e');
+      throw Exception('Erro ao desativar a receita: $e');
     }
   }
 

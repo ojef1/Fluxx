@@ -13,18 +13,19 @@ abstract class CustomFlushbar {
     return FlashyFlushbar(
       leadingWidget: Icon(
         isError ? Icons.warning_rounded : Icons.check_rounded,
-        color: isError ? AppTheme.colors.white : AppTheme.colors.hintColor,
+        color: AppTheme.colors.white,
         size: 24,
       ),
+      borderRadius: BorderRadiusGeometry.circular(5),
       message: message,
-      messageStyle: AppTheme.textStyles.bodyTextStyle.copyWith(
-        color: isError ? AppTheme.colors.white : AppTheme.colors.hintColor,
+      messageStyle: AppTheme.textStyles.secondaryTextStyle.copyWith(
+        color: AppTheme.colors.white,
         overflow: TextOverflow.visible,
       ),
       comingFromTop: true,
       margin: const EdgeInsets.all(24),
       duration: Duration(seconds: durationSeconds.toInt()),
-      backgroundColor: isError ? Colors.red : AppTheme.colors.white,
+      backgroundColor: isError ? Colors.red : AppTheme.colors.hintColor,
       messageHorizontalSpacing: 20,
       trailingWidget: IconButton(
         icon: Icon(

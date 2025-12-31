@@ -8,7 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class RevenueCubit extends Cubit<RevenueState> {
   RevenueCubit() : super(const RevenueState());
 
-
   void updateGetRevenueResponse(GetRevenueResponse getRevenueResponse) {
     emit(state.copyWith(getRevenueResponse: getRevenueResponse));
   }
@@ -25,8 +24,8 @@ class RevenueCubit extends Cubit<RevenueState> {
     updateGetRevenueResponse(GetRevenueResponse.loading);
     try {
       final results = await Future.wait([
-        _getPublicRevenue(monthId),
-        _getExclusiveRevenue(monthId),
+        _getMonthlyRevenue(monthId),
+        _getSingleRevenue(monthId),
       ]);
 
       final combinedRevenuesList = [
@@ -44,13 +43,13 @@ class RevenueCubit extends Cubit<RevenueState> {
     }
   }
 
-  Future<List<RevenueModel>> _getPublicRevenue(int monthId) async {
+  Future<List<RevenueModel>> _getMonthlyRevenue(int monthId) async {
     try {
-      final revenue = await Db.getPublicRevenues(monthId);
+      final revenue = await Db.getMonthlyRevenues(monthId);
 
-      final publicRevenuesList =
+      final monthlyRevenuesList =
           revenue.map((item) => RevenueModel.fromJson(item)).toList();
-      return publicRevenuesList;
+      return monthlyRevenuesList;
     } catch (error) {
       debugPrint('$error');
 
@@ -58,33 +57,17 @@ class RevenueCubit extends Cubit<RevenueState> {
     }
   }
 
-  Future<List<RevenueModel>> _getExclusiveRevenue(int monthId) async {
+  Future<List<RevenueModel>> _getSingleRevenue(int monthId) async {
     try {
-      final revenue = await Db.getExclusiveRevenues(monthId);
+      final revenue = await Db.getSingleRevenues(monthId);
 
-      final exclusiveRevenuesList =
+      final singleRevenuesList =
           revenue.map((item) => RevenueModel.fromJson(item)).toList();
-      return exclusiveRevenuesList;
+      return singleRevenuesList;
     } catch (error) {
       debugPrint('$error');
       return [];
     }
-  }
-
-  void updateSelectedRevenue(RevenueModel revenue) {
-    emit(state.copyWith(selectedRevenue: revenue));
-  }
-
-  void removeRevenueSelection() {
-    RevenueModel unselected = RevenueModel(
-      id: '',
-      name: '',
-      startMonthId: null,
-      endMonthId: null,
-      value: 0.0,
-      isPublic: null,
-    );
-    emit(state.copyWith(selectedRevenue: unselected));
   }
 
   Future<void> calculateAvailableValue(int monthId) async {
@@ -115,7 +98,7 @@ class RevenueCubit extends Cubit<RevenueState> {
         return RevenueModel(
           id: revenue.id,
           name: revenue.name,
-          isPublic: revenue.isPublic,
+          isMonthly: revenue.isMonthly,
           startMonthId: revenue.startMonthId,
           endMonthId: revenue.endMonthId,
           value: valorDisponivel,

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:Fluxx/blocs/category_cubit/category_state.dart';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/models/category_model.dart';
@@ -7,21 +9,52 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CategoryCubit extends Cubit<CategoryState> {
   CategoryCubit() : super(const CategoryState());
 
-  Future<void> getCategorys() async {
+  Future<void> getCategorys(int monthId) async {
     updateGetCategorysResponse(GetCategoriesResponse.loading);
     try {
-      final result = await Db.getCategories();
-      final categorys = result
-          .map((item) => CategoryModel(
-                id: item['id'],
-                categoryName: item['name'],
-              ))
-          .toList();
-      emit(state.copyWith(categories: categorys));
-      updateGetCategorysResponse(GetCategoriesResponse.success);
+      final results = await Future.wait([
+        _getMonthlyCategories(monthId),
+        _getSingleCategories(monthId),
+      ]);
+
+      final combinedCategoriessList = [
+        ...results[0],
+        ...results[1],
+      ];
+
+      emit(state.copyWith(categories: combinedCategoriessList));
     } catch (e) {
+      debugPrint('$e');
       updateErrorMessage(e.toString());
       updateGetCategorysResponse(GetCategoriesResponse.error);
+      emit(state.copyWith(categories: state.categories));
+    }
+  }
+
+  Future<List<CategoryModel>> _getMonthlyCategories(int monthId) async {
+    try {
+      final categories = await Db.getMonthlyCategories(monthId);
+
+      final monthlyCategoriesList =
+          categories.map((item) => CategoryModel.fromJson(item)).toList();
+      return monthlyCategoriesList;
+    } catch (error) {
+      debugPrint('$error');
+
+      return [];
+    }
+  }
+
+  Future<List<CategoryModel>> _getSingleCategories(int monthId) async {
+    try {
+      final categories = await Db.getSingleCategories(monthId);
+
+      final singleCategoriesList =
+          categories.map((item) => CategoryModel.fromJson(item)).toList();
+      return singleCategoriesList;
+    } catch (error) {
+      debugPrint('$error');
+      return [];
     }
   }
 

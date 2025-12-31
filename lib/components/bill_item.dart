@@ -39,7 +39,7 @@ class _BillItemState extends State<BillItem> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.colors.itemBackgroundColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(5),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

@@ -12,9 +12,14 @@ class CategoryBillPage extends StatefulWidget {
 class _CategoryBillPageState extends State<CategoryBillPage> {
   @override
   void initState() {
-    GetIt.I<CategoryCubit>().getCategorys();
+    init();
     widget.registerValidator(_validate);
     super.initState();
+  }
+
+  Future<void> init() async {
+    var selectedMonthId = GetIt.I<BillFormCubit>().state.selectedMonth!.id!;
+    GetIt.I<CategoryCubit>().getCategorys(selectedMonthId);
   }
 
   Future<bool> _validate() async {
@@ -53,7 +58,7 @@ class _CategoryBillPageState extends State<CategoryBillPage> {
                   context,
                   AppRoutes.categoryFormPage,
                 ).then(
-                  (value) => GetIt.I<CategoryCubit>().getCategorys(),
+                  (value) => init(),
                 ),
                 title: 'Parece que você não possui categorias',
                 subTitle: 'Clique aqui para criar',
@@ -106,8 +111,7 @@ class _CategoryBillPageState extends State<CategoryBillPage> {
                                   onPressed: () => Navigator.pushNamed(
                                           context, AppRoutes.categoryFormPage)
                                       .then(
-                                    (value) =>
-                                        GetIt.I<CategoryCubit>().getCategorys(),
+                                    (value) => init(),
                                   ),
                                 ),
                             ],

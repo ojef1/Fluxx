@@ -8,8 +8,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
-class RevenueDesactiveWarningBottomsheet extends StatelessWidget {
-  const RevenueDesactiveWarningBottomsheet({super.key});
+class RevenueDisableWarningBottomsheet extends StatelessWidget {
+  const RevenueDisableWarningBottomsheet({super.key});
 
   String get nextMonth {
     var monthInFocus = GetIt.I<ResumeCubit>().state.monthInFocus;

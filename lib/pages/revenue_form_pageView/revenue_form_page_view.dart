@@ -47,7 +47,7 @@ class _RevenueFormPageviewState extends State<RevenueFormPageview> {
         GetIt.I<ResumeCubit>().state.monthInFocus!;
     revenueFormMode = GetIt.I<RevenueFormCubit>().state.revenueFormMode;
     isEditingMode = revenueFormMode == RevenueFormMode.editing;
-    canDesactive = GetIt.I<RevenueFormCubit>().canDesactive;
+    canDesactive = GetIt.I<RevenueFormCubit>().canDesactive(_currentMonth.id!);
     super.initState();
   }
 
@@ -244,6 +244,6 @@ class _RevenueFormPageviewState extends State<RevenueFormPageview> {
   void _showRevenueWarning() {
     showModalBottomSheet(
         context: context,
-        builder: (context) => const RevenueDesactiveWarningBottomsheet());
+        builder: (context) => const RevenueDisableWarningBottomsheet());
   }
 }

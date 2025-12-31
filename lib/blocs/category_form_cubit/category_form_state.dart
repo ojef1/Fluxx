@@ -4,10 +4,13 @@ enum ResponseStatus { initial, loading, success, error }
 
 enum CategoryFormMode { adding, editing }
 
+enum RecurrenceMode { single, monthly }
+
 class CategoryFormState extends Equatable {
   final String id; // só será preenchida no modo editing
   final String name;
   final CategoryFormMode categoryFormMode;
+  final RecurrenceMode recurrenceMode;
   final ResponseStatus responseStatus;
   final String responseMessage;
 
@@ -15,6 +18,7 @@ class CategoryFormState extends Equatable {
     this.id = '',
     this.name = '',
     this.categoryFormMode = CategoryFormMode.adding,
+    this.recurrenceMode = RecurrenceMode.single,
     this.responseStatus = ResponseStatus.initial,
     this.responseMessage = '',
   });
@@ -23,6 +27,7 @@ class CategoryFormState extends Equatable {
     String? id,
     String? name,
     CategoryFormMode? categoryFormMode,
+    RecurrenceMode? recurrenceMode,
     ResponseStatus? responseStatus,
     String? responseMessage,
   }) {
@@ -30,6 +35,7 @@ class CategoryFormState extends Equatable {
       id: id ?? this.id,
       name: name ?? this.name,
       categoryFormMode: categoryFormMode ?? this.categoryFormMode,
+      recurrenceMode: recurrenceMode ?? this.recurrenceMode,
       responseStatus: responseStatus ?? this.responseStatus,
       responseMessage: responseMessage ?? this.responseMessage,
     );
@@ -40,6 +46,7 @@ class CategoryFormState extends Equatable {
         id,
         name,
         categoryFormMode,
+        recurrenceMode,
         responseStatus,
         responseMessage,
       ];

@@ -15,9 +15,9 @@ class RevenueFormCubit extends Cubit<RevenueFormState> {
   //como Id, recurrence e etc.
   RevenueModel? _loadedRevenueToEdit;
 
-  bool get canDesactive =>
-      _loadedRevenueToEdit?.isActive == 1 &&
-      _loadedRevenueToEdit?.isPublic == 1 &&
+  bool canDesactive(int currentMonthId) =>
+      _loadedRevenueToEdit?.isMonthly == 1 &&
+      _loadedRevenueToEdit?.endMonthId != currentMonthId &&
       state.revenueFormMode == RevenueFormMode.editing;
 
   void updateName(String name) {
@@ -63,7 +63,7 @@ class RevenueFormCubit extends Cubit<RevenueFormState> {
         value: state.price,
         startMonthId: currentMonthId,
         endMonthId: isMonthly ? null : currentMonthId,
-        isPublic: isMonthly ? 1 : 0, // 1 para true e 0 para false
+        isMonthly: isMonthly ? 1 : 0, // 1 para true e 0 para false
       );
 
       var result = await Db.insertRevenue(newRevenue);
@@ -91,8 +91,8 @@ class RevenueFormCubit extends Cubit<RevenueFormState> {
         value: state.price,
         startMonthId: _loadedRevenueToEdit?.startMonthId,
         endMonthId: _loadedRevenueToEdit?.endMonthId,
-        isPublic:
-            _loadedRevenueToEdit?.isPublic ?? 0, // 1 para true e 0 para false
+        isMonthly:
+            _loadedRevenueToEdit?.isMonthly ?? 0, // 1 para true e 0 para false
       );
 
       var result = await Db.updateRevenue(updatedRevenue);
@@ -114,7 +114,7 @@ class RevenueFormCubit extends Cubit<RevenueFormState> {
   Future<void> desactiveRevenue(int currentMonthId) async {
     updateResponseStatus(ResponseStatus.loading);
     try {
-      var result = await Db.deactivateRevenue(state.id, currentMonthId);
+      var result = await Db.disableRevenue(state.id, currentMonthId);
       if (result > 0) {
         await updateResponseMessage('Receita desativada com sucesso.');
         updateResponseStatus(ResponseStatus.success);
