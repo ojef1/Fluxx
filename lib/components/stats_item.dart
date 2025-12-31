@@ -1,5 +1,6 @@
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_state.dart';
+import 'package:Fluxx/components/auto_marquee_text.dart';
 import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/helpers.dart';
@@ -19,26 +20,23 @@ class StatsCategoryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
     return Container(
-      margin: EdgeInsets.symmetric(
-        vertical: mediaQuery.height * .01,
-        horizontal: mediaQuery.width * .02,
+      margin: const EdgeInsets.symmetric(
+        horizontal: 10,
       ),
-      width: mediaQuery.width * .3,
-      height: mediaQuery.height * .2,
+      padding: EdgeInsets.symmetric(
+        vertical: mediaQuery.height * .02,
+        horizontal: mediaQuery.width * .04,
+      ),
+      width: mediaQuery.width * .65,
+      height: 20,
       decoration: BoxDecoration(
         color: AppTheme.colors.itemBackgroundColor,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        spacing: 20,
         children: [
-          Text(
-            statsItem.categoryName ?? '',
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            style: AppTheme.textStyles.subTileTextStyle,
-          ),
           BlocBuilder<ResumeCubit, ResumeState>(
             bloc: GetIt.I(),
             buildWhen: (previous, current) =>
@@ -48,8 +46,8 @@ class StatsCategoryItem extends StatelessWidget {
               double percentage =
                   (totalSpent > 0) ? statsItem.price! / totalSpent : 0;
               return SizedBox(
-                width: 80,
-                height: 80,
+                width: 100,
+                height: 100,
                 child: FittedBox(
                   child: CircularPercentIndicator(
                     radius: 60.0,
@@ -62,18 +60,32 @@ class StatsCategoryItem extends StatelessWidget {
                     backgroundColor: AppTheme.colors.lightHintColor,
                     center: Text(
                       '${(percentage * 100).toStringAsFixed(0)}%',
-                      style: AppTheme.textStyles.subTileTextStyle,
+                      style: AppTheme.textStyles.subTileTextStyle.copyWith(fontSize: AppTheme.fontSizes.large),
                     ),
                   ),
                 ),
               );
             },
           ),
-          Text(
-            'R\$ ${formatPrice(statsItem.price ?? 0)}',
-            textAlign: TextAlign.center,
-            overflow: TextOverflow.ellipsis,
-            style: AppTheme.textStyles.descTextStyle.copyWith(color: AppTheme.colors.hintTextColor),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  height: 20,
+                  child: AutoMarqueeText(
+                    text: statsItem.categoryName ?? '',
+                    style: AppTheme.textStyles.subTileTextStyle,
+                  ),
+                ),
+                Text(
+                  'R\$ ${formatPrice(statsItem.price ?? 0)}',
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTheme.textStyles.subTileTextStyle,
+                ),
+              ],
+            ),
           ),
         ],
       ),

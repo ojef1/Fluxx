@@ -63,7 +63,8 @@ class _DateSelectorState extends State<DateSelector> {
       // Em caso de erro, só deixa null mesmo
       selectedDateFromState = null;
     }
-    var selectedDate = selectedDateFromState ?? DateTime.now();
+    var selectedDate = selectedDateFromState ?? DateTime.now();    
+    GetIt.I<BillFormCubit>().getMonthIdFromDate(selectedDate);
     GetIt.I<BillFormCubit>().updateDate(selectedDate.toString());
     return selectedDate;
   }();

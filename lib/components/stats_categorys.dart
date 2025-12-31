@@ -91,13 +91,14 @@ class StatsCategory extends StatelessWidget {
             // );
           } else {
             return SizedBox(
-              height: mediaQuery.height * .22,
+              height: 120,
               child: Row(
                 children: [
                   Expanded(
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: state.totalByCategory.length,
+
                       itemBuilder: (context, index) {
                         return StatsCategoryItem(
                           statsItem: state.totalByCategory[index],

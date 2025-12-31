@@ -70,7 +70,7 @@ class _CheckBillPageState extends State<CheckBillPage> {
                           subtitle: 'R\$${formatPrice(state.price)}'),
                       _DataItem(
                           title: 'Renda usada',
-                          subtitle: state.revenueSelected!.name ?? 'Nenhuma'),
+                          subtitle: state.revenueSelected?.name ?? 'Nenhuma'),
                       _DataItem(
                           title: 'Categoria',
                           subtitle: state.categorySelected!.categoryName ??

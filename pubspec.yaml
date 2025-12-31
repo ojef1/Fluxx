@@ -29,6 +29,7 @@ dependencies:
   flashy_flushbar: ^1.0.0
   image_picker: ^1.1.2
   flutter_masked_text2: ^0.9.1
+  marquee: ^2.3.0
 
   
 flutter_native_splash:
