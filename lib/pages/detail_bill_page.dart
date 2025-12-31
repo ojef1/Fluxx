@@ -1,6 +1,7 @@
 import 'package:Fluxx/blocs/bill_cubit/bill_cubit.dart';
 import 'package:Fluxx/blocs/bill_cubit/bill_state.dart';
 import 'package:Fluxx/components/app_bar.dart';
+import 'package:Fluxx/components/auto_marquee_text.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/helpers.dart';
@@ -247,12 +248,11 @@ class _DataItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 2,
       children: [
-        Text(
-          title,
+        AutoMarqueeText(
+          text: title,
           style: AppTheme.textStyles.secondaryTextStyle
               .copyWith(color: AppTheme.colors.hintTextColor.withAlpha(100)),
-          softWrap: true,
-          overflow: TextOverflow.visible,
+          
         ),
         Text(
           subtitle.isNotEmpty

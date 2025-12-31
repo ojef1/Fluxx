@@ -4,7 +4,8 @@ class PriceBillPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
   final void Function(String) onError;
 
-  const PriceBillPage({super.key, required this.registerValidator, required this.onError});
+  const PriceBillPage(
+      {super.key, required this.registerValidator, required this.onError});
   @override
   State<PriceBillPage> createState() => _PriceBillPageState();
 }
@@ -25,15 +26,29 @@ class _PriceBillPageState extends State<PriceBillPage> {
   }
 
   Future<bool> _validate() async {
-     if (_moneyController.text.isEmpty || _moneyController.text == '0,00') {
-      widget.onError('valor mínimo de 0,01');
-      return false;
-    }
-    final String billValueFormatted = _moneyController.text.replaceAll(',', '.');
-    final double billValueDouble = double.parse(billValueFormatted);
-    GetIt.I<BillFormCubit>().updatePrice(billValueDouble);
-    return true;
+  final text = _moneyController.text.trim();
+
+  if (text.isEmpty) {
+    widget.onError('Informe um valor');
+    return false;
   }
+
+  // Remove separadores de milhar e troca vírgula por ponto
+  final formatted = text
+      .replaceAll('.', '')
+      .replaceAll(',', '.');
+
+  final value = double.tryParse(formatted);
+
+  if (value == null || value < 0.01) {
+    widget.onError('Valor mínimo de 0,01');
+    return false;
+  }
+
+  GetIt.I<BillFormCubit>().updatePrice(value);
+  return true;
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -47,20 +62,20 @@ class _PriceBillPageState extends State<PriceBillPage> {
           overflow: TextOverflow.visible,
         ),
         SizedBox(height: mediaQuery.height * .1),
-         TextFormField(
-         maxLines: 1,
-         textAlignVertical: TextAlignVertical.top,
-         cursorColor: Colors.white,
-         controller: _moneyController,
-         keyboardType: TextInputType.number,
-         style: AppTheme.textStyles.titleTextStyle,
-         textAlign: TextAlign.center,
-         decoration: InputDecoration(
-           border: InputBorder.none,
-           hintText: '',
-           hintStyle: AppTheme.textStyles.bodyTextStyle,
-         ),
-                   ),
+        TextFormField(
+          maxLines: 1,
+          textAlignVertical: TextAlignVertical.top,
+          cursorColor: Colors.white,
+          controller: _moneyController,
+          keyboardType: TextInputType.number,
+          style: AppTheme.textStyles.titleTextStyle,
+          textAlign: TextAlign.center,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: '',
+            hintStyle: AppTheme.textStyles.bodyTextStyle,
+          ),
+        ),
       ],
     );
   }

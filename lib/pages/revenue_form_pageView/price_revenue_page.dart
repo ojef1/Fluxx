@@ -25,15 +25,28 @@ class _PriceRevenuePageState extends State<PriceRevenuePage> {
   }
 
   Future<bool> _validate() async {
-     if (_moneyController.text.isEmpty || _moneyController.text == '0,00') {
-      widget.onError('valor mínimo de 0,01');
-      return false;
-    }
-    final String billValueFormatted = _moneyController.text.replaceAll(',', '.');
-    final double billValueDouble = double.parse(billValueFormatted);
-    GetIt.I<RevenueFormCubit>().updatePrice(billValueDouble);
-    return true;
+  final text = _moneyController.text.trim();
+
+  if (text.isEmpty) {
+    widget.onError('Informe um valor');
+    return false;
   }
+
+  // Remove separadores de milhar e troca vírgula por ponto
+  final formatted = text
+      .replaceAll('.', '')
+      .replaceAll(',', '.');
+
+  final value = double.tryParse(formatted);
+
+  if (value == null || value < 0.01) {
+    widget.onError('Valor mínimo de 0,01');
+    return false;
+  }
+
+  GetIt.I<RevenueFormCubit>().updatePrice(value);
+  return true;
+}
 
   @override
   Widget build(BuildContext context) {

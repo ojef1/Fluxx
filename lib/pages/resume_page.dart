@@ -205,16 +205,20 @@ class _ResumePageState extends State<ResumePage> {
                                 buildWhen: (previous, current) =>
                                     previous.percentSpent !=
                                     current.percentSpent,
-                                builder: (context, state) =>
-                                    LinearPercentIndicator(
+                                builder: (context, state) {
+                                  final percent = (state.percentSpent / 100).clamp(0.0, 1.0);
+                                  final extrapolated = state.percentSpent > 100.0;
+                                  return LinearPercentIndicator(
                                   padding: EdgeInsets.zero,
                                   barRadius: const Radius.circular(50),
                                   lineHeight: 20,
-                                  percent: state.percentSpent / 100,
-                                  progressColor: AppTheme.colors.hintColor,
+                                  percent: percent,
+                                  progressColor: extrapolated ? AppTheme.colors.red : AppTheme.colors.hintColor,
                                   backgroundColor:
                                       AppTheme.colors.lightHintColor,
-                                ),
+                                );
+                                
+                                },
                               ),
                             ],
                           ),

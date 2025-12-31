@@ -36,7 +36,7 @@ class _DefaultColors implements ColorsInterface {
   @override
   Color get primaryTextColor => const Color(0xffD9D9D9);
   @override
-  Color get hintTextColor => const Color(0xffbabcbd);
+  Color get hintTextColor => const Color(0xff8C8C8C);
   @override
   Color get grayD4 => const Color(0xffd4d4d4);
   @override
