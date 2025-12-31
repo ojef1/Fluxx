@@ -68,14 +68,14 @@ class _CategoryBillPageState extends State<CategoryBillPage> {
                   bloc: GetIt.I(),
                   buildWhen: (previous, current) =>
                       previous.categorySelected != current.categorySelected,
-                  builder: (context,addState) {
+                  builder: (context, addState) {
                     return Expanded(
                       child: ListView.builder(
                         shrinkWrap: true,
                         itemCount: state.categories.length,
                         itemBuilder: (context, index) {
-                          bool isSelected =
-                              state.categories[index] == addState.categorySelected;
+                          bool isSelected = state.categories[index].id ==
+                              addState.categorySelected?.id;
                           return Column(
                             children: [
                               PrimaryButton(

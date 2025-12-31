@@ -1,5 +1,6 @@
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/user_cubit/user_cubit.dart';
+import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
@@ -16,6 +17,7 @@ class IntroPage extends StatefulWidget {
 class _IntroPageState extends State<IntroPage> {
   late final String greeting;
   late MonthModel actualMonth;
+  bool error = false;
 
   @override
   void initState() {
@@ -24,13 +26,25 @@ class _IntroPageState extends State<IntroPage> {
   }
 
   Future<void> init() async {
-    await Future.wait([
-      _loadGreeting(),
-      _loadUserInfos(),
-      _loadActualMonth(),
-    ]);
-    _onInitComplete();
+    setState(() {
+      error = false;
+    });
+    try {
+      await Future.wait([
+        _loadGreeting(),
+        _loadUserInfos(),
+        _loadActualMonth(),
+      ]);
+      _onInitComplete();
+    } catch (e) {
+      setState(() {
+      error = true;
+    });
+      debugPrint('Error during intro initialization: $e');
+    }
   }
+
+  
 
   Future<void> _loadGreeting() async {
     greeting = GetIt.I<ResumeCubit>().getGreeting();
@@ -48,11 +62,10 @@ class _IntroPageState extends State<IntroPage> {
   void _onInitComplete() {
     Future.delayed(const Duration(seconds: 2), () {
       Navigator.pushReplacementNamed(
-      context,
-      AppRoutes.homePage, 
-    );
+        context,
+        AppRoutes.homePage,
+      );
     });
-    
   }
 
   @override
@@ -65,20 +78,37 @@ class _IntroPageState extends State<IntroPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset('assets/app/splash.png', width: 150, height: 150),
-            CircularProgressIndicator(
-              constraints: const BoxConstraints(
-                minWidth: 30,
-                minHeight: 30,
-              ),
-              backgroundColor: AppTheme.colors.hintColor,
-              valueColor:
-                  AlwaysStoppedAnimation<Color>(AppTheme.colors.lightHintColor),
-            ),
-            const SizedBox(height: 20),
+            if (error)
             Text(
-              'Carregando seus dados',
+              'Ocorreu um erro ao carregar seus dados.',
               style: AppTheme.textStyles.secondaryTextStyle,
+              textAlign: TextAlign.center,
             ),
+            if (error)
+            PrimaryButton(
+              text: "tentar novamente",
+              onPressed: () => init(),
+              width: 150,
+              color: AppTheme.colors.itemBackgroundColor,
+              textStyle: AppTheme.textStyles.secondaryTextStyle
+                  .copyWith(color: AppTheme.colors.white),
+            ),
+            if (!error)
+              CircularProgressIndicator(
+                constraints: const BoxConstraints(
+                  minWidth: 30,
+                  minHeight: 30,
+                ),
+                backgroundColor: AppTheme.colors.hintColor,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    AppTheme.colors.lightHintColor),
+              ),
+            const SizedBox(height: 20),
+            if (!error)
+              Text(
+                'Carregando seus dados',
+                style: AppTheme.textStyles.secondaryTextStyle,
+              ),
           ],
         ),
       ),
