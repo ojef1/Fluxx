@@ -112,11 +112,11 @@ class BillFormCubit extends Cubit<BillFormState> {
 
     for (int i = 0; i <= repeatTimes; i++) {
       final monthId = targetMonthId + i;
-      //só irá passar a renda, se ela existir no mês
+      //só irá passar a receita, se ela existir no mês
       bool canUseRevenue = false;
 
       if (revenue != null && revenueExistsInMonth(revenue, monthId)) {
-        //só verifica se tem saldo se a renda existir no mês
+        //só verifica se tem saldo se a receita existir no mês
         canUseRevenue = await _hasBalace(monthId);
       }
       await _addSingleBill(
@@ -183,7 +183,7 @@ class BillFormCubit extends Cubit<BillFormState> {
   bool revenueExistsInMonth(RevenueModel revenue, int targetMonthId) {
     final endMonth = revenue.endMonthId;
     if (endMonth == null) {
-      //se não tem mês final definido significa que a renda existe para todos os meses
+      //se não tem mês final definido significa que a receita existe para todos os meses
       return true;
     } else {
       return targetMonthId >= revenue.startMonthId! &&

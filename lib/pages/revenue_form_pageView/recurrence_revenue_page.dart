@@ -30,7 +30,7 @@ class _RecurrenceRevenuePageState extends State<RecurrenceRevenuePage> {
       child: Column(
         children: [
           Text(
-            'Essa renda será mensal ou única?',
+            'Essa receita será mensal ou única?',
             style: AppTheme.textStyles.subTileTextStyle,
             softWrap: true,
             textAlign: TextAlign.center,
@@ -122,7 +122,7 @@ class _RecurrenceRevenuePageState extends State<RecurrenceRevenuePage> {
                                   overflow: TextOverflow.visible,
                                 ),
                                 Text(
-                                  'Não se preocupe, se precisar você pode desativar a renda a qualquer momento e ela não aparecerá mais para os meses seguintes.',
+                                  'Não se preocupe, se precisar você pode desativar a receita a qualquer momento e ela não aparecerá mais para os meses seguintes.',
                                   style: AppTheme.textStyles.subTileTextStyle
                                       .copyWith(
                                           color: AppTheme.colors.hintTextColor

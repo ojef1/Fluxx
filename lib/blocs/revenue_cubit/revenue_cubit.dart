@@ -98,7 +98,7 @@ class RevenueCubit extends Cubit<RevenueState> {
       await getRevenues(monthId);
       final revenuesList = state.revenuesList;
 
-      // 3. Calcular o valor usado de cada renda
+      // 3. Calcular o valor usado de cada receita
       Map<String, double> valorUsadoPorRenda = {};
       for (var bill in billsList) {
         if (bill.paymentId != null) {
@@ -107,7 +107,7 @@ class RevenueCubit extends Cubit<RevenueState> {
         }
       }
 
-      // 4. Calcular o valor disponível de cada renda
+      // 4. Calcular o valor disponível de cada receita
       List<RevenueModel> valoresDisponiveis = revenuesList.map((revenue) {
         double valorUsado = valorUsadoPorRenda[revenue.id] ?? 0;
         double valorDisponivel = revenue.value! - valorUsado;

@@ -70,7 +70,7 @@ class ShortcutAddBottomsheet extends StatelessWidget {
                     arguments: revenue);
               },
               title: Text(
-                'Adicionar Renda',
+                'Adicionar Receita',
                 style: AppTheme.textStyles.bodyTextStyle,
               ),
               trailing: Icon(

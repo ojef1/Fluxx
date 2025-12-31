@@ -88,7 +88,7 @@ class BillItem extends StatelessWidget {
                     ),
                     const SizedBox(width: 5),
                     Text(
-                      'Renda Usada: ',
+                      'Receita Usada: ',
                       style: AppTheme.textStyles.bodyTextStyle,
                     ),
                   ],

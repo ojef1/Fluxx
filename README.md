@@ -1,6 +1,6 @@
 # 💰 App de Controle Financeiro
 
-Um aplicativo completo de **gestão financeira pessoal**, focado em organização de gastos mensais, controle por categoria e análise do uso da sua renda. Desenvolvido em **Flutter**, o app oferece uma experiência prática e intuitiva para acompanhar sua vida financeira com clareza.
+Um aplicativo completo de **gestão financeira pessoal**, focado em organização de gastos mensais, controle por categoria e análise do uso da sua receita. Desenvolvido em **Flutter**, o app oferece uma experiência prática e intuitiva para acompanhar sua vida financeira com clareza.
 
 ## 🚀 Funcionalidades
 
@@ -8,7 +8,7 @@ Um aplicativo completo de **gestão financeira pessoal**, focado em organizaçã
 - 📆 Organização de despesas por **mês**
 - 📊 Visualização gráfica de **gastos por categoria**
 - 🧾 Registro de **categorias personalizadas**
-- 💼 Gerenciamento de **fontes de renda**
+- 💼 Gerenciamento de **fontes de receita**
 - 🔄 Associação de despesas a fontes específicas de pagamento
 - 📈 Barra de progresso que mostra quanto da sua receita já foi utilizada
 
@@ -30,13 +30,13 @@ Um aplicativo completo de **gestão financeira pessoal**, focado em organizaçã
 <img src="assets/screenshots/tela_detalhes_conta.png" alt="Tela Detalhes da Conta" width="250"/>
 
 > ### Tela de Adicionar Conta
-<img src="assets/screenshots/tela_adicionar_conta.png" alt="Tela de Adicionar Conta" width="250"/> <img src="assets/screenshots/lista_categorias.png" alt="Tela para Escolher a Categoria da Conta" width="250"/> <img src="assets/screenshots/lista_rendas.png" alt="Tela para Escolher a Renda da Conta" width="250"/>
+<img src="assets/screenshots/tela_adicionar_conta.png" alt="Tela de Adicionar Conta" width="250"/> <img src="assets/screenshots/lista_categorias.png" alt="Tela para Escolher a Categoria da Conta" width="250"/> <img src="assets/screenshots/lista_rendas.png" alt="Tela para Escolher a Receita da Conta" width="250"/>
 
 > ### Tela de Adicionar Categoria
 <img src="assets/screenshots/tela_adicionar_categoria.png" alt="Tela de Adicionar Categoria" width="250"/>
 
-> ### Tela de Adicionar Renda
-<img src="assets/screenshots/tela_adicionar_renda.png" alt="Tela de Adicionar Renda" width="250"/> <img src="assets/screenshots/descricao_add_renda.png" alt="Descrição de como funciona a adição de rendas" width="250"/>
+> ### Tela de Adicionar Receita
+<img src="assets/screenshots/tela_adicionar_renda.png" alt="Tela de Adicionar Receita" width="250"/> <img src="assets/screenshots/descricao_add_renda.png" alt="Descrição de como funciona a adição de rendas" width="250"/>
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -51,9 +51,9 @@ Um aplicativo completo de **gestão financeira pessoal**, focado em organizaçã
 ## 📌 Observações
 O foco do app é no controle real de gastos, e não em simulações.
 
-Você pode criar categorias e fontes de renda personalizadas para se adaptar à sua realidade.
+Você pode criar categorias e fontes de receita personalizadas para se adaptar à sua realidade.
 
-O sistema de progressão de uso da renda ajuda a visualizar quanto da sua receita já foi utilizada no mês.
+O sistema de progressão de uso da receita ajuda a visualizar quanto da sua receita já foi utilizada no mês.
 
 📄 Licença
 Este projeto está licenciado sob a MIT License.

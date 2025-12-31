@@ -146,7 +146,7 @@ class _DetailBillPageState extends State<DetailBillPage> {
                           subtitle:
                               'R\$${formatPrice(state.detailBill?.price ?? 0.0)}'),
                       _DataItem(
-                          title: 'Renda usada',
+                          title: 'Receita usada',
                           subtitle: state.detailBill?.paymentName ?? ''),
                       _DataItem(
                           title: 'Categoria',

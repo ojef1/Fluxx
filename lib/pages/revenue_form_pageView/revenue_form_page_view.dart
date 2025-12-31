@@ -34,7 +34,7 @@ class _RevenueFormPageviewState extends State<RevenueFormPageview> {
   late final RevenueFormMode revenueFormMode;
   late final bool isEditingMode;
   //variavel de contexto existente apenas no modo edição
-  //é referente a renda que está sendo editada
+  //é referente a receita que está sendo editada
   late final bool canDesactive;
 
   @override
@@ -70,7 +70,7 @@ class _RevenueFormPageviewState extends State<RevenueFormPageview> {
       ),
     ];
 
-    //Não é possível alterar se a renda é mensal ou única na edição
+    //Não é possível alterar se a receita é mensal ou única na edição
     if (!isEditingMode) {
       pages.add(
         RecurrenceRevenuePage(
@@ -108,7 +108,7 @@ class _RevenueFormPageviewState extends State<RevenueFormPageview> {
                   backgroundColor: AppTheme.colors.appBackgroundColor,
                   resizeToAvoidBottomInset: true,
                   appBar: CustomAppBar(
-                    title: isEditing ? 'Editar Renda' : 'Adicionar Renda',
+                    title: isEditing ? 'Editar Receita' : 'Adicionar Receita',
                     backButton: () {
                       if (_currentIndex == 0) {
                         Navigator.pop(context);

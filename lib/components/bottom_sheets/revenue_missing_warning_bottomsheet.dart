@@ -58,7 +58,7 @@ class RevenueMissingWarningBottomsheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'º As contas serão criadas normalmente, mas alguns meses ficarão sem renda selecionada.',
+                  'º As contas serão criadas normalmente, mas alguns meses ficarão sem receita selecionada.',
                   style: AppTheme.textStyles.subTileTextStyle,
                   textAlign: TextAlign.start,
                   softWrap: true,
@@ -117,18 +117,18 @@ class RevenueMissingWarningBottomsheet extends StatelessWidget {
   String _getFirstMessage(BillFormState state) {
     switch (type) {
       case MissingRevenueType.revenueNotFound:
-        return 'º A renda “${state.revenueSelected?.name}” não existe até o mês de “${state.repeatMonthName}.';
+        return 'º A receita “${state.revenueSelected?.name}” não existe até o mês de “${state.repeatMonthName}.';
       case MissingRevenueType.insufficientBalance:
         final monthsText = _formatMonths(state.monthsWithoutBalance);
 
         if (monthsText.isEmpty) {
-          return 'º A renda “${state.revenueSelected?.name}” '
+          return 'º A receita “${state.revenueSelected?.name}” '
               'não possui saldo suficiente.';
         }
 
         final plural = state.monthsWithoutBalance.length > 1;
 
-        return 'º A renda “${state.revenueSelected?.name}” '
+        return 'º A receita “${state.revenueSelected?.name}” '
             'não possui saldo suficiente para '
             '${plural ? 'os meses : ' : 'o mês de'} "$monthsText".';
     }
@@ -139,7 +139,7 @@ class RevenueMissingWarningBottomsheet extends StatelessWidget {
       case MissingRevenueType.revenueNotFound:
         return 'Dica: rendas podem ser criadas apenas para meses específicos';
       case MissingRevenueType.insufficientBalance:
-        return 'Dica: você pode ajustar o valor da renda ou criar uma renda extra para os próximos meses';
+        return 'Dica: você pode ajustar o valor da receita ou criar uma receita extra para os próximos meses';
     }
   }
 

@@ -325,7 +325,7 @@ class Db {
 
       return result.isNotEmpty ? result.first['name'] as String : null;
     } catch (e) {
-      debugPrint("Erro ao buscar renda mais usada: $e");
+      debugPrint("Erro ao buscar receita mais usada: $e");
       return null;
     }
   }
@@ -444,7 +444,7 @@ class Db {
       );
       return result;
     } catch (e) {
-      throw Exception("Erro ao adicionar a renda: $e");
+      throw Exception("Erro ao adicionar a receita: $e");
     }
   }
 
@@ -508,7 +508,7 @@ class Db {
 
       return result;
     } catch (e) {
-      throw Exception('Erro ao desativar a renda: $e');
+      throw Exception('Erro ao desativar a receita: $e');
     }
   }
 
@@ -522,7 +522,7 @@ class Db {
       );
       return result;
     } catch (e) {
-      throw Exception('Erro ao remover a renda: $e');
+      throw Exception('Erro ao remover a receita: $e');
     }
   }
 
@@ -560,7 +560,7 @@ class Db {
       );
       return result;
     } catch (e) {
-      throw Exception('Erro ao atualizar a renda: $e');
+      throw Exception('Erro ao atualizar a receita: $e');
     }
   }
 
@@ -578,7 +578,7 @@ class Db {
       );
       return result;
     } catch (e) {
-      throw Exception('Erro ao atualizar a renda: $e');
+      throw Exception('Erro ao atualizar a receita: $e');
     }
   }
 

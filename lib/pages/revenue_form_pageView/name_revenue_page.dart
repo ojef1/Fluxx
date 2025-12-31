@@ -43,7 +43,7 @@ class _NameRevenuePageState extends State<NameRevenuePage> {
     return Column(
       children: [
         Text(
-          'Qual o nome dessa renda?',
+          'Qual o nome dessa receita?',
           style: AppTheme.textStyles.subTileTextStyle,
           softWrap: true,
           overflow: TextOverflow.visible,

@@ -68,11 +68,11 @@ class RevenueFormCubit extends Cubit<RevenueFormState> {
 
       var result = await Db.insertRevenue(newRevenue);
       if (result != -1) {
-        await updateResponseMessage('renda adicionada com sucesso.');
+        await updateResponseMessage('receita adicionada com sucesso.');
         updateResponseStatus(ResponseStatus.success);
         return;
       } else {
-        await updateResponseMessage('Falha ao adicionar a renda.');
+        await updateResponseMessage('Falha ao adicionar a receita.');
         updateResponseStatus(ResponseStatus.error);
         return;
       }
@@ -97,11 +97,11 @@ class RevenueFormCubit extends Cubit<RevenueFormState> {
 
       var result = await Db.updateRevenue(updatedRevenue);
       if (result > 0) {
-        await updateResponseMessage('renda editada com sucesso.');
+        await updateResponseMessage('receita editada com sucesso.');
         updateResponseStatus(ResponseStatus.success);
         return;
       } else {
-        await updateResponseMessage('Falha ao editar a renda.');
+        await updateResponseMessage('Falha ao editar a receita.');
         updateResponseStatus(ResponseStatus.error);
         return;
       }
@@ -116,11 +116,11 @@ class RevenueFormCubit extends Cubit<RevenueFormState> {
     try {
       var result = await Db.deactivateRevenue(state.id, currentMonthId);
       if (result > 0) {
-        await updateResponseMessage('Renda desativada com sucesso.');
+        await updateResponseMessage('Receita desativada com sucesso.');
         updateResponseStatus(ResponseStatus.success);
         return;
       } else {
-        await updateResponseMessage('Falha ao desativar a renda.');
+        await updateResponseMessage('Falha ao desativar a receita.');
         updateResponseStatus(ResponseStatus.error);
         return;
       }

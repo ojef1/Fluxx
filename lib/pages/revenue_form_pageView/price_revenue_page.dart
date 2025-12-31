@@ -41,7 +41,7 @@ class _PriceRevenuePageState extends State<PriceRevenuePage> {
     return Column(
       children: [
         Text(
-          'Qual o valor dessa renda?',
+          'Qual o valor dessa receita?',
           style: AppTheme.textStyles.subTileTextStyle,
           softWrap: true,
           overflow: TextOverflow.visible,

@@ -64,7 +64,7 @@ class RevenueItem extends StatelessWidget {
                 style: AppTheme.textStyles.subTileTextStyle,
               ),
               Text(
-                item.isPublic == 1 ? 'Renda Mensal' : 'Renda Única',
+                item.isPublic == 1 ? 'Receita Mensal' : 'Receita Única',
                 style: AppTheme.textStyles.subTileTextStyle,
               )
             ],

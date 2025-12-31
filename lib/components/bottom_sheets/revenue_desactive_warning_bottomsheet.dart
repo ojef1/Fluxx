@@ -72,7 +72,7 @@ class RevenueDesactiveWarningBottomsheet extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'º A partir de $nextMonth, essa renda não fará mais parte da sua lista de rendas mensais.',
+                  'º A partir de $nextMonth, essa receita não fará mais parte da sua lista de rendas mensais.',
                   style: AppTheme.textStyles.subTileTextStyle,
                   textAlign: TextAlign.start,
                   softWrap: true,
@@ -81,7 +81,7 @@ class RevenueDesactiveWarningBottomsheet extends StatelessWidget {
                 const SizedBox(height: 20),
                 Center(
                   child: Text(
-                    'Tem certeza que deseja desativar esta renda?',
+                    'Tem certeza que deseja desativar esta receita?',
                     style: AppTheme.textStyles.subTileTextStyle,
                     textAlign: TextAlign.center,
                     softWrap: true,

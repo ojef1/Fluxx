@@ -65,7 +65,7 @@ class ResumeCubit extends Cubit<ResumeState> {
   Future<void> calculatePercent(double totalIncome) async {
     final totalSpent = state.totalSpent;
     if (totalIncome == 0.0) {
-      // Não tem renda, então não calcula porcentagem
+      // Não tem receita, então não calcula porcentagem
       emit(state.copyWith(percentSpent: 0.0));
       return;
     } else {

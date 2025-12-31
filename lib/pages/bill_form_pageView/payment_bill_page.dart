@@ -18,7 +18,7 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
   }
 
   Future<bool> _validate() async {
-    //a renda é opcional então não precisa validar nada
+    //a receita é opcional então não precisa validar nada
     return true;
   }
 
@@ -33,7 +33,7 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
     return Column(
       children: [
         Text(
-          'Qual renda você usou/usará para pagar\n essa conta?',
+          'Qual receita você usou/usará para pagar\n essa conta?',
           style: AppTheme.textStyles.subTileTextStyle,
           softWrap: true,
           textAlign: TextAlign.center,

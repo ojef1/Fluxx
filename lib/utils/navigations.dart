@@ -25,7 +25,7 @@ void goToBillForm({required BuildContext context, BillModel? bill}) {
 
 void goToRevenueForm({required BuildContext context, RevenueModel? revenue}) {
   if (revenue != null) {
-    //se existe dados da renda significa que será editado
+    //se existe dados da receita significa que será editado
     //portanto o modo do formulário será para edição
     GetIt.I<RevenueFormCubit>().updateRevenueFormMode(RevenueFormMode.editing);
     GetIt.I<RevenueFormCubit>().loadRevenueToEdit(revenue);
