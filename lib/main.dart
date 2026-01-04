@@ -2,6 +2,7 @@ import 'package:Fluxx/pages/bill_form_pageView/bill_form_page_view.dart';
 import 'package:Fluxx/pages/bill_list_page.dart';
 import 'package:Fluxx/pages/category_form_pageView/category_form_page_view.dart';
 import 'package:Fluxx/pages/category_list_page.dart';
+import 'package:Fluxx/pages/credit_card_form_pageView/credit_card_form_page_view.dart';
 import 'package:Fluxx/pages/detail_bill_page.dart';
 import 'package:Fluxx/pages/intro_page.dart';
 import 'package:Fluxx/pages/month_list_page.dart';
@@ -61,6 +62,7 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.detailPage: (ctx) => const BillListPage(),
         AppRoutes.statsPage: (ctx) => const StatsPage(),
         AppRoutes.billFormPage: (ctx) => const BillFormPageview(),
+        AppRoutes.creditCardFormPage: (ctx) => const CreditCardFormPageview(),
         AppRoutes.detailBillPage: (ctx) => const DetailBillPage(),
         AppRoutes.categoryFormPage: (ctx) => const CategoryFormPageview(),
         AppRoutes.revenueFormPage: (ctx) => const RevenueFormPageview(),

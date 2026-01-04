@@ -1,6 +1,7 @@
 import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/category_model.dart';
+import 'package:Fluxx/models/credit_card_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/models/user_model.dart';
 import 'package:Fluxx/utils/constants.dart';
@@ -22,79 +23,6 @@ class Db {
       path.join(dbPath, 'Fluxx.db'),
       onOpen: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
-      },
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 23) {
-          await db.transaction((txn) async {
-            // =======================
-            // 🔁 REVENUE
-            // =======================
-            await txn.execute('''
-        CREATE TABLE revenue_new (
-          id TEXT PRIMARY KEY,
-          name TEXT NOT NULL,
-          value REAL NOT NULL,
-          start_month_id INTEGER,
-          end_month_id INTEGER,
-          is_monthly INTEGER,
-          FOREIGN KEY (start_month_id) REFERENCES months (id),
-          FOREIGN KEY (end_month_id) REFERENCES months (id)
-        )
-      ''');
-
-            final oldRevenues = await txn.query('revenue');
-
-            for (final revenue in oldRevenues) {
-              await txn.insert(
-                'revenue_new',
-                {
-                  'id': revenue['id'],
-                  'name': revenue['name'],
-                  'value': revenue['value'],
-                  'start_month_id': revenue['start_month_id'],
-                  'end_month_id': revenue['end_month_id'],
-                  'is_monthly': 1, // valor padrão
-                },
-              );
-            }
-
-            await txn.execute('DROP TABLE revenue');
-            await txn.execute('ALTER TABLE revenue_new RENAME TO revenue');
-
-            // =======================
-            // ➕ CATEGORY
-            // =======================
-            await txn.execute('''
-        CREATE TABLE category_new (
-          id TEXT PRIMARY KEY,
-          name TEXT,
-          start_month_id INTEGER,
-          end_month_id INTEGER,
-          is_monthly INTEGER,
-          FOREIGN KEY (start_month_id) REFERENCES months (id),
-          FOREIGN KEY (end_month_id) REFERENCES months (id)
-        )
-      ''');
-
-            final oldCategories = await txn.query('category');
-
-            for (final category in oldCategories) {
-              await txn.insert(
-                'category_new',
-                {
-                  'id': category['id'],
-                  'name': category['name'],
-                  'start_month_id': null,
-                  'end_month_id': null,
-                  'is_monthly': 1, // valor padrão
-                },
-              );
-            }
-
-            await txn.execute('DROP TABLE category');
-            await txn.execute('ALTER TABLE category_new RENAME TO category');
-          });
-        }
       },
       onCreate: (db, version) async {
         await db.execute('PRAGMA foreign_keys = ON');
@@ -161,9 +89,55 @@ class Db {
           'FOREIGN KEY (end_month_id) REFERENCES ${Tables.months} (id))',
         );
 
+        //criar a tabela de cartões de crédito
+        await db.execute(
+          'CREATE TABLE ${Tables.creditCards} ('
+          'id TEXT PRIMARY KEY, '
+          'name TEXT NOT NULL, '
+          'total_limit REAL NOT NULL, '
+          'closing_day INTEGER, '
+          'bank_id INTEGER, '
+          'network_id INTEGER, '
+          'last_digits TEXT, '
+          'due_day INTEGER)',
+        );
+
+        //criar a tabela de contas do cartão de crédito
+        await db.execute(
+          'CREATE TABLE ${Tables.creditCardsBills} ('
+          'id TEXT PRIMARY KEY, '
+          'credit_card_id TEXT NOT NULL, '
+          'name TEXT, '
+          'description TEXT, '
+          'price REAL, '
+          'date TEXT, '
+          'invoice_id TEXT, '
+          'FOREIGN KEY (invoice_id) REFERENCES ${Tables.creditCardsInvoices} (id), '
+          'FOREIGN KEY (credit_card_id) REFERENCES ${Tables.creditCards} (id) ON DELETE SET NULL)',
+        );
+
+        //criar a tabela de faturas de cartão de crédito
+        await db.execute(
+          'CREATE TABLE ${Tables.creditCardsInvoices} ('
+          'id TEXT PRIMARY KEY, '
+          'credit_card_id TEXT NOT NULL, '
+          'category_id TEXT NOT NULL, '
+          'payment_id TEXT NULL, '
+          'month_id INTEGER NOT NULL, '
+          'due_date TEXT NOT NULL, '
+          'start_date TEXT NOT NULL, '
+          'end_date TEXT NOT NULL, '
+          'price REAL, '
+          'is_paid INTEGER, '
+          'FOREIGN KEY (credit_card_id) REFERENCES ${Tables.creditCards} (id) ON DELETE SET NULL, '
+          'FOREIGN KEY (category_id) REFERENCES ${Tables.category} (id) ON DELETE RESTRICT, '
+          'FOREIGN KEY (payment_id) REFERENCES ${Tables.revenue} (id) ON DELETE SET NULL, '
+          'FOREIGN KEY (month_id) REFERENCES ${Tables.months} (id))',
+        );
+
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      version: 23,
+      version: 25,
     );
     return _db!;
   }
@@ -355,7 +329,8 @@ class Db {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getMonthlyCategories(int monthId) async{
+  static Future<List<Map<String, dynamic>>> getMonthlyCategories(
+      int monthId) async {
     final db = await Db.dataBase();
     try {
       final result = await db.rawQuery('''
@@ -369,9 +344,10 @@ class Db {
     } catch (e) {
       throw Exception('Erro ao consultar as categorias públicas: $e');
     }
-  } 
+  }
 
-  static Future<List<Map<String, dynamic>>> getSingleCategories(int monthId) async {
+  static Future<List<Map<String, dynamic>>> getSingleCategories(
+      int monthId) async {
     final db = await Db.dataBase();
     try {
       final result = await db.rawQuery('''
@@ -446,6 +422,18 @@ class Db {
     } catch (e) {
       debugPrint("Erro ao obter totais por categoria: $e");
       return [];
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getCreditCards() async {
+    final db = await Db.dataBase();
+    try{
+
+    return await db.query(
+      Tables.creditCards,
+    );
+    }catch(e){
+      throw Exception('Não foi possível encontrar os cartões : $e');
     }
   }
 
@@ -588,6 +576,23 @@ class Db {
       throw Exception('Erro ao inserir categoria: $e');
     }
   }
+
+  static Future<int> insertCreditCard(CreditCardModel creditCard) async {
+    final db = await Db.dataBase();
+    final dataJson = creditCard.toJson();
+
+    try {
+      int result = await db.insert(
+        Tables.creditCards,
+        dataJson,
+        conflictAlgorithm: sql.ConflictAlgorithm.replace,
+      );
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao inserir Cartão de crédito : $e');
+    }
+  }
+
   //---------------------------FIM -> INSERIR-------------------------
 
   //---------------------------INICIO -> DELETAR-------------------------
@@ -717,6 +722,25 @@ class Db {
       return result;
     } catch (e) {
       throw Exception("Erro ao atualizar a conta: $e");
+    }
+  }
+
+  static Future<int> updateCreditCard(CreditCardModel creditCard) async {
+    final db = await Db.dataBase();
+    final cardId = creditCard.id!;
+    final updatedData = creditCard.toJson();
+
+    try {
+      int result = await db.update(
+        Tables.creditCards,
+        updatedData,
+        where: 'id = ?',
+        whereArgs: [cardId],
+        conflictAlgorithm: sql.ConflictAlgorithm.replace,
+      );
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao atualizar o cartão : $e');
     }
   }
 

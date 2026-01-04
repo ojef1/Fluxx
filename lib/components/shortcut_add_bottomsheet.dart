@@ -14,7 +14,7 @@ class ShortcutAddBottomsheet extends StatelessWidget {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
     return Container(
-      height: mediaQuery.height * .4,
+      height: mediaQuery.height * .5,
       color: AppTheme.colors.appBackgroundColor,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Column(
@@ -28,6 +28,30 @@ class ShortcutAddBottomsheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(25)),
           ),
           const SizedBox(height: 40),
+          Container(
+            decoration: BoxDecoration(
+                color: AppTheme.colors.itemBackgroundColor,
+                borderRadius: BorderRadius.circular(10)),
+            padding: const EdgeInsets.all(3),
+            width: mediaQuery.width * .85,
+            child: ListTile(
+              onTap: () {
+                Navigator.pushReplacementNamed(
+                  context,
+                  AppRoutes.creditCardFormPage,
+                );
+              },
+              title: Text(
+                'Adicionar Cartão de Crédito',
+                style: AppTheme.textStyles.bodyTextStyle,
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: AppTheme.colors.hintColor,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
                 color: AppTheme.colors.itemBackgroundColor,

@@ -72,10 +72,12 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - pubspec.yaml
-    - assets\images\default_user.jpeg
+    - assets/images/default_user.jpeg
     - assets/app/
     - assets/svg/
     - assets/images/
+    - assets/images/banks_path/
+    - assets/images/cardNetworks_path/
   # - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

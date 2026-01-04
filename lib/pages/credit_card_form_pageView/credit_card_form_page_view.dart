@@ -1,147 +1,121 @@
-import 'package:Fluxx/blocs/bill_form_cubit/bill_form_cubit.dart';
-import 'package:Fluxx/blocs/category_cubit/category_cubit.dart';
-import 'package:Fluxx/blocs/category_cubit/category_state.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
-import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
-import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
+
+import 'package:Fluxx/blocs/credit_card_form_cubit/credit_card_form_cubit.dart';
 import 'package:Fluxx/components/app_bar.dart';
-import 'package:Fluxx/components/bottom_sheets/revenue_missing_warning_bottomsheet.dart';
-import 'package:Fluxx/components/custom_big_text_field.dart';
 import 'package:Fluxx/components/custom_text_field.dart';
-import 'package:Fluxx/components/empty_list_placeholder/empty_category_list.dart';
-import 'package:Fluxx/components/empty_list_placeholder/empty_revenue_list.dart';
 import 'package:Fluxx/components/primary_button.dart';
-import 'package:Fluxx/models/category_model.dart';
-import 'package:Fluxx/models/month_model.dart';
-import 'package:Fluxx/models/revenue_model.dart';
+import 'package:Fluxx/models/bank_model.dart';
+import 'package:Fluxx/models/card_network_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
-import 'package:Fluxx/utils/app_routes.dart';
+import 'package:Fluxx/utils/constants.dart';
 import 'package:Fluxx/utils/helpers.dart';
-import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:get_it/get_it.dart';
-import 'package:intl/intl.dart';
 
-part 'name_bill_page.dart';
-part 'price_bill_page.dart';
-part 'date_bill_page.dart';
-part 'desc_bill_page.dart';
-part 'category_bill_page.dart';
-part 'payment_bill_page.dart';
-part 'repeat_bill_page.dart.dart';
-part 'check_bill_page.dart';
+part 'name_credit_card_page.dart';
+part 'limit_credit_card_page.dart';
+part 'closing_credit_card_page.dart';
+part 'due_credit_card_page.dart';
+part 'bank_credit_card_page.dart';
+part 'network_credit_card_page.dart';
+part 'check_credit_card_page.dart';
+part 'last_digits_credit_card_page.dart';
 
-class BillFormPageview extends StatefulWidget {
-  const BillFormPageview({super.key});
+class CreditCardFormPageview extends StatefulWidget {
+  const CreditCardFormPageview({super.key});
 
   @override
-  State<BillFormPageview> createState() => _BillFormPageviewState();
+  State<CreditCardFormPageview> createState() => _CreditCardFormPageviewState();
 }
 
-class _BillFormPageviewState extends State<BillFormPageview> {
+class _CreditCardFormPageviewState extends State<CreditCardFormPageview> {
   late final PageController _pageController;
   int _currentIndex = 0;
   Future<bool> Function()? _currentValidator;
-  late final MonthModel _currentMonth;
-  late final BillFormMode billFormMode;
+  late final CreditCardFormMode creditCardFormMode;
   late final bool shouldShowRepeatPage;
   late final bool isDecember;
 
   @override
   void initState() {
     _pageController = PageController();
-    _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
-    //TODO trocar string por variável constante
-    isDecember = _currentMonth.name == 'Dezembro';
-    billFormMode = GetIt.I<BillFormCubit>().state.billFormMode;
-    shouldShowRepeatPage = !isDecember && billFormMode != BillFormMode.editing;
+    creditCardFormMode = GetIt.I<CreditCardFormCubit>().state.creditCardFormMode;
     super.initState();
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    GetIt.I<BillFormCubit>().resetState();
+    GetIt.I<CreditCardFormCubit>().resetState();
     super.dispose();
   }
 
   List<Widget> get _listPageWidgets {
     List<Widget> pages = [
-      NameBillPage(
+      NameCreditCardPage(
         registerValidator: _registerValidator,
         onError: (p0) => _showError(p0),
       ),
-      PriceBillPage(
+      LimitCreditCardPage(
         registerValidator: _registerValidator,
         onError: (p0) => _showError(p0),
       ),
-      DateBillPage(
+      BankCreditCardPage(
         registerValidator: _registerValidator,
         onError: (p0) => _showError(p0),
       ),
-      DescBillPage(
+      NetworkCreditCardPage(
         registerValidator: _registerValidator,
         onError: (p0) => _showError(p0),
       ),
-      CategoryBillPage(
+      LastDigitsCreditCardPage(
         registerValidator: _registerValidator,
         onError: (p0) => _showError(p0),
       ),
-      PaymentBillPage(
+      ClosingCreditCardPage(
+        registerValidator: _registerValidator,
+        onError: (p0) => _showError(p0),
+      ),
+      DueCreditCardPage(
+        registerValidator: _registerValidator,
+        onError: (p0) => _showError(p0),
+      ),
+       CheckCreditCardPage(
         registerValidator: _registerValidator,
         onError: (p0) => _showError(p0),
       ),
     ];
-
-    //o limite de meses para repetição é até dezembro do ano corrente
-    //a repetição não pode ser editada
-    //portanto se o mês atual for dezembro ou o fomulário estiver em modo de edição, não faz sentido mostrar a página de repetição
-    if (shouldShowRepeatPage) {
-      pages.add(
-        RepeatBillPage(
-          registerValidator: _registerValidator,
-          onError: (p0) => _showError(p0),
-        ),
-      );
-    }
-
-    pages.add(
-      CheckBillPage(
-        registerValidator: _registerValidator,
-        onError: (p0) => _showError(p0),
-      ),
-    );
-
     return pages;
   }
 
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
-    return BlocListener<BillFormCubit, BillFormState>(
+    return BlocListener<CreditCardFormCubit, CreditCardFormState>(
         bloc: GetIt.I(),
         listener: (context, state) {
           if (state.responseStatus == ResponseStatus.success) {
             showFlushbar(context, state.responseMessage, false);
             Navigator.pop(context);
+          }else if (state.responseStatus == ResponseStatus.error){
+            showFlushbar(context, state.responseMessage, true);
           }
         },
         child: AnnotatedRegion(
           value: SystemUiOverlayStyle.dark,
-          child: BlocBuilder<BillFormCubit, BillFormState>(
+          child: BlocBuilder<CreditCardFormCubit, CreditCardFormState>(
               bloc: GetIt.I(),
               buildWhen: (previous, current) =>
-                  previous.billFormMode != current.billFormMode,
+                  previous.creditCardFormMode != current.creditCardFormMode,
               builder: (context, state) {
-                bool isEditing = state.billFormMode == BillFormMode.editing;
+                bool isEditing = state.creditCardFormMode == CreditCardFormMode.editing;
                 return Scaffold(
                   backgroundColor: AppTheme.colors.appBackgroundColor,
                   resizeToAvoidBottomInset: true,
                   appBar: CustomAppBar(
-                    title: isEditing ? 'Editar Conta' : 'Adicionar Conta',
+                    title: isEditing ? 'Editar Cartão' : 'Adicionar Cartão',
                     backButton: () {
                       if (_currentIndex == 0) {
                         Navigator.pop(context);
@@ -202,7 +176,7 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                             children: _listPageWidgets,
                           ),
                         ),
-                        BlocBuilder<BillFormCubit, BillFormState>(
+                        BlocBuilder<CreditCardFormCubit, CreditCardFormState>(
                             bloc: GetIt.I(),
                             buildWhen: (previous, current) =>
                                 previous.responseStatus !=
@@ -225,8 +199,8 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                                         if (_currentIndex ==
                                             _listPageWidgets.length - 1) {
                                           //se for a ultima página, salva a conta
-                                          await GetIt.I<BillFormCubit>()
-                                              .submitBill();
+                                          await GetIt.I<CreditCardFormCubit>()
+                                              .submitCard();
                                         } else {
                                           _pageController.nextPage(
                                             duration: Durations.medium2,

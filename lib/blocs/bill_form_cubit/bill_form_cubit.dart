@@ -141,7 +141,6 @@ class BillFormCubit extends Cubit<BillFormState> {
       paymentId: paymentId,
       isPayed: 0,
     );
-    log('Adicionando conta: ${newBill.toJson()}', name: '_addSingleBill');
     final result = await Db.insertBill(Tables.bills, newBill);
 
     if (result == -1) {

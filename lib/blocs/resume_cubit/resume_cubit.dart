@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:Fluxx/blocs/resume_cubit/resume_state.dart';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/models/month_model.dart';
@@ -21,6 +23,8 @@ class ResumeCubit extends Cubit<ResumeState> {
   }
 
   Future<MonthModel> getActualMonth() async {
+    try{
+
     var result = await Db.getMonths(DateTime.now().year);
     List<MonthModel> monthsList = result
         .map<MonthModel>((monthMap) => MonthModel.fromJson(monthMap))
@@ -38,6 +42,10 @@ class ResumeCubit extends Cubit<ResumeState> {
     );
     emit(state.copyWith(currentMonth: monthModel));
     return monthModel;
+    } catch (error) {
+      log('Erro ao obter mês atual: $error');
+      rethrow;
+    }
   }
 
   void updateMonthInFocus(MonthModel month) {

@@ -8,6 +8,7 @@ class AppRoutes {
   static const String detailBillPage = '/detail-bill-page';
   static const String statsPage = '/stats-page';
   static const String billFormPage = '/bill-form-page';
+  static const String creditCardFormPage = '/credit-card-form-page';
   static const String categoryFormPage = '/category-form-page';
   static const String revenueFormPage = '/revenue-form-page';
   static const String profilePage = '/profile-page';
