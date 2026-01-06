@@ -1,10 +1,11 @@
 
-import 'package:Fluxx/blocs/credit_card_form_cubit/credit_card_form_cubit.dart';
+import 'package:Fluxx/blocs/credit_card_cubits/credit_card_form_cubit.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/custom_text_field.dart';
 import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/bank_model.dart';
 import 'package:Fluxx/models/card_network_model.dart';
+import 'package:Fluxx/services/credit_card_services.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:Fluxx/utils/helpers.dart';
@@ -209,7 +210,7 @@ class _CreditCardFormPageviewState extends State<CreditCardFormPageview> {
                                         }
                                       },
                                 width: mediaQuery.width * .85,
-                                color: AppTheme.colors.itemBackgroundColor,
+                                color: AppTheme.colors.hintColor,
                                 textStyle: AppTheme.textStyles.bodyTextStyle,
                               );
                             }),

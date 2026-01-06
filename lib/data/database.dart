@@ -1,10 +1,15 @@
+import 'dart:developer';
+
 import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
+import 'package:Fluxx/models/invoice_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/models/user_model.dart';
+import 'package:Fluxx/services/credit_card_services.dart';
 import 'package:Fluxx/utils/constants.dart';
+import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
@@ -23,6 +28,61 @@ class Db {
       path.join(dbPath, 'Fluxx.db'),
       onOpen: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        log(
+          'versão antiga > $oldVersion, nova: $newVersion',
+        );
+        if (oldVersion < 28) {
+          //criar a tabela de cartões de crédito
+          await db.execute(
+            'CREATE TABLE IF NOT EXISTS ${Tables.creditCards} ('
+            'id TEXT PRIMARY KEY, '
+            'name TEXT NOT NULL, '
+            'total_limit REAL NOT NULL, '
+            'closing_day INTEGER, '
+            'bank_id INTEGER, '
+            'network_id INTEGER, '
+            'last_digits TEXT, '
+            'due_day INTEGER,'
+            'is_active INTEGER NOT NULL DEFAULT 1 )',
+          );
+
+          //criar a tabela de contas do cartão de crédito
+          await db.execute(
+            'CREATE TABLE IF NOT EXISTS ${Tables.creditCardsBills} ('
+            'id TEXT PRIMARY KEY, '
+            'credit_card_id TEXT NOT NULL, '
+            'category_id TEXT NOT NULL, '
+            'name TEXT, '
+            'description TEXT, '
+            'price REAL, '
+            'date TEXT, '
+            'invoice_id TEXT, '
+            'FOREIGN KEY (invoice_id) REFERENCES ${Tables.creditCardsInvoices} (id), '
+            'FOREIGN KEY (category_id) REFERENCES ${Tables.category} (id) ON DELETE RESTRICT, '
+            'FOREIGN KEY (credit_card_id) REFERENCES ${Tables.creditCards} (id) ON DELETE SET NULL)',
+          );
+
+          //criar a tabela de faturas de cartão de crédito
+          await db.execute(
+            'CREATE TABLE IF NOT EXISTS ${Tables.creditCardsInvoices} ('
+            'id TEXT PRIMARY KEY, '
+            'credit_card_id TEXT , '
+            'category_id TEXT NOT NULL, '
+            'payment_id TEXT NULL, '
+            'month_id INTEGER NOT NULL, '
+            'due_date TEXT NOT NULL, '
+            'start_date TEXT NOT NULL, '
+            'end_date TEXT NOT NULL, '
+            'price REAL, '
+            'is_paid INTEGER, '
+            'FOREIGN KEY (credit_card_id) REFERENCES ${Tables.creditCards} (id) ON DELETE RESTRICT, '
+            'FOREIGN KEY (category_id) REFERENCES ${Tables.category} (id) ON DELETE RESTRICT, '
+            'FOREIGN KEY (payment_id) REFERENCES ${Tables.revenue} (id) ON DELETE SET NULL, '
+            'FOREIGN KEY (month_id) REFERENCES ${Tables.months} (id))',
+          );
+        }
       },
       onCreate: (db, version) async {
         await db.execute('PRAGMA foreign_keys = ON');
@@ -99,7 +159,8 @@ class Db {
           'bank_id INTEGER, '
           'network_id INTEGER, '
           'last_digits TEXT, '
-          'due_day INTEGER)',
+          'due_day INTEGER, '
+          'is_active INTEGER NOT NULL DEFAULT 1 )',
         );
 
         //criar a tabela de contas do cartão de crédito
@@ -107,12 +168,14 @@ class Db {
           'CREATE TABLE ${Tables.creditCardsBills} ('
           'id TEXT PRIMARY KEY, '
           'credit_card_id TEXT NOT NULL, '
+          'category_id TEXT NOT NULL, '
           'name TEXT, '
           'description TEXT, '
           'price REAL, '
           'date TEXT, '
           'invoice_id TEXT, '
           'FOREIGN KEY (invoice_id) REFERENCES ${Tables.creditCardsInvoices} (id), '
+          'FOREIGN KEY (category_id) REFERENCES ${Tables.category} (id) ON DELETE RESTRICT, '
           'FOREIGN KEY (credit_card_id) REFERENCES ${Tables.creditCards} (id) ON DELETE SET NULL)',
         );
 
@@ -129,7 +192,7 @@ class Db {
           'end_date TEXT NOT NULL, '
           'price REAL, '
           'is_paid INTEGER, '
-          'FOREIGN KEY (credit_card_id) REFERENCES ${Tables.creditCards} (id) ON DELETE SET NULL, '
+          'FOREIGN KEY (credit_card_id) REFERENCES ${Tables.creditCards} (id) ON DELETE RESTRICT, '
           'FOREIGN KEY (category_id) REFERENCES ${Tables.category} (id) ON DELETE RESTRICT, '
           'FOREIGN KEY (payment_id) REFERENCES ${Tables.revenue} (id) ON DELETE SET NULL, '
           'FOREIGN KEY (month_id) REFERENCES ${Tables.months} (id))',
@@ -137,7 +200,7 @@ class Db {
 
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      version: 25,
+      version: 29,
     );
     return _db!;
   }
@@ -150,6 +213,21 @@ class Db {
     // Inserir o as informações iniciais do usuário
     await db.insert(Tables.user,
         {'name': 'usuário', 'salary': 0.0, 'picture': defaultImagePath});
+
+    //Categoria padrão para faturas do cartão
+    final CategoryModel invoiceCategory = CategoryModel(
+      id: Constants.creditCardCategoryId,
+      categoryName: 'Cartão de crédito',
+      endMonthId: null,
+      isMonthly: 1,
+      startMonthId: 1,
+    );
+    await db.insert(
+      Tables.category,
+      invoiceCategory.toJson(),
+      conflictAlgorithm: sql.ConflictAlgorithm.replace,
+    );
+    log('inseriu a categoria $invoiceCategory');
   }
   //---------------------------FIM -> CRIAR BANCO-------------------------
 
@@ -292,6 +370,104 @@ class Db {
     }
   }
 
+  static Future<Map<String, dynamic>?> getCreditCardById(String id) async {
+    final db = await Db.dataBase();
+
+    try {
+      final result = await db.query(
+        Tables.creditCards,
+        where: 'id = ?',
+        whereArgs: [id],
+        limit: 1,
+      );
+
+      return result.isEmpty ? null : result.first;
+    } catch (e) {
+      debugPrint("Erro ao consultar cartão pelo ID : $e");
+      return null;
+    }
+  }
+
+  static Future<InvoiceModel?> getCreditCardInvoice({
+    required CreditCardModel creditCard,
+    required DateTime referenceDate,
+  }) async {
+    final db = await Db.dataBase();
+
+    //Buscar cartão
+    final cardResult = await getCreditCardById(creditCard.id!);
+
+    if (cardResult == null || cardResult.isEmpty) {
+      throw Exception('Cartão não encontrado');
+    }
+
+    final closingDay = cardResult['closing_day'] as int;
+
+    //Calcular período
+    final period = calculateInvoicePeriod(
+      date: referenceDate,
+      closingDay: closingDay,
+    );
+
+    final monthId = await getMonthId(
+      yearId: await getYearId(period.end.year),
+      month: period.end.month,
+    );
+
+    //Buscar fatura por cartão + mês
+    final existing = await db.query(
+      Tables.creditCardsInvoices,
+      where: '''
+      credit_card_id = ?
+      AND month_id = ?
+    ''',
+      whereArgs: [creditCard.id, monthId],
+      limit: 1,
+    );
+
+    if (existing.isNotEmpty) {
+      final invoice = InvoiceModel.fromJson(existing.first);
+      return invoice;
+    } else {
+      final newInvoice = InvoiceModel(
+        id: codeGenerate(),
+        creditCardId: creditCard.id!,
+        categoryId: Constants.creditCardCategoryId,
+        paymentId: null,
+        monthId: monthId,
+        dueDate: creditCard.dueDay.toString(),
+        startDate: period.start.toIso8601String(),
+        endDate: period.end.toIso8601String(),
+        price: 0.0,
+        isPaid: 0,
+      );
+
+      await _insertCreditCardInvoice(newInvoice);
+
+      return newInvoice;
+    }
+  }
+
+  static Future<double> getInvoicePrice({required String invoiceId}) async {
+    final db = await Db.dataBase();
+
+    try {
+      final result = await db.query(
+        Tables.creditCardsInvoices,
+        where: 'id = ?',
+        whereArgs: [invoiceId],
+        limit: 1,
+      );
+      if (result.isEmpty) return 0.0;
+      final price = result.first['price'];
+
+      return (price as num?)?.toDouble() ?? 0.0;
+    } catch (e) {
+      log('e', name: 'getInvoicePrice');
+      throw Exception('não foi possível pegar o valor da fatura');
+    }
+  }
+
   static Future<List<Map<String, dynamic>>> getMonthlyRevenues(
       int monthId) async {
     final db = await Db.dataBase();
@@ -338,6 +514,7 @@ class Db {
       WHERE is_monthly = 1
         AND start_month_id <= ?
         AND (end_month_id >= ? OR end_month_id IS NULL)
+        AND id != '${Constants.creditCardCategoryId}'
     ''', [monthId, monthId]);
 
       return result;
@@ -427,13 +604,29 @@ class Db {
 
   static Future<List<Map<String, dynamic>>> getCreditCards() async {
     final db = await Db.dataBase();
-    try{
-
-    return await db.query(
-      Tables.creditCards,
-    );
-    }catch(e){
+    try {
+      return await db.query(
+        Tables.creditCards,
+      );
+    } catch (e) {
       throw Exception('Não foi possível encontrar os cartões : $e');
+    }
+  }
+
+  static Future<List<Map<String,dynamic>>?> getCreditCardsBills(String invoiceId) async{
+    final db = await Db.dataBase();
+
+    try {
+      final result = await db.query(
+        Tables.creditCardsBills,
+        where: 'invoice_id = ?',
+        whereArgs: [invoiceId],
+      );
+
+       return result;
+    } catch (e) {
+      debugPrint("Erro ao consultar contas da fatura : $e");
+      return [];
     }
   }
 
@@ -593,6 +786,22 @@ class Db {
     }
   }
 
+  static Future<int> _insertCreditCardInvoice(InvoiceModel invoice) async {
+    final db = await Db.dataBase();
+    final dataJson = invoice.toJson();
+
+    try {
+      int result = await db.insert(
+        Tables.creditCardsInvoices,
+        dataJson,
+        conflictAlgorithm: sql.ConflictAlgorithm.replace,
+      );
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao inserir Fatura do Cartão : $e');
+    }
+  }
+
   //---------------------------FIM -> INSERIR-------------------------
 
   //---------------------------INICIO -> DELETAR-------------------------
@@ -648,6 +857,21 @@ class Db {
       return result;
     } catch (e) {
       throw Exception("Erro ao remover a conta: $e");
+    }
+  }
+
+  static Future<int> disableCreditCard(String id) async {
+    final db = await Db.dataBase();
+    try {
+      final result = await db.update(
+        Tables.creditCards,
+        {'is_active': 0},
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      return result;
+    } catch (e) {
+      throw Exception('Erro ao remover o cartão : $e');
     }
   }
 

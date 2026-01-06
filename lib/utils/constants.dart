@@ -5,6 +5,7 @@ import 'package:Fluxx/models/month_model.dart';
 class Constants {
   static const defaultPicture = 'assets/images/default_user.jpeg';
   static const topMargin = 20.0;
+  static const creditCardCategoryId = 'FIXO_00000001';
 }
 
 class AppMonths {
@@ -42,10 +43,10 @@ class Banks {
     BankModel(id: 13, name: 'Neon',iconPath: '$_banks/neon.png'),
     BankModel(id: 14, name: 'Next',iconPath: '$_banks/next.png'),
     BankModel(id: 15, name: 'Mercado Pago',iconPath: '$_banks/mercado_pago.png'),
-    BankModel(id: 15, name: 'Original',iconPath: '$_banks/original.png'),
-    BankModel(id: 15, name: 'BV',iconPath: '$_banks/bv.png'),
-    BankModel(id: 15, name: 'agiBank',iconPath: '$_banks/agibank.png'),
-    BankModel(id: 16, name: 'Outro',iconPath: '$_banks/outro.png'),
+    BankModel(id: 16, name: 'Original',iconPath: '$_banks/original.png'),
+    BankModel(id: 17, name: 'BV',iconPath: '$_banks/bv.png'),
+    BankModel(id: 18, name: 'agiBank',iconPath: '$_banks/agibank.png'),
+    BankModel(id: 19, name: 'Outro',iconPath: '$_banks/outro.png'),
   ];
 }
 

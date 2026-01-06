@@ -3,6 +3,10 @@ import 'package:Fluxx/pages/bill_list_page.dart';
 import 'package:Fluxx/pages/category_form_pageView/category_form_page_view.dart';
 import 'package:Fluxx/pages/category_list_page.dart';
 import 'package:Fluxx/pages/credit_card_form_pageView/credit_card_form_page_view.dart';
+import 'package:Fluxx/pages/credit_card_info/credit_card_stats_page.dart';
+import 'package:Fluxx/pages/credit_card_list_page.dart';
+import 'package:Fluxx/pages/credit_card_info/credit_card_info_page.dart';
+import 'package:Fluxx/pages/credit_card_info/credit_card_detail_page.dart';
 import 'package:Fluxx/pages/detail_bill_page.dart';
 import 'package:Fluxx/pages/intro_page.dart';
 import 'package:Fluxx/pages/month_list_page.dart';
@@ -57,13 +61,17 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.intro: (ctx) => const IntroPage(),
         AppRoutes.homePage: (ctx) => const ResumePage(),
         AppRoutes.monthListPage: (ctx) => const MonthListPage(),
+        AppRoutes.creditCardListPage: (ctx) => const CreditCardListPage(),
         AppRoutes.categoryListPage: (ctx) => const CategoryListPage(),
         AppRoutes.revenueListPage: (ctx) => const RevenueListPage(),
         AppRoutes.detailPage: (ctx) => const BillListPage(),
         AppRoutes.statsPage: (ctx) => const StatsPage(),
+        AppRoutes.creditCardStatsPage: (ctx) => const CreditCardStatsPage(),
+        AppRoutes.creditCardInfoPage: (ctx) => const CreditCardInfoPage(),
         AppRoutes.billFormPage: (ctx) => const BillFormPageview(),
         AppRoutes.creditCardFormPage: (ctx) => const CreditCardFormPageview(),
         AppRoutes.detailBillPage: (ctx) => const DetailBillPage(),
+        AppRoutes.creditCardDetailPage: (ctx) => const CreditCardDetailPage(),
         AppRoutes.categoryFormPage: (ctx) => const CategoryFormPageview(),
         AppRoutes.revenueFormPage: (ctx) => const RevenueFormPageview(),
         AppRoutes.profilePage: (ctx) => const ProfilePage(),

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:Fluxx/blocs/category_cubit/category_state.dart';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/models/category_model.dart';

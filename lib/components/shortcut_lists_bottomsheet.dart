@@ -10,7 +10,7 @@ class ShortcutListsBottomsheet extends StatelessWidget {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
     return Container(
-      height: mediaQuery.height * .5,
+      height: mediaQuery.height * .6,
       color: AppTheme.colors.appBackgroundColor,
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       child: Column(
@@ -24,6 +24,26 @@ class ShortcutListsBottomsheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(25)),
           ),
           const SizedBox(height: 40),
+          Container(
+            decoration: BoxDecoration(
+                color: AppTheme.colors.itemBackgroundColor,
+                borderRadius: BorderRadius.circular(10)),
+            padding: const EdgeInsets.all(3),
+            width: mediaQuery.width * .85,
+            child: ListTile(
+              onTap: () =>
+                  Navigator.pushReplacementNamed(context, AppRoutes.creditCardListPage),
+              title: Text(
+                'Lista de Cartões',
+                style: AppTheme.textStyles.bodyTextStyle,
+              ),
+              trailing: Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: AppTheme.colors.hintColor,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
           Container(
             decoration: BoxDecoration(
                 color: AppTheme.colors.itemBackgroundColor,

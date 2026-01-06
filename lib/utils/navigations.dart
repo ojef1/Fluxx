@@ -1,8 +1,11 @@
 import 'package:Fluxx/blocs/bill_form_cubit/bill_form_cubit.dart';
 import 'package:Fluxx/blocs/category_form_cubit/category_form_cubit.dart';
+import 'package:Fluxx/blocs/credit_card_cubits/credit_card_form_cubit.dart';
+import 'package:Fluxx/blocs/credit_card_cubits/credit_card_info_cubit.dart';
 import 'package:Fluxx/blocs/revenue_form_cubit/revenue_form_cubit.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/category_model.dart';
+import 'package:Fluxx/models/credit_card_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/cupertino.dart';
@@ -52,3 +55,30 @@ void goToCategoryForm({required BuildContext context, CategoryModel? category}) 
     AppRoutes.categoryFormPage,
   );
 } 
+
+void goToCreditCardForm({required BuildContext context, CreditCardModel? creditCard}) {
+  if (creditCard != null) {
+    //se existe dados do cartão significa que será editado
+    //portanto o modo do formulário será para edição
+    GetIt.I<CreditCardFormCubit>().updateFormMode(CreditCardFormMode.editing);
+    GetIt.I<CreditCardFormCubit>().loadCreditCardToEdit(creditCard);
+  } else {
+    GetIt.I<CreditCardFormCubit>().updateFormMode(CreditCardFormMode.adding);
+  }
+  Navigator.pushNamed(
+    context,
+    AppRoutes.creditCardFormPage,
+  );
+} 
+
+void goToCreditCardInfo({required BuildContext context, required String id}) {
+  GetIt.I<CreditCardInfoCubit>().loadIdToGet(id);
+  Navigator.pushNamed(
+    context,
+    AppRoutes.creditCardInfoPage,
+  );
+}
+
+void goToHomePage({required BuildContext context}){
+  Navigator.pushNamed(context, AppRoutes.homePage);
+}

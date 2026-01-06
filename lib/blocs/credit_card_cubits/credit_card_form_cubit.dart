@@ -113,7 +113,7 @@ class CreditCardFormCubit extends Cubit<CreditCardFormState> {
     }
   }
 
-  void loadedCreditCardToEdit(CreditCardModel creditCard) {
+  void loadCreditCardToEdit(CreditCardModel creditCard) {
     _loadedCreditCardToEdit = creditCard;
     var currentDate = DateTime.now();
     var closingDateTime = DateTime(

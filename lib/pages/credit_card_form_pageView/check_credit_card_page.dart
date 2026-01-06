@@ -89,13 +89,6 @@ class _CheckCreditCardPageState extends State<CheckCreditCardPage> {
   }
 }
 
-BankModel getBank(int bankId) {
-  return Banks.all.firstWhere((bank) => bank.id == bankId);
-}
-
-CardNetworkModel getCardNetwork(int cardNetworkId) {
-  return CardNetwork.all.firstWhere((bank) => bank.id == cardNetworkId);
-}
 
 class _DataItem extends StatelessWidget {
   final String title;
