@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:Fluxx/blocs/credit_card_cubits/credit_card_info_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_state.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
@@ -62,7 +61,6 @@ class _ResumePageState extends State<ResumePage> {
     await GetIt.I<ResumeCubit>().getTotalSpent(actualMonth.id!);
     var totalRevenues = await GetIt.I<RevenueCubit>().calculateTotalRevenues();
     await GetIt.I<ResumeCubit>().calculatePercent(totalRevenues);
-    await GetIt.I<CreditCardInfoCubit>().getInvoicesForCurrentMonth();
   }
 
   @override
@@ -308,7 +306,7 @@ class _ResumePageState extends State<ResumePage> {
                           ),
                           GestureDetector(
                             onTap: () => Navigator.pushNamed(
-                                    context, AppRoutes.statsPage)
+                                    context, AppRoutes.billStatsPage)
                                 .then((value) => init()),
                             child: Container(
                               alignment: Alignment.center,

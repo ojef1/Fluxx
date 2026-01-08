@@ -1,4 +1,4 @@
-import 'package:Fluxx/blocs/bill_form_cubit/bill_form_cubit.dart';
+import 'package:Fluxx/blocs/bills_cubit/bill_form_cubit.dart';
 import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';

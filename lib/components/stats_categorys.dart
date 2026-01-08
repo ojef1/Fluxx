@@ -58,7 +58,7 @@ class StatsCategory extends StatelessWidget {
             return EmptyCategoryList(
               onPressed: () => Navigator.pushNamed(
                 context,
-                AppRoutes.detailPage,
+                AppRoutes.monthBillsPage,
               ),
               title: 'Parece que nenhuma categoria foi atrelada as suas contas',
               subTitle: 'Clique aqui para ver suas contas',

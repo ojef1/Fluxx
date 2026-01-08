@@ -1,5 +1,5 @@
-import 'package:Fluxx/blocs/bill_cubit/bill_cubit.dart';
-import 'package:Fluxx/blocs/bill_cubit/bill_state.dart';
+import 'package:Fluxx/blocs/bills_cubit/bill_cubit.dart';
+import 'package:Fluxx/blocs/bills_cubit/bill_state.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/auto_marquee_text.dart';
 import 'package:Fluxx/models/bill_model.dart';

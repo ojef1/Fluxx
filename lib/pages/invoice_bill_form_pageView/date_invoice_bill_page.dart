@@ -1,15 +1,15 @@
-part of 'bill_form_page_view.dart';
+part of 'invoice_bill_form_page_view.dart';
 
-class DateBillPage extends StatefulWidget {
+class DateInvoiceBillPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
   final void Function(String) onError;
-  const DateBillPage(
+  const DateInvoiceBillPage(
       {super.key, required this.registerValidator, required this.onError});
   @override
-  State<DateBillPage> createState() => _DateBillPageState();
+  State<DateInvoiceBillPage> createState() => _DateInvoiceBillPageState();
 }
 
-class _DateBillPageState extends State<DateBillPage> {
+class _DateInvoiceBillPageState extends State<DateInvoiceBillPage> {
   @override
   void initState() {
     super.initState();
@@ -23,18 +23,29 @@ class _DateBillPageState extends State<DateBillPage> {
 
   @override
   Widget build(BuildContext context) {
-    var mediaQuery = MediaQuery.of(context).size;
+    DateTime? selectedDateFromState;
+    try {
+      selectedDateFromState = DateFormat('dd/MM/yyyy')
+          .parse(GetIt.I<InvoiceBillFormCubit>().state.date);
+    } catch (_) {
+      // Em caso de erro, só deixa null mesmo
+      selectedDateFromState = null;
+    }
     return Column(
+      spacing: 30,
       children: [
         Text(
-          'Quando essa conta foi/deverá ser paga?',
+          'Quando essa compra foi feita?',
           style: AppTheme.textStyles.subTileTextStyle,
           softWrap: true,
           overflow: TextOverflow.visible,
         ),
-        SizedBox(height: mediaQuery.height * .03),
         DateSelector(
-          onDateSelected: (date) {},
+          selectedDateFromState: selectedDateFromState,
+          onDateSelected: (date) {
+            GetIt.I<InvoiceBillFormCubit>().updateSelectedMonth(date);
+            GetIt.I<InvoiceBillFormCubit>().updateDate(date.toString());
+          },
         ),
       ],
     );
@@ -43,10 +54,12 @@ class _DateBillPageState extends State<DateBillPage> {
 
 class DateSelector extends StatefulWidget {
   final ValueChanged<DateTime> onDateSelected;
+  final DateTime? selectedDateFromState;
 
   const DateSelector({
     super.key,
     required this.onDateSelected,
+    required this.selectedDateFromState,
   });
 
   @override
@@ -54,25 +67,20 @@ class DateSelector extends StatefulWidget {
 }
 
 class _DateSelectorState extends State<DateSelector> {
-  DateTime selectedDate = () {
-    DateTime? selectedDateFromState;
-    try {
-      selectedDateFromState =
-          DateFormat('dd/MM/yyyy').parse(GetIt.I<BillFormCubit>().state.date);
-    } catch (_) {
-      // Em caso de erro, só deixa null mesmo
-      selectedDateFromState = null;
-    }
-    var selectedDate = selectedDateFromState ?? DateTime.now();    
-    GetIt.I<BillFormCubit>().updateSelectedMonth(selectedDate);
-    GetIt.I<BillFormCubit>().updateDate(selectedDate.toString());
-    return selectedDate;
-  }();
+  late DateTime selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+
+    selectedDate = widget.selectedDateFromState ?? DateTime.now();
+
+    widget.onDateSelected(selectedDate);
+  }
 
   void _selectDay(DateTime date) {
     setState(() => selectedDate = date);
-    GetIt.I<BillFormCubit>().updateDate(date.toString());
-    GetIt.I<BillFormCubit>().updateSelectedMonth(selectedDate);
+    
     widget.onDateSelected(date);
   }
 
@@ -81,20 +89,6 @@ class _DateSelectorState extends State<DateSelector> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _quickButton(
-              "Ontem",
-              DateTime.now().subtract(const Duration(days: 1)),
-            ),
-            _quickButton("Hoje", DateTime.now()),
-            _quickButton(
-              "Amanhã",
-              DateTime.now().add(const Duration(days: 1)),
-            ),
-          ],
-        ),
         const SizedBox(height: 25),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -105,34 +99,6 @@ class _DateSelectorState extends State<DateSelector> {
         ),
       ],
     );
-  }
-
-  Widget _quickButton(String label, DateTime date) {
-    final bool isSelected = _isSameDay(date, selectedDate);
-
-    return GestureDetector(
-      onTap: () => _selectDay(date),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 18),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppTheme.colors.hintColor
-              : AppTheme.colors.itemBackgroundColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          label,
-          style: isSelected
-              ? AppTheme.textStyles.subTileTextStyle
-                  .copyWith(color: AppTheme.colors.white)
-              : AppTheme.textStyles.subTileTextStyle,
-        ),
-      ),
-    );
-  }
-
-  bool _isSameDay(DateTime a, DateTime b) {
-    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 }
 
@@ -159,12 +125,6 @@ class _CalendarWidgetState extends State<_CalendarWidget> {
         DateTime(widget.selectedDate.year, widget.selectedDate.month);
   }
 
-  void _changeMonth(int offset) {
-    final nextMonth = DateTime(focusedMonth.year, focusedMonth.month + offset);
-
-    setState(() => focusedMonth = nextMonth);
-  }
-
   @override
   Widget build(BuildContext context) {
     final firstDayOfMonth = DateTime(focusedMonth.year, focusedMonth.month, 1);
@@ -180,21 +140,6 @@ class _CalendarWidgetState extends State<_CalendarWidget> {
       ),
       child: Column(
         children: [
-          // HEADER
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _arrowButton(Icons.chevron_left, () => _changeMonth(-1)),
-              Text(
-                DateFormat("MMMM yyyy").format(focusedMonth),
-                style: AppTheme.textStyles.tileTextStyle,
-              ),
-              _arrowButton(Icons.chevron_right, () => _changeMonth(1)),
-            ],
-          ),
-
-          const SizedBox(height: 15),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"]
@@ -208,9 +153,7 @@ class _CalendarWidgetState extends State<_CalendarWidget> {
                     ))
                 .toList(),
           ),
-
           const SizedBox(height: 10),
-
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -251,20 +194,6 @@ class _CalendarWidgetState extends State<_CalendarWidget> {
             },
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _arrowButton(IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: AppTheme.colors.appBackgroundColor,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Icon(icon, color: AppTheme.colors.white),
       ),
     );
   }

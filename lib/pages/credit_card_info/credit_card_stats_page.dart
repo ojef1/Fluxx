@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_info_cubit.dart';
 import 'package:Fluxx/components/bottom_sheets/credit_card_info_bottomsheet.dart';
+import 'package:Fluxx/components/custom_loading.dart';
 import 'package:Fluxx/services/credit_card_services.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/helpers.dart';
@@ -19,10 +20,8 @@ class CreditCardStatsPage extends StatefulWidget {
 }
 
 class _CreditCardStatsPageState extends State<CreditCardStatsPage> {
-
   @override
   void initState() {
-    
     super.initState();
   }
 
@@ -49,20 +48,7 @@ class _CreditCardStatsPageState extends State<CreditCardStatsPage> {
                   switch (state.status) {
                     case ResponseStatus.initial:
                     case ResponseStatus.loading:
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 150),
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            constraints: const BoxConstraints(
-                              minWidth: 30,
-                              minHeight: 30,
-                            ),
-                            backgroundColor: AppTheme.colors.hintColor,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                AppTheme.colors.lightHintColor),
-                          ),
-                        ),
-                      );
+                      return const CustomLoading();
                     case ResponseStatus.error:
                       return const Padding(
                         padding: EdgeInsets.symmetric(vertical: 100),
@@ -174,9 +160,11 @@ class _StatsPageContentState extends State<_StatsPageContent> {
                         style: AppTheme.textStyles.bodyTextStyle,
                       ),
                       Text(
-                        'R\$${calcRemainingLimit(
-                          totalLimit: state.card?.creditLimit ?? 0.0,
-                          totalSpent: state.invoice?.price ?? 0.0,
+                        'R\$${formatPrice(
+                          calcRemainingLimit(
+                            totalLimit: state.card?.creditLimit ?? 0.0,
+                            totalSpent: state.invoice?.price ?? 0.0,
+                          ),
                         )}',
                         style: AppTheme.textStyles.bodyTextStyle,
                       ),

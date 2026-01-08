@@ -2,11 +2,10 @@ import 'dart:developer';
 import 'dart:math' as math;
 
 import 'package:Fluxx/data/database.dart';
-import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
 import 'package:Fluxx/models/invoice_bill_model.dart';
 import 'package:Fluxx/models/invoice_model.dart';
-import 'package:Fluxx/services/credit_card_services.dart';
+import 'package:Fluxx/services/credit_card_services.dart' as service;
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,7 +21,10 @@ class CreditCardInfoCubit extends Cubit<CreditCardInfoState> {
   Future<void> init(int monthId) async {
     _updateResponseStatus(ResponseStatus.initial);
     await getCreditCardById(state.idToGet);
-    final currentInvoice = await getInvoice(state.card!);
+    final currentInvoice = await service.getInvoice(
+      card: state.card!,
+      referenceDate: DateTime.now(),
+    );
     emit(state.copyWith(invoice: currentInvoice));
     await _calcRecommendedSpendig(monthId);
     await _calcRevenueImpairment(monthId);
@@ -35,45 +37,9 @@ class CreditCardInfoCubit extends Cubit<CreditCardInfoState> {
       final invoiceBills =
           result.map((item) => InvoiceBillModel.fromJson(item)).toList();
       emit(state.copyWith(invoiceBillsLength: invoiceBills.length));
-    }else{
+    } else {
       emit(state.copyWith(invoiceBillsLength: 0));
     }
-  }
-
-  Future<InvoiceModel?> getInvoice(CreditCardModel card) async {
-    // _updateResponseStatus(ResponseStatus.loading);
-    try {
-      final invoice = Db.getCreditCardInvoice(
-        creditCard: card,
-        referenceDate: DateTime.now(),
-      );
-      _updateResponseMessage('');
-      // _updateResponseStatus(ResponseStatus.success);
-      return invoice;
-    } catch (e) {
-      log('$e', name: 'getInvoice');
-      _updateResponseMessage('Erro ao achar a fatura');
-      // _updateResponseStatus(ResponseStatus.error);
-    }
-    return null;
-  }
-
-  Future<List<InvoiceModel>> getInvoicesForCurrentMonth() async {
-    final cards = await Db.getData(Tables.creditCards);
-    final now = DateTime.now();
-
-    final List<InvoiceModel> invoices = [];
-
-    for (final card in cards) {
-      final creditCard = CreditCardModel.fromJson(card);
-      final invoice = await getInvoice(creditCard);
-      // garante que é a fatura do mês atual
-      if (invoice != null && invoice.monthId == now.month) {
-        invoices.add(invoice);
-      }
-    }
-    log('faturas : $invoices');
-    return invoices;
   }
 
   Future<void> _calcRecommendedSpendig(int monthId) async {
@@ -86,7 +52,7 @@ class CreditCardInfoCubit extends Cubit<CreditCardInfoState> {
   }
 
   Future<void> _calcRevenueImpairment(int monthId) async {
-    final double totalRevenues = await calcTotalRevenues(monthId);
+    final double totalRevenues = await service.calcTotalRevenues(monthId);
     final double totalInvoice = state.invoice?.price ?? 0.0;
 
     double impairmentPercent = 0.0;
@@ -104,9 +70,8 @@ class CreditCardInfoCubit extends Cubit<CreditCardInfoState> {
   Future<void> getCreditCardById(String id) async {
     _updateResponseStatus(ResponseStatus.loading);
     try {
-      var result = await Db.getCreditCardById(id);
-      if (result != null) {
-        final card = CreditCardModel.fromJson(result);
+      var card = await service.getCreditCardById(id);
+      if (card != null) {
         emit(state.copyWith(card: card));
         _updateResponseMessage('');
         _updateResponseStatus(ResponseStatus.success);

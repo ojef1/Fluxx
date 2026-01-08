@@ -1,24 +1,21 @@
-import 'package:Fluxx/blocs/bills_cubit/bill_cubit.dart';
-import 'package:Fluxx/utils/app_routes.dart';
+import 'package:Fluxx/models/invoice_bill_model.dart';
 import 'package:flutter/material.dart';
 import 'package:Fluxx/themes/app_theme.dart';
-import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/utils/helpers.dart';
-import 'package:get_it/get_it.dart';
 
-class BillItem extends StatefulWidget {
-  final BillModel bill;
+class InvoiceBillItem extends StatefulWidget {
+  final InvoiceBillModel bill;
 
-  const BillItem({
+  const InvoiceBillItem({
     super.key,
     required this.bill,
   });
 
   @override
-  State<BillItem> createState() => _BillItemState();
+  State<InvoiceBillItem> createState() => _InvoiceBillItemState();
 }
 
-class _BillItemState extends State<BillItem> {
+class _InvoiceBillItemState extends State<InvoiceBillItem> {
   bool isExpanded = false;
 
   void toggleExpanded() {
@@ -78,17 +75,12 @@ class _BillItemState extends State<BillItem> {
                         secondCurve: Curves.easeInOut,
                         firstChild: const SizedBox.shrink(),
                         secondChild: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            _InfoText(formatDate(widget.bill.date) ?? ''),
                             _InfoText(
-                                formatDate(widget.bill.paymentDate) ?? ''),
-                            Flexible(
-                              fit: FlexFit.tight,
-                              child: _InfoText(
-                                'R\$ ${formatPrice(widget.bill.price ?? 0)}',
-                              ),
+                              'R\$ ${formatPrice(widget.bill.price ?? 0)}',
                             ),
-                            _InfoText(
-                                widget.bill.isPayed == 1 ? 'Pago' : 'Pendente'),
                           ],
                         ),
                       ),
@@ -113,7 +105,7 @@ class _BillItemState extends State<BillItem> {
 }
 
 class _ExpandedContent extends StatelessWidget {
-  final BillModel bill;
+  final InvoiceBillModel bill;
 
   const _ExpandedContent({required this.bill});
 
@@ -122,11 +114,11 @@ class _ExpandedContent extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          AppRoutes.detailBillPage,
-        );
-        GetIt.I<BillCubit>().getBill(bill.id!, bill.monthId!);
+        // Navigator.pushNamed(
+        //   context,
+        //   AppRoutes.detailBillPage,
+        // );
+        // GetIt.I<InvoiceBillListCubit>().getBill(bill.id!, bill.monthId!);
       },
       child: Column(
         children: [
@@ -136,18 +128,13 @@ class _ExpandedContent extends StatelessWidget {
             value: bill.categoryName ?? '—',
           ),
           _RowItem(
-            icon: Icons.wallet_rounded,
-            label: 'Receita usada:',
-            value: bill.paymentName ?? '—',
+            icon: Icons.calendar_today_outlined,
+            label: 'Data da compra:',
+            value: formatDate(bill.date) ?? '',
           ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
             child: Divider(thickness: 1),
-          ),
-          _RowItem(
-            icon: Icons.calendar_today_outlined,
-            label: 'Data de pagamento:',
-            value: formatDate(bill.paymentDate) ?? '',
           ),
           _RowItem(
             icon: Icons.attach_money,
@@ -155,11 +142,9 @@ class _ExpandedContent extends StatelessWidget {
             value: 'R\$ ${formatPrice(bill.price ?? 0)}',
           ),
           _RowItem(
-            icon: bill.isPayed == 1
-                ? Icons.check_circle_outline
-                : Icons.cancel_outlined,
-            label: 'Status:',
-            value: bill.isPayed == 1 ? 'Pago' : 'Pendente',
+            icon: Icons.check_circle_outline,
+            label: 'Pagamento:',
+            value: '${bill.installmentNumber}/${bill.installmentTotal}',
           ),
         ],
       ),

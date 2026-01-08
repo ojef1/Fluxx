@@ -1,7 +1,7 @@
 import 'dart:developer';
 
-import 'package:Fluxx/blocs/bill_cubit/bill_state.dart';
-import 'package:Fluxx/blocs/bill_list_cubit/bill_list_cubit.dart';
+import 'package:Fluxx/blocs/bills_cubit/bill_state.dart';
+import 'package:Fluxx/blocs/bills_cubit/bill_list_cubit.dart';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/bill_model.dart';
@@ -69,10 +69,6 @@ class BillCubit extends Cubit<BillState> {
     }
   }
 
-  void _updateMonthTotalValues(int monthId) {
-    GetIt.I<ListBillCubit>().getMonthTotalSpent(monthId);
-    GetIt.I<ListBillCubit>().getMonthTotalPayed(monthId);
-  }
 
   void updateGetBillResponse(GetBillResponse getBillResponse) {
     emit(state.copyWith(getBillResponse: getBillResponse));
@@ -103,8 +99,7 @@ class BillCubit extends Cubit<BillState> {
       if (result > 0) {
         updateSuccessMessage('Conta removida com sucesso.');
         updateRemoveBillsResponse(RemoveBillsResponse.success);
-        _updateMonthTotalValues(monthId);
-        await GetIt.I<ListBillCubit>().getAllBills(monthId);
+        await GetIt.I<BillListCubit>().getAllBills(monthId);
         return result;
       } else {
         updateErrorMessage('Falha ao remover a conta.');

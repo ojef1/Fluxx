@@ -3,6 +3,8 @@ import 'dart:developer';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/models/bank_model.dart';
 import 'package:Fluxx/models/card_network_model.dart';
+import 'package:Fluxx/models/credit_card_model.dart';
+import 'package:Fluxx/models/invoice_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/utils/constants.dart';
 
@@ -44,6 +46,16 @@ CardNetworkModel getCardNetwork(int cardNetworkId) {
 double calcRemainingLimit(
     {required double totalLimit, required double totalSpent}) {
   return totalLimit - totalSpent;
+}
+
+Future<double> getCreditCardAvailableLimite(
+    {required CreditCardModel card}) async {
+  try {
+    return await Db.getCreditCardAvailableLimite(card: card);
+  } catch (e) {
+    log('$e', name: 'getCreditCardAvailableLimite');
+    return 0.0;
+  }
 }
 
 double calcPercentSpent(
@@ -167,4 +179,66 @@ Future<List<RevenueModel>> _getSingleRevenue(int monthId) async {
     log('$error');
     return [];
   }
+}
+
+Future<InvoiceModel?> getInvoice({
+  required CreditCardModel card,
+  required DateTime referenceDate,
+}) async {
+  try {
+    final invoice = await Db.getCreditCardInvoice(
+      creditCard: card,
+      referenceDate: referenceDate,
+    );
+    return invoice;
+  } catch (e) {
+    log('$e', name: 'getInvoice');
+  }
+  return null;
+}
+
+Future<List<InvoiceModel>> getInvoicesByMonth(int monthId) async {
+  try {
+    final result = await Db.getInvoicesByMonth(monthId);
+    final invoices = result.map((item) => InvoiceModel.fromJson(item)).toList();
+    return invoices;
+  } catch (e) {
+    log('$e', name: 'getInvoice');
+  }
+  return [];
+}
+
+Future<CreditCardModel?> getCreditCardById(String cardId) async {
+  try {
+    var result = await Db.getCreditCardById(cardId);
+    if (result != null) {
+      final card = CreditCardModel.fromJson(result);
+      return card;
+    } else {
+      return null;
+    }
+  } catch (e) {
+    log('$e', name: 'deleteCreditCard');
+    return null;
+  }
+}
+
+Future<List<CreditCardModel>> getCardsList() async {
+  try {
+    var result = await Db.getCreditCards();
+    final cardsList =
+        result.map((item) => CreditCardModel.fromJson(item)).toList();
+    log('lista de cartões : $cardsList');
+    return cardsList;
+  } catch (e) {
+    log('Erro ao buscar os cartões : $e', name: 'getCardsList');
+    rethrow;
+  }
+}
+
+CreditCardModel getCardFromInvoice({
+  required List<CreditCardModel> cards,
+  required InvoiceModel invoice,
+}) {
+  return cards.firstWhere((card) => card.id == invoice.creditCardId);
 }

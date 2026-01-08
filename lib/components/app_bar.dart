@@ -17,6 +17,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(
         title,
         style: AppTheme.textStyles.titleTextStyle,
+        softWrap: true,
+        maxLines: 2,
       ),
       leading: IconButton(
         onPressed: backButton ?? ()=> Navigator.pop(context),

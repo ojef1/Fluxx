@@ -6,6 +6,7 @@ import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
+import 'package:Fluxx/services/bill_services.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,19 +21,13 @@ class BillFormCubit extends Cubit<BillFormState> {
   //como monthId, isPayed e etc.
   BillModel? _loadedBillToEdit;
 
-  Future<void> getMonthIdFromDate(DateTime date) async {
-    final yearId = await Db.getYearId(date.year);
-
-    final monthId = await Db.getMonthId(
-      yearId: yearId,
-      month: date.month,
-    );
-
-    final getMonth = await Db.getMonthById(monthId);
-    MonthModel? month = getMonth != null ? MonthModel.fromJson(getMonth) : null;
-    log('monthId: $monthId, e YearId : $yearId',
-        name: 'resolveMonthIdFromDate');
-    emit(state.copyWith(selectedMonth: month));
+  Future<void> updateSelectedMonth(DateTime date) async {
+    try {
+      MonthModel? selectedMonth = await getMonthIdFromDate(date);
+      emit(state.copyWith(selectedMonth: selectedMonth));
+    } catch (e) {
+      log('Não possível atualizar o mês selecionado');
+    }
   }
 
   updateName(String name) {

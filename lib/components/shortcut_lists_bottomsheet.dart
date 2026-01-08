@@ -72,7 +72,7 @@ class ShortcutListsBottomsheet extends StatelessWidget {
             width: mediaQuery.width * .85,
             child: ListTile(
               onTap: () {
-                Navigator.pushReplacementNamed(context, AppRoutes.detailPage);
+                Navigator.pushReplacementNamed(context, AppRoutes.monthBillsPage);
               },
               title: Text(
                 'Lista de Contas',

@@ -1,9 +1,9 @@
 import 'dart:developer';
 
-import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:Fluxx/services/credit_card_services.dart' as service;
 
 part 'credit_card_list_state.dart';
 
@@ -13,10 +13,7 @@ class CreditCardListCubit extends Cubit<CreditCardListState> {
   Future<void> getCardsList() async {
     updateResponseStatus(ResponseStatus.loading);
     try {
-      var result = await Db.getCreditCards();
-      final cardsList =
-          result.map((item) => CreditCardModel.fromJson(item)).toList();
-      log('lista de cartões : $cardsList');
+      final cardsList = await service.getCardsList();
       emit(state.copyWith(cardList: cardsList));
       updateResponseStatus(ResponseStatus.success);
     } catch (e) {

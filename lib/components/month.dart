@@ -17,7 +17,7 @@ class Month extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         GetIt.I<ResumeCubit>().updateMonthInFocus(month);
-        Navigator.pushNamed(context, AppRoutes.detailPage);
+        Navigator.pushNamed(context, AppRoutes.monthBillsPage);
       },
       child: Container(
         margin: EdgeInsets.symmetric(

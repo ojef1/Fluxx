@@ -1,5 +1,4 @@
-import 'package:Fluxx/blocs/bill_list_cubit/bill_list_cubit.dart';
-import 'package:Fluxx/blocs/bill_list_cubit/bill_list_state.dart';
+import 'package:Fluxx/blocs/bills_cubit/bill_list_cubit.dart';
 import 'package:Fluxx/blocs/category_cubit/category_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_state.dart';
@@ -52,7 +51,7 @@ class _StatsPageState extends State<StatsPage> {
         .calculateAvailableValue(state.monthInFocus!.id!);
     await GetIt.I<RevenueCubit>()
         .calculateRemainigRevenues(state.monthInFocus!.id!);
-    await GetIt.I<ListBillCubit>().getAllBills(state.monthInFocus!.id!);
+    await GetIt.I<BillListCubit>().getAllBills(state.monthInFocus!.id!);
     await GetIt.I<CategoryCubit>().getTotalByCategory(state.monthInFocus!.id!);
   }
 
@@ -159,7 +158,7 @@ class _StatsPageState extends State<StatsPage> {
                             style: AppTheme.textStyles.subTileTextStyle),
                       ),
                       SizedBox(height: mediaQuery.height * .01),
-                      BlocBuilder<ListBillCubit, ListBillState>(
+                      BlocBuilder<BillListCubit, ListBillState>(
                         bloc: GetIt.I(),
                         buildWhen: (previous, current) =>
                             previous.bills != current.bills,

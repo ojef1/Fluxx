@@ -4,6 +4,7 @@ import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
+import 'package:Fluxx/models/invoice_bill_model.dart';
 import 'package:Fluxx/models/invoice_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/models/user_model.dart';
@@ -13,6 +14,8 @@ import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 import 'package:path/path.dart' as path;
+
+part 'transactions.dart';
 
 class Db {
   static sql.Database? _db;
@@ -59,6 +62,9 @@ class Db {
             'price REAL, '
             'date TEXT, '
             'invoice_id TEXT, '
+            'installment_number INTEGER NOT NULL, '
+            'installment_total INTEGER NOT NULL, '
+            'installment_group_id TEXT NOT NULL, '
             'FOREIGN KEY (invoice_id) REFERENCES ${Tables.creditCardsInvoices} (id), '
             'FOREIGN KEY (category_id) REFERENCES ${Tables.category} (id) ON DELETE RESTRICT, '
             'FOREIGN KEY (credit_card_id) REFERENCES ${Tables.creditCards} (id) ON DELETE SET NULL)',
@@ -174,6 +180,9 @@ class Db {
           'price REAL, '
           'date TEXT, '
           'invoice_id TEXT, '
+          'installment_number INTEGER NOT NULL, '
+          'installment_total INTEGER NOT NULL, '
+          'installment_group_id TEXT NOT NULL, '
           'FOREIGN KEY (invoice_id) REFERENCES ${Tables.creditCardsInvoices} (id), '
           'FOREIGN KEY (category_id) REFERENCES ${Tables.category} (id) ON DELETE RESTRICT, '
           'FOREIGN KEY (credit_card_id) REFERENCES ${Tables.creditCards} (id) ON DELETE SET NULL)',
@@ -200,7 +209,7 @@ class Db {
 
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      version: 29,
+      version: 30,
     );
     return _db!;
   }
@@ -448,6 +457,42 @@ class Db {
     }
   }
 
+  static Future<List<Map<String, dynamic>>> getInvoicesByMonth(
+      int monthId) async {
+    final db = await Db.dataBase();
+
+    try {
+      final result = db.query(
+        Tables.creditCardsInvoices,
+        where: 'month_id = ?',
+        whereArgs: [monthId],
+      );
+      return result;
+    } catch (e) {
+      throw Exception('Não foi possível pegas as faturas do mês $monthId');
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getInvoiceBills(String id) async {
+    final db = await Db.dataBase();
+
+    try {
+      final result = await db.rawQuery('''
+      SELECT ${Tables.creditCardsBills}.*,
+             ${Tables.category}.name AS category_name
+      FROM ${Tables.creditCardsBills}
+      LEFT JOIN ${Tables.category}
+        ON ${Tables.creditCardsBills}.category_id = ${Tables.category}.id
+      WHERE ${Tables.creditCardsBills}.invoice_id = ?
+      ''', [id]);
+
+      return result;
+    } catch (e) {
+      log('$e', name: 'getInvoiceBills');
+      throw Exception('Não foi possível pegar as contas da fatura');
+    }
+  }
+
   static Future<double> getInvoicePrice({required String invoiceId}) async {
     final db = await Db.dataBase();
 
@@ -465,6 +510,31 @@ class Db {
     } catch (e) {
       log('e', name: 'getInvoicePrice');
       throw Exception('não foi possível pegar o valor da fatura');
+    }
+  }
+
+  static Future<double> getCreditCardAvailableLimite(
+      {required CreditCardModel card}) async {
+    final db = await Db.dataBase();
+
+    try {
+      final invoiceResult = await db.rawQuery('''
+      SELECT SUM(price) as total
+      FROM ${Tables.creditCardsInvoices}
+      WHERE credit_card_id = ?
+        AND is_paid = 0
+    ''', [card.id]);
+
+      final double totalOpenInvoices =
+          (invoiceResult.first['total'] as num?)?.toDouble() ?? 0.0;
+
+      // Calcular limite disponível
+      final double availableLimit = card.creditLimit! - totalOpenInvoices;
+
+      // Segurança: nunca retornar negativo
+      return availableLimit < 0 ? 0.0 : availableLimit;
+    } catch (e) {
+      throw Exception('Erro ao calcular limite disponível: $e');
     }
   }
 
@@ -613,7 +683,8 @@ class Db {
     }
   }
 
-  static Future<List<Map<String,dynamic>>?> getCreditCardsBills(String invoiceId) async{
+  static Future<List<Map<String, dynamic>>?> getCreditCardsBills(
+      String invoiceId) async {
     final db = await Db.dataBase();
 
     try {
@@ -623,7 +694,7 @@ class Db {
         whereArgs: [invoiceId],
       );
 
-       return result;
+      return result;
     } catch (e) {
       debugPrint("Erro ao consultar contas da fatura : $e");
       return [];
@@ -754,6 +825,21 @@ class Db {
     }
   }
 
+  static Future<int> insertInvoiceBill(InvoiceBillModel invoice) async {
+    final db = await Db.dataBase();
+    final data = invoice.toJson();
+    try {
+      return await db.insert(
+        Tables.creditCardsBills,
+        data,
+        conflictAlgorithm: sql.ConflictAlgorithm.replace,
+      );
+    } catch (e) {
+      log('$e', name: 'insertInvoiceBill');
+      throw Exception('Erro ao adicionar a conta');
+    }
+  }
+
   static Future<int> insertCategory(CategoryModel data) async {
     final db = await Db.dataBase();
     final dataJson = data.toJson();
@@ -773,17 +859,76 @@ class Db {
   static Future<int> insertCreditCard(CreditCardModel creditCard) async {
     final db = await Db.dataBase();
     final dataJson = creditCard.toJson();
+    final now = DateTime.now();
+    return await db.transaction(
+      (txn) async {
+        try {
+          final result = await txn.insert(
+            Tables.creditCards,
+            dataJson,
+            conflictAlgorithm: sql.ConflictAlgorithm.replace,
+          );
 
-    try {
-      int result = await db.insert(
-        Tables.creditCards,
-        dataJson,
-        conflictAlgorithm: sql.ConflictAlgorithm.replace,
-      );
-      return result;
-    } catch (e) {
-      throw Exception('Erro ao inserir Cartão de crédito : $e');
-    }
+          if (result <= 0) {
+            throw Exception('Falha ao inserir cartão');
+          }
+
+          // Calcular período da fatura
+          final period = calculateInvoicePeriod(
+            date: now,
+            closingDay: creditCard.closingDay!,
+          );
+
+          final yearId = await _getYearIdTx(txn: txn, year: period.end.year);
+          final monthId = await _getMonthIdTx(
+            txn: txn,
+            yearId: yearId,
+            month: period.end.month,
+          );
+
+          // Garantia extra (embora em criação não devesse existir)
+          final existing = await txn.query(
+            Tables.creditCardsInvoices,
+            where: 'credit_card_id = ? AND month_id = ?',
+            whereArgs: [creditCard.id, monthId],
+            limit: 1,
+          );
+
+          final cat = await txn.query(
+            Tables.category,
+            where: 'id = ?',
+            whereArgs: [Constants.creditCardCategoryId],
+          );
+
+          log('categoria fixa existe? ${cat.isNotEmpty}');
+
+          if (existing.isEmpty) {
+            final newInvoice = InvoiceModel(
+              id: codeGenerate(),
+              creditCardId: creditCard.id!,
+              categoryId: Constants.creditCardCategoryId,
+              paymentId: null,
+              monthId: monthId,
+              dueDate: creditCard.dueDay.toString(),
+              startDate: period.start.toIso8601String(),
+              endDate: period.end.toIso8601String(),
+              price: 0.0,
+              isPaid: 0,
+            );
+            log('invoice : $newInvoice');
+            await txn.insert(
+              Tables.creditCardsInvoices,
+              newInvoice.toJson(),
+            );
+          }
+
+          return result;
+        } catch (e) {
+          // qualquer erro aqui cancela tudo
+          rethrow;
+        }
+      },
+    );
   }
 
   static Future<int> _insertCreditCardInvoice(InvoiceModel invoice) async {
@@ -796,6 +941,7 @@ class Db {
         dataJson,
         conflictAlgorithm: sql.ConflictAlgorithm.replace,
       );
+      log('Fatura inserida $invoice');
       return result;
     } catch (e) {
       throw Exception('Erro ao inserir Fatura do Cartão : $e');

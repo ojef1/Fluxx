@@ -1,6 +1,7 @@
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_form_cubit.dart'
     as formcubit;
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_info_cubit.dart';
+import 'package:Fluxx/components/custom_loading.dart';
 import 'package:Fluxx/models/bank_model.dart';
 import 'package:Fluxx/models/card_network_model.dart';
 import 'package:Fluxx/services/credit_card_services.dart';
@@ -67,20 +68,7 @@ class _CreditCardDetailPageState extends State<CreditCardDetailPage> {
                   switch (loadState.status) {
                     case ResponseStatus.initial:
                     case ResponseStatus.loading:
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 150),
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            constraints: const BoxConstraints(
-                              minWidth: 30,
-                              minHeight: 30,
-                            ),
-                            backgroundColor: AppTheme.colors.hintColor,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                AppTheme.colors.lightHintColor),
-                          ),
-                        ),
-                      );
+                      return const CustomLoading();
                     case ResponseStatus.error:
                       return const Padding(
                         padding: EdgeInsets.symmetric(vertical: 100),

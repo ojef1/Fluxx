@@ -1,11 +1,15 @@
-import 'package:Fluxx/blocs/bill_form_cubit/bill_form_cubit.dart';
+import 'package:Fluxx/blocs/bills_cubit/bill_form_cubit.dart';
 import 'package:Fluxx/blocs/category_form_cubit/category_form_cubit.dart';
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_form_cubit.dart';
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_info_cubit.dart';
+import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_form_cubit.dart';
+import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_list_cubit.dart';
 import 'package:Fluxx/blocs/revenue_form_cubit/revenue_form_cubit.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
+import 'package:Fluxx/models/invoice_bill_model.dart';
+import 'package:Fluxx/models/invoice_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,22 +45,26 @@ void goToRevenueForm({required BuildContext context, RevenueModel? revenue}) {
   );
 }
 
-void goToCategoryForm({required BuildContext context, CategoryModel? category}) {
+void goToCategoryForm(
+    {required BuildContext context, CategoryModel? category}) {
   if (category != null) {
     //se existe dados da categoria significa que será editado
     //portanto o modo do formulário será para edição
-    GetIt.I<CategoryFormCubit>().updateCategoryFormMode(CategoryFormMode.editing);
+    GetIt.I<CategoryFormCubit>()
+        .updateCategoryFormMode(CategoryFormMode.editing);
     GetIt.I<CategoryFormCubit>().loadCategoryToEdit(category);
   } else {
-    GetIt.I<CategoryFormCubit>().updateCategoryFormMode(CategoryFormMode.adding);
+    GetIt.I<CategoryFormCubit>()
+        .updateCategoryFormMode(CategoryFormMode.adding);
   }
   Navigator.pushNamed(
     context,
     AppRoutes.categoryFormPage,
   );
-} 
+}
 
-void goToCreditCardForm({required BuildContext context, CreditCardModel? creditCard}) {
+void goToCreditCardForm(
+    {required BuildContext context, CreditCardModel? creditCard}) {
   if (creditCard != null) {
     //se existe dados do cartão significa que será editado
     //portanto o modo do formulário será para edição
@@ -69,7 +77,7 @@ void goToCreditCardForm({required BuildContext context, CreditCardModel? creditC
     context,
     AppRoutes.creditCardFormPage,
   );
-} 
+}
 
 void goToCreditCardInfo({required BuildContext context, required String id}) {
   GetIt.I<CreditCardInfoCubit>().loadIdToGet(id);
@@ -79,6 +87,32 @@ void goToCreditCardInfo({required BuildContext context, required String id}) {
   );
 }
 
-void goToHomePage({required BuildContext context}){
+void goToHomePage({required BuildContext context}) {
   Navigator.pushNamed(context, AppRoutes.homePage);
+}
+
+void goToInvoiceBillPage({
+  required BuildContext context,
+  required InvoiceModel invoice,
+}) {
+  GetIt.I<InvoiceBillListCubit>().updateIdToGet(invoiceId: invoice.id ?? '');
+  Navigator.pushNamed(context, AppRoutes.invoiceBillsPage);
+}
+
+void goToInvoiceBillForm({
+  required BuildContext context,
+  InvoiceBillModel? invoiceBill,
+}) {
+  if (invoiceBill != null) {
+    //se existe dados da conta de cartão significa que será editado
+    //portanto o modo do formulário será para edição
+    GetIt.I<InvoiceBillFormCubit>().updateFormMode(InvoiceBillFormMode.editing);
+    GetIt.I<InvoiceBillFormCubit>().loadBillToEdit(invoiceBill);
+  } else {
+    GetIt.I<InvoiceBillFormCubit>().updateFormMode(InvoiceBillFormMode.adding);
+  }
+  Navigator.pushNamed(
+    context,
+    AppRoutes.invoiceBillFormPage,
+  );
 }

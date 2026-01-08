@@ -1,4 +1,4 @@
-import 'package:Fluxx/blocs/bill_form_cubit/bill_form_cubit.dart';
+import 'package:Fluxx/blocs/bills_cubit/bill_form_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/revenue_form_cubit/revenue_form_cubit.dart';
 import 'package:Fluxx/components/primary_button.dart';

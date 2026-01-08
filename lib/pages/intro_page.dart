@@ -1,5 +1,6 @@
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/user_cubit/user_cubit.dart';
+import 'package:Fluxx/components/custom_loading.dart';
 import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
@@ -94,15 +95,7 @@ class _IntroPageState extends State<IntroPage> {
                   .copyWith(color: AppTheme.colors.white),
             ),
             if (!error)
-              CircularProgressIndicator(
-                constraints: const BoxConstraints(
-                  minWidth: 30,
-                  minHeight: 30,
-                ),
-                backgroundColor: AppTheme.colors.hintColor,
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    AppTheme.colors.lightHintColor),
-              ),
+              const CustomLoading(padding: EdgeInsets.zero),
             const SizedBox(height: 20),
             if (!error)
               Text(

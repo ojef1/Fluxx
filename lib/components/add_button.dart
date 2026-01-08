@@ -7,11 +7,17 @@ class AddButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var mediaQuery = MediaQuery.of(context).size;
     return ListTile(
       titleTextStyle: AppTheme.textStyles.bodyTextStyle,
       titleAlignment: ListTileTitleAlignment.center,
       tileColor: AppTheme.colors.itemBackgroundColor,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      minTileHeight: mediaQuery.height * .055,
+      shape: BeveledRectangleBorder(
+        borderRadius: BorderRadius.circular(5),
+      ),
+      splashColor: AppTheme.colors.hintColor,
       title: Stack(
         alignment: Alignment.centerLeft,
         children: [
@@ -21,7 +27,7 @@ class AddButton extends StatelessWidget {
               Text(
                 'Adicionar',
                 textAlign: TextAlign.center,
-                style: AppTheme.textStyles.tileTextStyle.copyWith(
+                style: AppTheme.textStyles.bodyTextStyle.copyWith(
                   color: AppTheme.colors.primaryTextColor,
                 ),
               ),
