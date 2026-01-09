@@ -1,7 +1,7 @@
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_form_cubit.dart'
     as formcubit;
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_list_cubit.dart';
-import 'package:Fluxx/components/add_button.dart';
+import 'package:Fluxx/components/secondary_button.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/empty_list_placeholder/empty_credit_card_list.dart';
 import 'package:Fluxx/models/bank_model.dart';
@@ -30,7 +30,7 @@ class _CreditCardListPageState extends State<CreditCardListPage> {
   }
 
   Future<void> init() async {
-    GetIt.I<CreditCardListCubit>().getCardsList();
+    GetIt.I<CreditCardListCubit>().getActiveCardsList();
   }
 
   @override
@@ -77,9 +77,12 @@ class _CreditCardListPageState extends State<CreditCardListPage> {
                           child: Column(
                             spacing: 35,
                             children: [
-                              AddButton(
-                                  onPressed: () =>
-                                      goToCreditCardForm(context: context)),
+                              SecondaryButton(
+                                title: 'Adicionar',
+                                icon: Icons.add_rounded,
+                                onPressed: () =>
+                                    goToCreditCardForm(context: context),
+                              ),
                               ListView.builder(
                                 shrinkWrap: true,
                                 itemCount: state.cardList.length,
@@ -123,26 +126,47 @@ class _CreditCardListPageState extends State<CreditCardListPage> {
                                         padding:
                                             const EdgeInsets.only(top: 16.0),
                                         child: Row(
-                                          spacing: 15,
+                                          spacing: 10,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
-                                            ClipOval(
-                                              child: Image.asset(
-                                                fit: BoxFit.cover,
-                                                isAntiAlias: true,
-                                                bank.iconPath,
-                                                height: 25,
-                                                width: 25,
+                                            Expanded(
+                                              child: Row(
+                                                spacing: 15,
+                                                children: [
+                                                  ClipOval(
+                                                    child: Image.asset(
+                                                      fit: BoxFit.cover,
+                                                      isAntiAlias: true,
+                                                      bank.iconPath,
+                                                      height: 25,
+                                                      width: 25,
+                                                    ),
+                                                  ),
+                                                  Flexible(
+                                                    child: Text(
+                                                      bank.name,
+                                                      style: AppTheme.textStyles
+                                                          .secondaryTextStyle,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                            Text(
-                                              '${bank.name} ºººº${card.lastFourDigits}',
-                                              style: AppTheme.textStyles
-                                                  .secondaryTextStyle,
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  'final ${card.lastFourDigits}',
+                                                  style: AppTheme.textStyles
+                                                      .secondaryTextStyle,
+                                                ),
+                                              ],
                                             ),
                                           ],
                                         ),
                                       ),
-                                      onTap: () => goToCreditCardInfo(context: context, id: card.id!),
+                                      onTap: () => goToCreditCardInfo(
+                                          context: context, id: card.id!),
                                     ),
                                   );
                                 },

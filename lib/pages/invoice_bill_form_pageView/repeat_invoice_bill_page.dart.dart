@@ -114,11 +114,9 @@ class _RepeatBillHandle extends StatefulWidget {
 }
 
 class _RepeatBillHandleState extends State<_RepeatBillHandle> {
-  late final MonthModel _currentMonth;
 
   @override
   void initState() {
-    _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
     super.initState();
   }
 
@@ -136,113 +134,96 @@ class _RepeatBillHandleState extends State<_RepeatBillHandle> {
             textAlign: TextAlign.center,
             overflow: TextOverflow.visible,
           ),
+          const SizedBox(height: 20),
+          BlocBuilder<InvoiceBillFormCubit, InvoiceBillFormState>(
+            bloc: GetIt.I(),
+            buildWhen: (previous, current) =>
+                previous.repeatCount != current.repeatCount,
+            builder: (context, state) {
+              return Container(
+                width: mediaQuery.width * .55,
+                height: 50,
+                padding: EdgeInsets.zero,
+                decoration: BoxDecoration(
+                    color: AppTheme.colors.itemBackgroundColor,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      height: double.infinity,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: AppTheme.colors.hintColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: () => GetIt.I<InvoiceBillFormCubit>()
+                            .updateRepeatCount(state.repeatCount - 1),
+                        style: IconButton.styleFrom(
+                          shape: BeveledRectangleBorder(
+                              borderRadius: BorderRadiusGeometry.circular(2)),
+                        ),
+                        icon: Icon(
+                          Icons.remove_rounded,
+                          color: AppTheme.colors.white,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'X${state.repeatCount}',
+                      style: AppTheme.textStyles.subTileTextStyle
+                          .copyWith(color: AppTheme.colors.white),
+                    ),
+                    Container(
+                      height: double.infinity,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: AppTheme.colors.hintColor,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: () => GetIt.I<InvoiceBillFormCubit>()
+                            .updateRepeatCount(state.repeatCount + 1),
+                        style: IconButton.styleFrom(
+                          shape: BeveledRectangleBorder(
+                              borderRadius: BorderRadiusGeometry.circular(2)),
+                        ),
+                        icon: Icon(
+                          Icons.add_rounded,
+                          color: AppTheme.colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 40),
           Text(
-            '(Isso não poderá ser editado depois)',
-            style: AppTheme.textStyles.subTileTextStyle
-                .copyWith(color: AppTheme.colors.hintTextColor.withAlpha(100)),
+            'Atenção',
+            style: AppTheme.textStyles.subTileTextStyle,
             softWrap: true,
             textAlign: TextAlign.center,
             overflow: TextOverflow.visible,
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 35.0),
+            child: Text(
+              'Compras parceladas não podem ser editadas depois.',
+              style: AppTheme.textStyles.subTileTextStyle
+                  .copyWith(color: AppTheme.colors.hintTextColor.withAlpha(100)),
+              softWrap: true,
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.visible,
+            ),
+          ),
           const SizedBox(height: 20),
-          BlocBuilder<InvoiceBillFormCubit, InvoiceBillFormState>(
-              bloc: GetIt.I(),
-              buildWhen: (previous, current) =>
-                  previous.repeatCount != current.repeatCount,
-              builder: (context, state) {
-                return Container(
-                  width: mediaQuery.width * .55,
-                  height: 50,
-                  padding: EdgeInsets.zero,
-                  decoration: BoxDecoration(
-                      color: AppTheme.colors.itemBackgroundColor,
-                      borderRadius: BorderRadius.circular(5)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        height: double.infinity,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          color: AppTheme.colors.hintColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: IconButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () => GetIt.I<InvoiceBillFormCubit>().updateRepeatCount(state.repeatCount - 1),
-                          style: IconButton.styleFrom(
-                            shape: BeveledRectangleBorder(
-                                borderRadius: BorderRadiusGeometry.circular(2)),
-                          ),
-                          icon: Icon(
-                            Icons.remove_rounded,
-                            color: AppTheme.colors.white,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        'X${state.repeatCount}',
-                        style: AppTheme.textStyles.subTileTextStyle
-                            .copyWith(color: AppTheme.colors.white),
-                      ),
-                      Container(
-                        height: double.infinity,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          color: AppTheme.colors.hintColor,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: IconButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () => GetIt.I<InvoiceBillFormCubit>().updateRepeatCount(state.repeatCount + 1),
-                          style: IconButton.styleFrom(
-                            shape: BeveledRectangleBorder(
-                                borderRadius: BorderRadiusGeometry.circular(2)),
-                          ),
-                          icon: Icon(
-                            Icons.add_rounded,
-                            color: AppTheme.colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
         ],
       ),
     );
   }
-
-  Future<void> _validateSelectedMonth(
-    // RevenueModel revenue,
-    int repeatValue,
-    DateTime month,
-  ) async {
-    // _updateStates(repeatValue, month);
-    // var targetMonthId = _currentMonth.id! + repeatValue;
-    // bool hasRevenues =
-    //     GetIt.I<BillFormCubit>().revenueExistsInMonth(revenue, targetMonthId);
-
-    // if (hasRevenues) {
-    //   bool hasBalance =
-    //       await GetIt.I<BillFormCubit>().balanceValidation(_currentMonth.id!);
-    //   if (hasBalance) return;
-    //   _showRevenueWarning(MissingRevenueType.insufficientBalance);
-    // } else {
-    //   _showRevenueWarning(MissingRevenueType.revenueNotFound);
-    // }
-  }
-
-  // void _updateStates(int repeatValue, DateTime month) {
-  //   GetIt.I<BillFormCubit>().updateRepeatCount(repeatValue);
-  //   GetIt.I<BillFormCubit>()
-  //       .updateRepeatMonthName(getMonthName(month, withYear: true));
-  // }
-
-  // void _showRevenueWarning(MissingRevenueType type) {
-  //   showModalBottomSheet(
-  //       context: context,
-  //       builder: (context) => RevenueMissingWarningBottomsheet(type: type));
-  // }
 }

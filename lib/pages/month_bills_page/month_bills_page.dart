@@ -1,8 +1,10 @@
 import 'package:Fluxx/blocs/bills_cubit/bill_cubit.dart';
 import 'package:Fluxx/blocs/bills_cubit/bill_state.dart';
 import 'package:Fluxx/blocs/bills_cubit/bill_form_cubit.dart' as billform;
+import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_form_cubit.dart' as invoiceform;
+import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_cubit.dart' as invoicecubit;
+import 'package:Fluxx/blocs/invoices_cubits/invoice_payment_cubit.dart' as invoicepayment;
 import 'package:Fluxx/blocs/bills_cubit/bill_list_cubit.dart';
-import 'package:Fluxx/blocs/credit_card_cubits/credit_card_form_cubit.dart' as cardform;
 import 'package:Fluxx/blocs/invoices_cubits/invoices_list_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/components/app_bar.dart';
@@ -130,11 +132,32 @@ class _ListenerWrapper extends StatelessWidget {
             }
           },
         ),
-        BlocListener<cardform.CreditCardFormCubit, cardform.CreditCardFormState>(
+        BlocListener<invoiceform.InvoiceBillFormCubit, invoiceform.InvoiceBillFormState>(
           listenWhen: (previous, current) => previous.responseStatus != current.responseStatus,
           bloc: GetIt.I(),
           listener: (context, state) {
-            if (state.responseStatus == cardform.ResponseStatus.success) {
+            if (state.responseStatus == invoiceform.ResponseStatus.success) {
+              _getInvoices();
+            }
+          },
+        ),
+        BlocListener<invoicecubit.InvoiceBillCubit,
+            invoicecubit.InvoiceBillState>(
+          listenWhen: (previous, current) =>
+              previous.status != current.status,
+          bloc: GetIt.I(),
+          listener: (context, state) {
+            if (state.status == invoicecubit.ResponseStatus.success) {
+              _getInvoices();
+            }
+          },
+        ),
+        BlocListener<invoicepayment.InvoicePaymentCubit, invoicepayment.InvoicePaymentState>(
+          bloc: GetIt.I(),
+          listenWhen: (previous, current) =>
+              previous.paymentStatus != current.paymentStatus,
+          listener: (context, state) {
+            if (state.paymentStatus == invoicepayment.PaymentResponseStatus.success) {
               _getInvoices();
             }
           },

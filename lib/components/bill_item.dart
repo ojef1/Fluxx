@@ -124,7 +124,7 @@ class _ExpandedContent extends StatelessWidget {
       onTap: () {
         Navigator.pushNamed(
           context,
-          AppRoutes.detailBillPage,
+          AppRoutes.detailCommonBillPage,
         );
         GetIt.I<BillCubit>().getBill(bill.id!, bill.monthId!);
       },

@@ -2,8 +2,10 @@ import 'package:Fluxx/blocs/bills_cubit/bill_form_cubit.dart';
 import 'package:Fluxx/blocs/category_form_cubit/category_form_cubit.dart';
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_form_cubit.dart';
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_info_cubit.dart';
+import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_cubit.dart';
 import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_form_cubit.dart';
 import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_list_cubit.dart';
+import 'package:Fluxx/blocs/invoices_cubits/invoice_payment_cubit.dart';
 import 'package:Fluxx/blocs/revenue_form_cubit/revenue_form_cubit.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/category_model.dart';
@@ -95,7 +97,7 @@ void goToInvoiceBillPage({
   required BuildContext context,
   required InvoiceModel invoice,
 }) {
-  GetIt.I<InvoiceBillListCubit>().updateIdToGet(invoiceId: invoice.id ?? '');
+  GetIt.I<InvoiceBillListCubit>().updateInvoiceInFocus(invoice: invoice);
   Navigator.pushNamed(context, AppRoutes.invoiceBillsPage);
 }
 
@@ -114,5 +116,70 @@ void goToInvoiceBillForm({
   Navigator.pushNamed(
     context,
     AppRoutes.invoiceBillFormPage,
+  );
+}
+
+void goToDetailInvoiceBillPage(
+    {required BuildContext context, required String id}) {
+  GetIt.I<InvoiceBillCubit>().updateIdToGet(id);
+  Navigator.pushNamed(
+    context,
+    AppRoutes.detailInvoiceBillPage,
+  );
+}
+
+void goToInvoicePaymentPage({
+  required BuildContext context,
+  required InvoiceModel invoice,
+}) {
+  GetIt.I<InvoicePaymentCubit>().updateInvoiceInFocus(invoice: invoice);
+  Navigator.pushNamed(
+    context,
+    AppRoutes.invoicePaymentPage,
+  );
+}
+
+void goToMonthBillsPage({
+  required BuildContext context,
+}){
+   Navigator.pushNamed(
+    context,
+    AppRoutes.monthBillsPage,
+  );
+}
+
+void goToCardsListPage({
+  required BuildContext context,
+}){
+   Navigator.pushNamed(
+    context,
+    AppRoutes.creditCardListPage,
+  );
+}
+
+void goToMonthListPage({
+  required BuildContext context,
+}){
+   Navigator.pushNamed(
+    context,
+    AppRoutes.monthListPage,
+  );
+}
+
+void goToCategoryListPage({
+  required BuildContext context,
+}){
+   Navigator.pushNamed(
+    context,
+    AppRoutes.categoryListPage,
+  );
+}
+
+void goToRevenuesListPage({
+  required BuildContext context,
+}){
+   Navigator.pushNamed(
+    context,
+    AppRoutes.revenueListPage,
   );
 }

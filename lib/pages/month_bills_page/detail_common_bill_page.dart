@@ -12,14 +12,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-class DetailBillPage extends StatefulWidget {
-  const DetailBillPage({super.key});
+class DetailCommonBillPage extends StatefulWidget {
+  const DetailCommonBillPage({super.key});
 
   @override
-  State<DetailBillPage> createState() => _DetailBillPageState();
+  State<DetailCommonBillPage> createState() => _DetailCommonBillPageState();
 }
 
-class _DetailBillPageState extends State<DetailBillPage> {
+class _DetailCommonBillPageState extends State<DetailCommonBillPage> {
   @override
   void initState() {
     super.initState();

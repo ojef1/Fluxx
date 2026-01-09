@@ -4,9 +4,8 @@ import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
 import 'package:Fluxx/blocs/revenue_form_cubit/revenue_form_cubit.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/empty_list_placeholder/empty_revenue_list.dart';
-import 'package:Fluxx/models/revenue_model.dart';
+import 'package:Fluxx/components/secondary_button.dart';
 import 'package:Fluxx/themes/app_theme.dart';
-import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:Fluxx/utils/navigations.dart';
@@ -39,15 +38,7 @@ class _RevenueListPageState extends State<RevenueListPage> {
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
-    return BlocListener<RevenueFormCubit, RevenueFormState>(
-      listenWhen: (previous, current) =>
-          previous.responseStatus != current.responseStatus,
-      bloc: GetIt.I(),
-      listener: (context, state) {
-        if (state.responseStatus == ResponseStatus.success) {
-          init();
-        }
-      },
+    return _ListenerWrapper(
       child: AnnotatedRegion(
         value: SystemUiOverlayStyle.dark,
         child: Scaffold(
@@ -62,28 +53,20 @@ class _RevenueListPageState extends State<RevenueListPage> {
               child: Column(
                 children: [
                   const SizedBox(height: Constants.topMargin),
+                  SecondaryButton(
+                    title: 'Adicionar',
+                    icon: Icons.add_rounded,
+                    onPressed: () => goToRevenueForm(context: context),
+                  ),
+                  const SizedBox(height: Constants.topMargin),
                   BlocBuilder<RevenueCubit, RevenueState>(
                     bloc: GetIt.I(),
                     buildWhen: (previous, current) =>
                         previous.revenuesList != current.revenuesList,
                     builder: (context, state) {
                       if (state.revenuesList.isEmpty) {
-                        var currentMonthId =
-                            GetIt.I<ResumeCubit>().state.currentMonth!.id;
-
                         return EmptyRevenueList(
-                          onPressed: () {
-                            RevenueModel revenue = RevenueModel();
-                            Navigator.pushNamed(
-                                    context, AppRoutes.revenueFormPage,
-                                    arguments: revenue)
-                                .then(
-                              (value) {
-                                GetIt.I<RevenueCubit>()
-                                    .calculateAvailableValue(currentMonthId!);
-                              },
-                            );
-                          },
+                          onPressed: () => goToRevenueForm(context: context),
                         );
                       } else {
                         return Expanded(
@@ -124,6 +107,35 @@ class _RevenueListPageState extends State<RevenueListPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ListenerWrapper extends StatelessWidget {
+  final Widget child;
+  const _ListenerWrapper({required this.child});
+
+  void _getRevenues() async {
+    var actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
+    GetIt.I<RevenueCubit>().getRevenues(actualMonth.id!);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<RevenueFormCubit, RevenueFormState>(
+          listenWhen: (previous, current) =>
+              previous.responseStatus != current.responseStatus,
+          bloc: GetIt.I(),
+          listener: (context, state) {
+            if (state.responseStatus == ResponseStatus.success) {
+              _getRevenues();
+            }
+          },
+        ),
+      ],
+      child: child,
     );
   }
 }

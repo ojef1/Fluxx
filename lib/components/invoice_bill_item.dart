@@ -1,4 +1,5 @@
 import 'package:Fluxx/models/invoice_bill_model.dart';
+import 'package:Fluxx/utils/navigations.dart';
 import 'package:flutter/material.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/helpers.dart';
@@ -113,13 +114,8 @@ class _ExpandedContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () {
-        // Navigator.pushNamed(
-        //   context,
-        //   AppRoutes.detailBillPage,
-        // );
-        // GetIt.I<InvoiceBillListCubit>().getBill(bill.id!, bill.monthId!);
-      },
+      onTap: () =>
+          goToDetailInvoiceBillPage(context: context, id: bill.id ?? ''),
       child: Column(
         children: [
           _RowItem(

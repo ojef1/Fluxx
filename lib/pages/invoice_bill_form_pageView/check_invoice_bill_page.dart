@@ -72,7 +72,7 @@ class _CheckBillPageState extends State<CheckBillPage> {
                           subtitle: state.categorySelected!.categoryName ??
                               'Nenhuma'),
                       _DataItem(
-                          title: 'Data de Pagamento',
+                          title: 'Data da compra',
                           subtitle: formatDate(state.date) ?? 'Nenhuma'),
                       _DataItem(
                           title: 'Forma de pagamento',

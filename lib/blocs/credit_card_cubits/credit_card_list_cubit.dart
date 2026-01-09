@@ -10,10 +10,10 @@ part 'credit_card_list_state.dart';
 class CreditCardListCubit extends Cubit<CreditCardListState> {
   CreditCardListCubit() : super(const CreditCardListState());
 
-  Future<void> getCardsList() async {
+  Future<void> getActiveCardsList() async {
     updateResponseStatus(ResponseStatus.loading);
     try {
-      final cardsList = await service.getCardsList();
+      final cardsList = await service.getActiveCardsList();
       emit(state.copyWith(cardList: cardsList));
       updateResponseStatus(ResponseStatus.success);
     } catch (e) {

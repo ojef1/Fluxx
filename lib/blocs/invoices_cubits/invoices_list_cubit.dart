@@ -22,9 +22,17 @@ class InvoicesListCubit extends Cubit<InvoicesListState> {
   Future<void> getInvoices(int monthId) async {
     _updateResponseStatus(ResponseStatus.loading);
     try {
-      final cards = await service.getCardsList();
+      final cards = await service.getAllCardsList();
       final invoices = await service.getInvoicesByMonth(monthId);
-      emit(state.copyWith(invoicesList: invoices, cardsList: cards));
+
+      final updatedInvoices = await Future.wait(
+        invoices.map((invoice) async {
+          final length = await service.getInvoiceBillsLength(invoice.id!);
+          return invoice.copyWith(invoiceBillsLength: length);
+        }),
+      );
+
+      emit(state.copyWith(invoicesList: updatedInvoices, cardsList: cards));
       _updateResponseMessage('');
       _updateResponseStatus(ResponseStatus.success);
     } catch (e) {
@@ -33,7 +41,6 @@ class InvoicesListCubit extends Cubit<InvoicesListState> {
       _updateResponseStatus(ResponseStatus.error);
     }
   }
-
 
   void resetState() {
     emit(const InvoicesListState());

@@ -4,6 +4,7 @@ import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/models/bank_model.dart';
 import 'package:Fluxx/models/card_network_model.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
+import 'package:Fluxx/models/invoice_bill_model.dart';
 import 'package:Fluxx/models/invoice_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/utils/constants.dart';
@@ -43,6 +44,26 @@ CardNetworkModel getCardNetwork(int cardNetworkId) {
   );
 }
 
+bool isInvoiceClosed({required String? endDate}) {
+  if (endDate == null || endDate.isEmpty) return false;
+
+  final DateTime closingDate = DateTime.parse(endDate);
+  final DateTime now = DateTime.now();
+
+  // fecha ao final do dia do closingDate
+  final DateTime endOfClosingDay = DateTime(
+    closingDate.year,
+    closingDate.month,
+    closingDate.day,
+    23,
+    59,
+    59,
+  );
+
+  return now.isAfter(endOfClosingDay);
+}
+
+
 double calcRemainingLimit(
     {required double totalLimit, required double totalSpent}) {
   return totalLimit - totalSpent;
@@ -61,9 +82,9 @@ Future<double> getCreditCardAvailableLimite(
 double calcPercentSpent(
     {required double totalLimit, required double totalSpent}) {
   if (totalLimit <= 0) return 0.0;
-  final percent = (totalSpent / totalLimit) * 100;
+  final percent = (totalSpent / totalLimit);
   // Garante que fique entre 0% e 100%
-  return percent.clamp(0.0, 100.0);
+  return percent.clamp(0.0, 1.0);
 }
 
 String getInvoiceStatus({
@@ -85,7 +106,7 @@ String getInvoiceStatus({
     closingRaw.day,
   );
 
-  // Calcula vencimento corretamente
+  // Calcula vencimento
   DateTime dueDate;
   if (dueDay > closingDate.day) {
     // vence no mesmo mês
@@ -112,7 +133,7 @@ String getInvoiceStatus({
     );
   }
 
-  // 🔍 Status
+  // Status
   if (today.isBefore(closingDate)) {
     final days = closingDate.difference(today).inDays;
     return days == 0
@@ -223,12 +244,23 @@ Future<CreditCardModel?> getCreditCardById(String cardId) async {
   }
 }
 
-Future<List<CreditCardModel>> getCardsList() async {
+Future<List<CreditCardModel>> getActiveCardsList() async {
   try {
-    var result = await Db.getCreditCards();
+    var result = await Db.getCreditActiveCards();
     final cardsList =
         result.map((item) => CreditCardModel.fromJson(item)).toList();
-    log('lista de cartões : $cardsList');
+    return cardsList;
+  } catch (e) {
+    log('Erro ao buscar os cartões : $e', name: 'getCardsList');
+    rethrow;
+  }
+}
+
+Future<List<CreditCardModel>> getAllCardsList() async {
+  try {
+    var result = await Db.getCreditAllCards();
+    final cardsList =
+        result.map((item) => CreditCardModel.fromJson(item)).toList();
     return cardsList;
   } catch (e) {
     log('Erro ao buscar os cartões : $e', name: 'getCardsList');
@@ -242,3 +274,14 @@ CreditCardModel getCardFromInvoice({
 }) {
   return cards.firstWhere((card) => card.id == invoice.creditCardId);
 }
+
+  Future<int> getInvoiceBillsLength(String invoiceId) async {
+    final result = await Db.getCreditCardsBills(invoiceId);
+    if (result != null) {
+      final invoiceBills =
+          result.map((item) => InvoiceBillModel.fromJson(item)).toList();
+      return invoiceBills.length;
+    } else {
+      return 0;
+    }
+  }

@@ -1,7 +1,6 @@
 import 'package:Fluxx/blocs/bills_cubit/bill_list_cubit.dart';
 import 'package:Fluxx/blocs/category_cubit/category_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_state.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
 import 'package:Fluxx/components/app_bar.dart';
@@ -48,7 +47,7 @@ class _StatsPageState extends State<StatsPage> {
     await GetIt.I<ResumeCubit>().getTotalSpent(state.monthInFocus!.id!);
     await GetIt.I<ResumeCubit>().calculatePercent(totalRevenues);
     await GetIt.I<RevenueCubit>()
-        .calculateAvailableValue(state.monthInFocus!.id!);
+        .getRevenues(state.monthInFocus!.id!);
     await GetIt.I<RevenueCubit>()
         .calculateRemainigRevenues(state.monthInFocus!.id!);
     await GetIt.I<BillListCubit>().getAllBills(state.monthInFocus!.id!);

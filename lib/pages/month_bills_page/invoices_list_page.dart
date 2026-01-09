@@ -1,5 +1,5 @@
 import 'package:Fluxx/blocs/invoices_cubits/invoices_list_cubit.dart';
-import 'package:Fluxx/components/add_button.dart';
+import 'package:Fluxx/components/secondary_button.dart';
 import 'package:Fluxx/components/custom_loading.dart';
 import 'package:Fluxx/components/empty_list_placeholder/empty_bill_list.dart';
 import 'package:Fluxx/components/invoice_item.dart';
@@ -58,47 +58,49 @@ class __InvoiceListPageContentState extends State<_InvoiceListPageContent> {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
     return BlocBuilder<InvoicesListCubit, InvoicesListState>(
-        buildWhen: (previous, current) =>
-            previous.invoicesList != current.invoicesList,
-        bloc: GetIt.I(),
-        builder: (context, state) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: Constants.topMargin),
-              Padding(
-                padding:
-                    EdgeInsets.symmetric(horizontal: mediaQuery.width * .06),
-                child: AddButton(
-                  onPressed: () => goToInvoiceBillForm(context: context),
-                ),
+      buildWhen: (previous, current) =>
+          previous.invoicesList != current.invoicesList,
+      bloc: GetIt.I(),
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: Constants.topMargin),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: mediaQuery.width * .06),
+              child: SecondaryButton(
+                title: 'Adicionar',
+                icon: Icons.add_rounded,
+                onPressed: () => goToInvoiceBillForm(context: context),
               ),
-              const SizedBox(height: 40),
-              state.invoicesList.isEmpty
-                  ? EmptyBillList(onPressed: () {})
-                  : ListView.builder(
-                      padding: EdgeInsets.zero,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: state.invoicesList.length,
-                      itemBuilder: (context, index) {
-                        CreditCardModel card = getCardFromInvoice(
-                            cards: state.cardsList,
-                            invoice: state.invoicesList[index]);
-                        return Column(
-                          children: [
-                            InvoiceItem(
-                              invoice: state.invoicesList[index],
-                              card: card,
-                            ),
-                            if (index == state.invoicesList.length)
-                              SizedBox(height: mediaQuery.height * .5),
-                          ],
-                        );
-                      },
-                    )
-            ],
-          );
-        });
+            ),
+            const SizedBox(height: 40),
+            state.invoicesList.isEmpty
+                ? EmptyBillList(onPressed: () {})
+                : ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: state.invoicesList.length,
+                    itemBuilder: (context, index) {
+                      CreditCardModel card = getCardFromInvoice(
+                          cards: state.cardsList,
+                          invoice: state.invoicesList[index]);
+                      return Column(
+                        children: [
+                          InvoiceItem(
+                            invoice: state.invoicesList[index],
+                            card: card,
+                          ),
+                          if (index == state.invoicesList.length -1)
+                            SizedBox(height: mediaQuery.height * .5),
+                        ],
+                      );
+                    },
+                  )
+          ],
+        );
+      },
+    );
   }
 }

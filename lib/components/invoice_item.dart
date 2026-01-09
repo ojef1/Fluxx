@@ -18,19 +18,25 @@ class InvoiceItem extends StatefulWidget {
 
 class _InvoiceItemState extends State<InvoiceItem> {
   late final BankModel bank;
+  late final bool hasOnlyOneBill;
 
   @override
   void initState() {
     bank = getBank(widget.card.bankId ?? 0);
+    hasOnlyOneBill = (widget.invoice.invoiceBillsLength ?? 0) >= 1;
     super.initState();
   }
+
+  //atualizar a fatura do resumePage quando adicionar uma conta na fatura
+  //definir images novas para o app 
 
   @override
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
     double boxHeight = mediaQuery.height * .15;
     return GestureDetector(
-      onTap: () => goToInvoiceBillPage(context: context, invoice: widget.invoice),
+      onTap: () =>
+          goToInvoiceBillPage(context: context, invoice: widget.invoice),
       child: Container(
         padding: const EdgeInsets.all(18),
         margin: EdgeInsets.symmetric(
@@ -49,9 +55,11 @@ class _InvoiceItemState extends State<InvoiceItem> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${bank.name} **** ${widget.card.lastFourDigits}',
-                  style: AppTheme.textStyles.bodyTextStyle,
+                Flexible(
+                  child: Text(
+                    bank.name,
+                    style: AppTheme.textStyles.bodyTextStyle,
+                  ),
                 ),
                 Text(
                   getInvoiceStatus(
@@ -80,10 +88,14 @@ class _InvoiceItemState extends State<InvoiceItem> {
               ],
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  ' compras nessa fatura',
+                  '${widget.invoice.invoiceBillsLength} ${(hasOnlyOneBill ? 'compra' : 'compras')} nessa fatura',
+                  style: AppTheme.textStyles.secondaryTextStyle,
+                ),
+                Text(
+                  'final ${widget.card.lastFourDigits}',
                   style: AppTheme.textStyles.secondaryTextStyle,
                 ),
               ],

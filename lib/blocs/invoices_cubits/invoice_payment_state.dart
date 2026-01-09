@@ -1,44 +1,50 @@
-part of 'invoice_bill_list_cubit.dart';
+part of 'invoice_payment_cubit.dart';
 
 enum ResponseStatus { initial, loading, success, error }
+enum PaymentResponseStatus { initial, loading, success, error }
 
-class InvoiceListBillState extends Equatable {
+class InvoicePaymentState extends Equatable {
   final InvoiceModel? invoice;
-  final List<InvoiceBillModel> bills;
+  final RevenueModel? paymentSelected;
   final List<RevenueModel> availableRevenues;
   final ResponseStatus status;
+  final PaymentResponseStatus paymentStatus;
   final String responseMessage;
 
-  const InvoiceListBillState({
+  const InvoicePaymentState({
     this.invoice,
-    this.bills = const [],
+    this.paymentSelected,
     this.availableRevenues = const [],
     this.status = ResponseStatus.initial,
+    this.paymentStatus = PaymentResponseStatus.initial,
     this.responseMessage = '',
   });
 
-  InvoiceListBillState copyWith({
+  InvoicePaymentState copyWith({
      InvoiceModel? invoice,
-    List<InvoiceBillModel>? bills,
+     RevenueModel? paymentSelected,
   List<RevenueModel>? availableRevenues,
     ResponseStatus? status,
+    PaymentResponseStatus? paymentStatus,
     String? responseMessage,
   }) {
-    return InvoiceListBillState(
+    return InvoicePaymentState(
+      paymentSelected: paymentSelected ?? this.paymentSelected,
       invoice: invoice ?? this.invoice,
-      bills: bills ?? this.bills,
       availableRevenues: availableRevenues ?? this.availableRevenues,
       status: status ?? this.status,
+      paymentStatus: paymentStatus ?? this.paymentStatus,
       responseMessage: responseMessage ?? this.responseMessage,
     );
   }
 
   @override
   List<Object?> get props => [
+        paymentSelected,
         invoice,
-        bills,
         availableRevenues,
         status,
+        paymentStatus,
         responseMessage,
       ];
 }

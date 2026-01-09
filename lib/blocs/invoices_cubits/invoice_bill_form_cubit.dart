@@ -9,7 +9,6 @@ import 'package:Fluxx/services/credit_card_services.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 part 'invoice_bill_form_state.dart';
 
@@ -29,10 +28,10 @@ class InvoiceBillFormCubit extends Cubit<InvoiceBillFormState> {
     }
   }
 
-  Future<void> getCards() async {
+  Future<void> getActiveCards() async {
     // _updateResponseStatus(ResponseStatus.loading);
     try {
-      List<CreditCardModel> cards = await getCardsList();
+      List<CreditCardModel> cards = await getActiveCardsList();
       List<CreditCardModel> cardsWithAvailableLimit = [];
       if (cards.isNotEmpty) {
         for (var card in cards) {
@@ -133,7 +132,69 @@ class InvoiceBillFormCubit extends Cubit<InvoiceBillFormState> {
     }
   }
 
-  Future<void> _addMultipleBills() async {}
+  Future<void> _addMultipleBills() async {
+    try {
+      final int repeatTimes = state.repeatCount;
+      final CreditCardModel card = state.cardSelected!;
+      final String installmentGroupId = codeGenerate();
+      double rawInstallment = state.price / repeatTimes;
+      double installmentPrice = double.parse(
+        rawInstallment.toStringAsFixed(2),
+      );
+      final DateTime date = DateTime.parse(state.date);
+
+      for (int i = 0; i < repeatTimes; i++) {
+      
+        // data de referência da parcela (mês a mês)
+        final DateTime referenceDate = DateTime(
+          date.year,
+          date.month + i,
+          date.day,
+        );
+
+        // pega (ou cria) a fatura correta
+        final invoice = await getInvoice(
+          card: card,
+          referenceDate: referenceDate,
+        );
+
+        if (invoice == null) {
+          throw Exception(
+              'Não foi possível obter a fatura da parcela ${i + 1}');
+        }
+
+        double price = installmentPrice;
+        if (i == repeatTimes - 1) {
+          final double accumulated = installmentPrice * (repeatTimes - 1);
+          price = double.parse(
+            (state.price - accumulated).toStringAsFixed(2),
+          );
+        }
+
+        final bill = InvoiceBillModel(
+          id: codeGenerate(),
+          creditCardId: card.id!,
+          categoryId: state.categorySelected!.id,
+          date: referenceDate.toIso8601String(),
+          invoiceId: invoice.id!,
+          name: state.name,
+          price: price,
+          installmentNumber: i + 1,
+          installmentTotal: repeatTimes,
+          installmentGroupId: installmentGroupId,
+        );
+
+        final result = await Db.insertInvoiceBill(bill);
+
+        if (result == -1) {
+          throw Exception('Erro ao inserir parcela ${i + 1}');
+        }
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> _addSingleBill() async {
     try {
       final DateTime date = DateTime.parse(state.date);
@@ -165,19 +226,51 @@ class InvoiceBillFormCubit extends Cubit<InvoiceBillFormState> {
     }
   }
 
-  Future<void> _editInvoiceBill() async {}
+  Future<void> _editInvoiceBill() async {
+    _updateResponseStatus(ResponseStatus.loading);
+    try{
+      var newBill = InvoiceBillModel(
+        id: _loadedBillToEdit!.id,
+        name: state.name,
+        price: state.price,
+        categoryId: state.categorySelected!.id,
+        date: _loadedBillToEdit!.date,
+        creditCardId: _loadedBillToEdit!.creditCardId,
+        installmentGroupId: _loadedBillToEdit!.installmentGroupId,
+        installmentNumber: _loadedBillToEdit!.installmentNumber,
+        installmentTotal: _loadedBillToEdit!.installmentTotal,
+        description: state.desc,
+        invoiceId: _loadedBillToEdit!.invoiceId,
+      );
 
-  void loadBillToEdit(InvoiceBillModel bill) {
+      final result = await Db.updateInvoiceBill(newBill);
+
+      if(result <= 0) {
+        log('deu erro ', name: '_editInvoiceBill');
+        _updateResponseMessage('Erro ao atualizar Compra');
+        _updateResponseStatus(ResponseStatus.error);
+      }
+        _updateResponseMessage('Compra editada com sucesso.');
+        _updateResponseStatus(ResponseStatus.success);
+    }catch(e){
+      log('deu erro $e ');
+      _updateResponseStatus(ResponseStatus.error);
+    }
+  }
+
+  Future<void> loadBillToEdit(InvoiceBillModel bill) async {
     var category =
         CategoryModel(id: bill.categoryId, categoryName: bill.categoryName);
-
+    var card = await getCreditCardById(bill.creditCardId!);
     emit(state.copyWith(
-      id: bill.id,
       name: bill.name,
       price: bill.price,
       date: bill.date,
       desc: bill.description,
       categorySelected: category,
+      cardSelected: card,
+      repeatBill: bill.installmentTotal! > 1,
+      repeatCount: bill.installmentTotal,
     ));
 
     _loadedBillToEdit = bill;

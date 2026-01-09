@@ -7,7 +7,9 @@ class AppRoutes {
   static const String revenueListPage = "/revenue-list-page";
   static const String monthBillsPage = '/month-bills-page';
   static const String invoiceBillsPage = '/invoice-bills-page';
-  static const String detailBillPage = '/detail-bill-page';
+  static const String detailCommonBillPage = '/detail-common-bill-page';
+  static const String detailInvoiceBillPage = '/detail-invoice-bill-page';
+  static const String invoicePaymentPage = '/invoice-payment-page';
   static const String creditCardDetailPage = '/credit-card-detail-page';
   static const String billStatsPage = '/bill-stats-page';
   static const String creditCardStatsPage = '/credit-card-stats-page';

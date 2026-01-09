@@ -33,7 +33,7 @@ class _PaymentInvoiceBillPageState extends State<PaymentInvoiceBillPage> {
   }
 
   Future<void> init() async {
-    GetIt.I<InvoiceBillFormCubit>().getCards();
+    GetIt.I<InvoiceBillFormCubit>().getActiveCards();
   }
 
   @override
@@ -48,7 +48,6 @@ class _PaymentInvoiceBillPageState extends State<PaymentInvoiceBillPage> {
         if (state.responseStatus == cardform.ResponseStatus.success) {
           init();
         }
-        //próximo passo é criar contas parceladas
       },
       child: Column(
         children: [

@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_info_cubit.dart';
 import 'package:Fluxx/components/bottom_sheets/credit_card_info_bottomsheet.dart';
 import 'package:Fluxx/components/custom_loading.dart';
 import 'package:Fluxx/services/credit_card_services.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/helpers.dart';
+import 'package:Fluxx/utils/navigations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -192,62 +191,64 @@ class _StatsPageContentState extends State<_StatsPageContent> {
           bloc: GetIt.I(),
           buildWhen: (previous, current) => previous.invoice != current.invoice,
           builder: (context, state) {
-            log('state : ${state.invoice}');
             var formatted = DateTime.parse(state.invoice?.endDate ?? '');
-            return Container(
-              padding: const EdgeInsets.all(18),
-              height: boxHeight,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: AppTheme.colors.itemBackgroundColor,
-                  borderRadius: BorderRadius.circular(5)),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 5,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Fatura de ${getMonthName(formatted)}',
-                        style: AppTheme.textStyles.bodyTextStyle,
-                      ),
-                      Text(
-                        getInvoiceStatus(
-                          endDate: state.invoice?.endDate ?? '',
-                          dueDay: int.parse(state.invoice?.dueDate ?? '0'),
-                          isPaid: state.invoice?.isPaid == 1,
+            return GestureDetector(
+              onTap: () => goToInvoiceBillPage(context: context, invoice: state.invoice!),
+              child: Container(
+                padding: const EdgeInsets.all(18),
+                height: boxHeight,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: AppTheme.colors.itemBackgroundColor,
+                    borderRadius: BorderRadius.circular(5)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 5,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Fatura de ${getMonthName(formatted)}',
+                          style: AppTheme.textStyles.bodyTextStyle,
                         ),
-                        style: AppTheme.textStyles.secondaryTextStyle,
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'R\$${formatPrice(
-                          state.invoice?.price ?? 0.0,
-                        )}',
-                        style: AppTheme.textStyles.titleTextStyle,
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        color: AppTheme.colors.white,
-                        size: 15,
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${state.invoiceBillsLength} compras nessa fatura',
-                        style: AppTheme.textStyles.secondaryTextStyle,
-                      ),
-                    ],
-                  )
-                ],
+                        Text(
+                          getInvoiceStatus(
+                            endDate: state.invoice?.endDate ?? '',
+                            dueDay: int.parse(state.invoice?.dueDate ?? '0'),
+                            isPaid: state.invoice?.isPaid == 1,
+                          ),
+                          style: AppTheme.textStyles.secondaryTextStyle,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'R\$${formatPrice(
+                            state.invoice?.price ?? 0.0,
+                          )}',
+                          style: AppTheme.textStyles.titleTextStyle,
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          color: AppTheme.colors.white,
+                          size: 15,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${state.invoiceBillsLength} compras nessa fatura',
+                          style: AppTheme.textStyles.secondaryTextStyle,
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             );
           },

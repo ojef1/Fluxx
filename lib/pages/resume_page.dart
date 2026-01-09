@@ -1,13 +1,12 @@
 import 'dart:io';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_state.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
 import 'package:Fluxx/blocs/user_cubit/user_cubit.dart';
 import 'package:Fluxx/blocs/user_cubit/user_state.dart';
+import 'package:Fluxx/components/Invoice_due_soon_widget.dart';
 import 'package:Fluxx/components/available_revenues.dart';
-import 'package:Fluxx/components/shortcut_add_bottomsheet.dart';
-import 'package:Fluxx/components/shortcut_lists_bottomsheet.dart';
+import 'package:Fluxx/components/quick_access_widget.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
@@ -30,19 +29,6 @@ class _ResumePageState extends State<ResumePage> {
   late final String greeting;
   late MonthModel actualMonth;
 
-  bool _wasPaused = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final isCurrent = ModalRoute.of(context)?.isCurrent ?? false;
-    if (isCurrent && _wasPaused) {
-      init();
-      _wasPaused = false;
-    } else if (!isCurrent) {
-      _wasPaused = true;
-    }
-  }
 
   @override
   void initState() {
@@ -57,7 +43,7 @@ class _ResumePageState extends State<ResumePage> {
     actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
 
     GetIt.I<ResumeCubit>().updateMonthInFocus(actualMonth);
-    await GetIt.I<RevenueCubit>().calculateAvailableValue(actualMonth.id!);
+    await GetIt.I<RevenueCubit>().getRevenues(actualMonth.id!);
     await GetIt.I<ResumeCubit>().getTotalSpent(actualMonth.id!);
     var totalRevenues = await GetIt.I<RevenueCubit>().calculateTotalRevenues();
     await GetIt.I<ResumeCubit>().calculatePercent(totalRevenues);
@@ -74,6 +60,7 @@ class _ResumePageState extends State<ResumePage> {
         child: SingleChildScrollView(
           controller: _pageScrollController,
           child: Column(
+            spacing: 20,
             children: [
               //AppBar
               Container(
@@ -168,63 +155,58 @@ class _ResumePageState extends State<ResumePage> {
                         children: [
                           BlocBuilder<ResumeCubit, ResumeState>(
                             bloc: GetIt.I(),
+                            buildWhen: (previous, current) =>
+                                previous.totalSpent != current.totalSpent,
                             builder: (context, state) => Text(
                               'R\$${formatPrice(state.totalSpent)}',
                               style: AppTheme.textStyles.titleTextStyle,
                             ),
                           ),
-                          Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  BlocBuilder<ResumeCubit, ResumeState>(
-                                    bloc: GetIt.I(),
-                                    buildWhen: (previous, current) =>
-                                        previous.percentSpent !=
-                                        current.percentSpent,
-                                    builder: (context, state) => Text(
-                                      '${state.percentSpent.toStringAsFixed(0)}%',
-                                      style:
-                                          AppTheme.textStyles.subTileTextStyle,
-                                    ),
-                                  ),
-                                  BlocBuilder<RevenueCubit, RevenueState>(
-                                    bloc: GetIt.I(),
-                                    buildWhen: (previous, current) =>
-                                        previous.totalRevenue !=
-                                        current.totalRevenue,
-                                    builder: (context, state) => Text(
-                                        'R\$${formatPrice(state.totalRevenue)}',
-                                        style: AppTheme
-                                            .textStyles.subTileTextStyle),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: mediaQuery.height * .01),
-                              BlocBuilder<ResumeCubit, ResumeState>(
-                                bloc: GetIt.I(),
-                                buildWhen: (previous, current) =>
-                                    previous.percentSpent !=
-                                    current.percentSpent,
-                                builder: (context, state) {
-                                  final percent = (state.percentSpent / 100).clamp(0.0, 1.0);
-                                  final extrapolated = state.percentSpent > 100.0;
-                                  return LinearPercentIndicator(
-                                  padding: EdgeInsets.zero,
-                                  barRadius: const Radius.circular(50),
-                                  lineHeight: 20,
-                                  percent: percent,
-                                  progressColor: extrapolated ? AppTheme.colors.red : AppTheme.colors.hintColor,
-                                  backgroundColor:
-                                      AppTheme.colors.lightHintColor,
-                                );
-                                
-                                },
-                              ),
-                            ],
+                          BlocBuilder<ResumeCubit, ResumeState>(
+                            bloc: GetIt.I(),
+                            buildWhen: (previous, current) =>
+                                previous.percentSpent != current.percentSpent,
+                            builder: (context, state) {
+                              final percent =
+                                  (state.percentSpent / 100).clamp(0.0, 1.0);
+                              final extrapolated = state.percentSpent > 100.0;
+                              return LinearPercentIndicator(
+                                padding: EdgeInsets.zero,
+                                barRadius: const Radius.circular(50),
+                                lineHeight: 20,
+                                percent: percent,
+                                progressColor: extrapolated
+                                    ? AppTheme.colors.red
+                                    : AppTheme.colors.hintColor,
+                                backgroundColor: AppTheme.colors.lightHintColor,
+                              );
+                            },
                           ),
+                          BlocBuilder<ResumeCubit, ResumeState>(
+                            bloc: GetIt.I(),
+                            buildWhen: (previous, current) =>
+                                previous.percentSpent != current.percentSpent,
+                            builder: (context, state) => Text(
+                              '${state.percentSpent.toStringAsFixed(0)}% da receita total usada',
+                              style: AppTheme.textStyles.subTileTextStyle,
+                            ),
+                          ),
+                          BlocBuilder<ResumeCubit, ResumeState>(
+                              bloc: GetIt.I(),
+                              buildWhen: (previous, current) =>
+                                  previous.totalSpent != current.totalSpent,
+                              builder: (context, resumeState) {
+                                return BlocBuilder<RevenueCubit, RevenueState>(
+                                  bloc: GetIt.I(),
+                                  buildWhen: (previous, current) =>
+                                      previous.totalRevenue !=
+                                      current.totalRevenue,
+                                  builder: (context, state) => Text(
+                                      'R\$${formatPrice(resumeState.totalSpent)} de R\$${formatPrice(state.totalRevenue)}',
+                                      style:
+                                          AppTheme.textStyles.subTileTextStyle),
+                                );
+                              }),
                         ],
                       ),
                     ),
@@ -233,139 +215,18 @@ class _ResumePageState extends State<ResumePage> {
               ),
 
               //Acesso Rápido
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.symmetric(
-                  horizontal: mediaQuery.width * .05,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(height: mediaQuery.height * .025),
-                    Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          GestureDetector(
-                            onTap: () => _showAddBottomSheet(context),
-                            child: Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.only(bottom: 5),
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: AppTheme.colors.itemBackgroundColor,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.add_rounded,
-                                    color: AppTheme.colors.hintColor,
-                                    size: 30,
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    'Adicionar',
-                                    style: AppTheme.textStyles.subTileTextStyle
-                                        .copyWith(fontSize: 10),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => _showListsBottomSheet(context),
-                            child: Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.only(bottom: 5),
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: AppTheme.colors.itemBackgroundColor,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.menu_rounded,
-                                    color: AppTheme.colors.hintColor,
-                                    size: 30,
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    'Listas',
-                                    style: AppTheme.textStyles.subTileTextStyle
-                                        .copyWith(fontSize: 10),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.pushNamed(
-                                    context, AppRoutes.billStatsPage)
-                                .then((value) => init()),
-                            child: Container(
-                              alignment: Alignment.center,
-                              margin: const EdgeInsets.only(bottom: 5),
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: AppTheme.colors.itemBackgroundColor,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.bar_chart_rounded,
-                                    color: AppTheme.colors.hintColor,
-                                    size: 30,
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Text(
-                                    'Estatísticas',
-                                    style: AppTheme.textStyles.subTileTextStyle
-                                        .copyWith(fontSize: 10),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+              const SizedBox(
+                height: 80,
+                child: QuickAccessWidget(),
               ),
-
+              //Fatura mais próxima de fechar
+              const InvoiceDueSoonWidget(),
               //Receitas Disponíveis
               const AvailableRevenues()
             ],
           ),
         ),
       ),
-    );
-  }
-
-  void _showAddBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return const ShortcutAddBottomsheet();
-      },
-    );
-  }
-
-  void _showListsBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return const ShortcutListsBottomsheet();
-      },
     );
   }
 }

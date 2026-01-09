@@ -1,8 +1,8 @@
 import 'package:Fluxx/blocs/category_cubit/category_cubit.dart';
 import 'package:Fluxx/blocs/category_cubit/category_state.dart';
-import 'package:Fluxx/blocs/credit_card_cubits/credit_card_form_cubit.dart' as cardform;
+import 'package:Fluxx/blocs/credit_card_cubits/credit_card_form_cubit.dart'
+    as cardform;
 import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_form_cubit.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/custom_big_text_field.dart';
 import 'package:Fluxx/components/custom_text_field.dart';
@@ -12,7 +12,6 @@ import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/bank_model.dart';
 import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
-import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/services/credit_card_services.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
@@ -55,6 +54,11 @@ class _InvoiceBillFormPageviewState extends State<InvoiceBillFormPageview> {
   void initState() {
     _pageController = PageController();
     billFormMode = GetIt.I<InvoiceBillFormCubit>().state.billFormMode;
+    if(billFormMode == InvoiceBillFormMode.editing){
+      //no modo edição, não passamos pela página da data onde essa função é chamada
+      //portante definimos ela aqui.
+      GetIt.I<InvoiceBillFormCubit>().updateSelectedMonth(DateTime.now());
+    }
     super.initState();
   }
 
@@ -66,41 +70,68 @@ class _InvoiceBillFormPageviewState extends State<InvoiceBillFormPageview> {
   }
 
   List<Widget> get _listPageWidgets {
-    List<Widget> pages = [
-      NameInvoiceBillPage(
-        registerValidator: _registerValidator,
-        onError: (p0) => _showError(p0),
-      ),
-      PriceInvoiceBillPage(
-        registerValidator: _registerValidator,
-        onError: (p0) => _showError(p0),
-      ),
-      DateInvoiceBillPage(
-        registerValidator: _registerValidator,
-        onError: (p0) => _showError(p0),
-      ),
-      DescBillPage(
-        registerValidator: _registerValidator,
-        onError: (p0) => _showError(p0),
-      ),
-      CategoryBillPage(
-        registerValidator: _registerValidator,
-        onError: (p0) => _showError(p0),
-      ),
-      PaymentInvoiceBillPage(
-        registerValidator: _registerValidator,
-        onError: (p0) => _showError(p0),
-      ),
-      RepeatInvoiceBillPage(
-        registerValidator: _registerValidator,
-        onError: (p0) => _showError(p0),
-      ),
-      CheckBillPage(
-        registerValidator: _registerValidator,
-        onError: (p0) => _showError(p0),
-      ),
-    ];
-    return pages;
+    if (billFormMode == InvoiceBillFormMode.adding) {
+      return [
+        NameInvoiceBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+        PriceInvoiceBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+        //
+        DateInvoiceBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+        DescBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+        CategoryBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+        //
+        PaymentInvoiceBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+        //
+        RepeatInvoiceBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+        CheckBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+      ];
+    } else {
+      return [
+        NameInvoiceBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+        PriceInvoiceBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+        DescBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+        CategoryBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+        CheckBillPage(
+          registerValidator: _registerValidator,
+          onError: (p0) => _showError(p0),
+        ),
+      ];
+    }
   }
 
   @override

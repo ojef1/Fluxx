@@ -1,5 +1,4 @@
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_state.dart';
 import 'package:Fluxx/components/auto_marquee_text.dart';
 import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';

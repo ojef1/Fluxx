@@ -3,7 +3,6 @@ import 'dart:math' as math;
 
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
-import 'package:Fluxx/models/invoice_bill_model.dart';
 import 'package:Fluxx/models/invoice_model.dart';
 import 'package:Fluxx/services/credit_card_services.dart' as service;
 import 'package:equatable/equatable.dart';
@@ -19,26 +18,32 @@ class CreditCardInfoCubit extends Cubit<CreditCardInfoState> {
   }
 
   Future<void> init(int monthId) async {
-    _updateResponseStatus(ResponseStatus.initial);
-    await getCreditCardById(state.idToGet);
-    final currentInvoice = await service.getInvoice(
-      card: state.card!,
-      referenceDate: DateTime.now(),
-    );
-    emit(state.copyWith(invoice: currentInvoice));
-    await _calcRecommendedSpendig(monthId);
-    await _calcRevenueImpairment(monthId);
-    await getInvoiceBillsLength(currentInvoice?.id ?? '');
+    _updateResponseStatus(ResponseStatus.loading);
+    try {
+      await getCreditCardById(state.idToGet);
+      final currentInvoice = await service.getInvoice(
+        card: state.card!,
+        referenceDate: DateTime.now(),
+      );
+      emit(state.copyWith(invoice: currentInvoice));
+      await _calcRecommendedSpendig(monthId);
+      await _calcRevenueImpairment(monthId);
+      await getInvoiceBillsLength(currentInvoice?.id ?? '');
+
+      _updateResponseStatus(ResponseStatus.success);
+    } catch (e) {
+      log('$e');
+      _updateResponseStatus(ResponseStatus.error);
+    }
   }
 
   Future<void> getInvoiceBillsLength(String invoiceId) async {
-    final result = await Db.getCreditCardsBills(invoiceId);
-    if (result != null) {
-      final invoiceBills =
-          result.map((item) => InvoiceBillModel.fromJson(item)).toList();
-      emit(state.copyWith(invoiceBillsLength: invoiceBills.length));
-    } else {
-      emit(state.copyWith(invoiceBillsLength: 0));
+    try {
+      final length = await service.getInvoiceBillsLength(invoiceId);
+
+      emit(state.copyWith(invoiceBillsLength: length));
+    } catch (e) {
+      log('$e');
     }
   }
 
@@ -58,8 +63,7 @@ class CreditCardInfoCubit extends Cubit<CreditCardInfoState> {
     double impairmentPercent = 0.0;
 
     if (totalRevenues > 0) {
-      impairmentPercent =
-          ((totalInvoice / totalRevenues) * 100).clamp(0.0, 100.0);
+      impairmentPercent = ((totalInvoice / totalRevenues) * 100);
     }
 
     emit(state.copyWith(
@@ -68,13 +72,11 @@ class CreditCardInfoCubit extends Cubit<CreditCardInfoState> {
   }
 
   Future<void> getCreditCardById(String id) async {
-    _updateResponseStatus(ResponseStatus.loading);
     try {
       var card = await service.getCreditCardById(id);
       if (card != null) {
         emit(state.copyWith(card: card));
         _updateResponseMessage('');
-        _updateResponseStatus(ResponseStatus.success);
       } else {
         _updateResponseMessage('Erro ao pegar os detalhes');
         _updateResponseStatus(ResponseStatus.error);
@@ -82,7 +84,7 @@ class CreditCardInfoCubit extends Cubit<CreditCardInfoState> {
     } catch (e) {
       log('$e', name: 'deleteCreditCard');
       _updateResponseMessage('Erro ao achar o cartão');
-      _updateResponseStatus(ResponseStatus.error);
+      rethrow;
     }
   }
 

@@ -51,8 +51,8 @@ class _CreditCardInfoPageState extends State<CreditCardInfoPage> {
                 const SizedBox(height: Constants.topMargin),
                 TabBar(
                   tabs: const [
-                    Tab(text: 'Estatísticas'),
-                    Tab(text: 'Detalhes'),
+                    Tab(text: 'Estatísticas do mês'),
+                    Tab(text: 'Detalhes gerais'),
                   ],
                   labelColor: AppTheme.colors.white,
                   unselectedLabelColor: AppTheme.colors.white,
@@ -61,6 +61,8 @@ class _CreditCardInfoPageState extends State<CreditCardInfoPage> {
                   labelStyle: AppTheme.textStyles.subTileTextStyle,
                   unselectedLabelStyle: AppTheme.textStyles.descTextStyle,
                   dividerColor: AppTheme.colors.appBackgroundColor,
+                  overlayColor:
+                      WidgetStatePropertyAll(AppTheme.colors.hintColor),
                 ),
                 const Expanded(
                   child: TabBarView(

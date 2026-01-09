@@ -82,3 +82,23 @@ Future<int> _insertYearTx({
     throw Exception('Erro ao inserir ano: $e');
   }
 }
+
+Future<void> _updateInvoiceTotalTx({
+  required sql.Transaction txn,
+  required String invoiceId,
+}) async {
+  final result = await txn.rawQuery('''
+    SELECT SUM(price) as total
+    FROM ${Tables.creditCardsBills}
+    WHERE invoice_id = ?
+  ''', [invoiceId]);
+
+  final double total = (result.first['total'] as num?)?.toDouble() ?? 0.0;
+
+  await txn.update(
+    Tables.creditCardsInvoices,
+    {'price': total},
+    where: 'id = ?',
+    whereArgs: [invoiceId],
+  );
+}

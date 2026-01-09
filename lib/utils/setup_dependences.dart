@@ -7,8 +7,10 @@ import 'package:Fluxx/blocs/category_form_cubit/category_form_cubit.dart';
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_form_cubit.dart';
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_list_cubit.dart';
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_info_cubit.dart';
+import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_cubit.dart';
 import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_form_cubit.dart';
 import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_list_cubit.dart';
+import 'package:Fluxx/blocs/invoices_cubits/invoice_payment_cubit.dart';
 import 'package:Fluxx/blocs/invoices_cubits/invoices_list_cubit.dart';
 import 'package:Fluxx/blocs/months_list_bloc/months__list_cubit.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
@@ -22,6 +24,7 @@ void setupDependencies() {
 
   getIt.registerLazySingleton<MonthsListCubit>(() => MonthsListCubit());
   getIt.registerLazySingleton<InvoicesListCubit>(() => InvoicesListCubit());
+  getIt.registerLazySingleton<InvoicePaymentCubit>(() => InvoicePaymentCubit());
   getIt.registerLazySingleton<InvoiceBillListCubit>(() => InvoiceBillListCubit());
   getIt.registerLazySingleton<CreditCardListCubit>(() => CreditCardListCubit());
   getIt.registerLazySingleton<BillListCubit>(() => BillListCubit());
@@ -32,6 +35,7 @@ void setupDependencies() {
   getIt.registerLazySingleton<RevenueFormCubit>(() => RevenueFormCubit());
   getIt.registerLazySingleton<CategoryFormCubit>(() => CategoryFormCubit());
   getIt.registerLazySingleton<BillCubit>(() => BillCubit());
+  getIt.registerLazySingleton<InvoiceBillCubit>(() => InvoiceBillCubit());
   getIt.registerLazySingleton<UserCubit>(() => UserCubit());
   getIt.registerLazySingleton<RevenueCubit>(() => RevenueCubit());
   getIt.registerLazySingleton<ResumeCubit>(() => ResumeCubit());

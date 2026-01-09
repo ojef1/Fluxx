@@ -88,6 +88,20 @@ class Db {
             'FOREIGN KEY (payment_id) REFERENCES ${Tables.revenue} (id) ON DELETE SET NULL, '
             'FOREIGN KEY (month_id) REFERENCES ${Tables.months} (id))',
           );
+
+          //Categoria padrão para faturas do cartão
+          final CategoryModel invoiceCategory = CategoryModel(
+            id: Constants.creditCardCategoryId,
+            categoryName: 'Cartão de crédito',
+            endMonthId: null,
+            isMonthly: 1,
+            startMonthId: 1,
+          );
+          await db.insert(
+            Tables.category,
+            invoiceCategory.toJson(),
+            conflictAlgorithm: sql.ConflictAlgorithm.replace,
+          );
         }
       },
       onCreate: (db, version) async {
@@ -379,6 +393,28 @@ class Db {
     }
   }
 
+  static Future<Map<String, dynamic>?> getInvoiceBillById(String billId) async {
+    final db = await Db.dataBase();
+
+    try {
+      final result = await db.rawQuery('''
+      SELECT ${Tables.creditCardsBills}.*, 
+             ${Tables.category}.name AS category_name
+      FROM ${Tables.creditCardsBills}
+      LEFT JOIN ${Tables.category} 
+        ON ${Tables.creditCardsBills}.category_id = ${Tables.category}.id
+      WHERE ${Tables.creditCardsBills}.id = ? 
+      LIMIT 1
+    ''', [billId]);
+
+      // Retorna o primeiro item encontrado ou null se não houver resultado
+      return result.isNotEmpty ? result.first : null;
+    } catch (e) {
+      debugPrint("Erro ao consultar conta pelo ID e mês: $e");
+      return null;
+    }
+  }
+
   static Future<Map<String, dynamic>?> getCreditCardById(String id) async {
     final db = await Db.dataBase();
 
@@ -418,8 +454,9 @@ class Db {
       closingDay: closingDay,
     );
 
+    final yearId = await getYearId(period.end.year);
     final monthId = await getMonthId(
-      yearId: await getYearId(period.end.year),
+      yearId: yearId,
       month: period.end.month,
     );
 
@@ -672,7 +709,16 @@ class Db {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getCreditCards() async {
+  static Future<List<Map<String, dynamic>>> getCreditActiveCards() async {
+    final db = await Db.dataBase();
+    try {
+      return await db.query(Tables.creditCards, where: 'is_active = 1');
+    } catch (e) {
+      throw Exception('Não foi possível encontrar os cartões : $e');
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getCreditAllCards() async {
     final db = await Db.dataBase();
     try {
       return await db.query(
@@ -708,19 +754,54 @@ class Db {
     final db = await Db.dataBase();
 
     try {
-      final result = await db.rawQuery('''
+      final billsResult = await db.rawQuery('''
     SELECT SUM(price) AS total
     FROM ${Tables.bills}
     WHERE month_id = ?
     ''', [monthId]);
 
-      return result.isNotEmpty
-          ? (result.first['total'] as double? ?? 0.0)
-          : 0.0;
+      final invoicesResult = await db.rawQuery('''
+      SELECT SUM(price) AS total
+      FROM ${Tables.creditCardsInvoices}
+      WHERE month_id = ?
+    ''', [monthId]);
+
+      final billsTotal = (billsResult.first['total'] as double?) ?? 0.0;
+
+      final invoicesTotal = (invoicesResult.first['total'] as double?) ?? 0.0;
+
+      return billsTotal + invoicesTotal;
     } catch (e) {
       debugPrint("Erro ao obter total do mês: $e");
       return 0.0;
     }
+  }
+
+  static Future<Map<String, double>> getTotalUsedByPaymentId(
+    int monthId,
+  ) async {
+    final db = await Db.dataBase();
+
+    final result = await db.rawQuery('''
+    SELECT payment_id, SUM(value) AS total_used
+    FROM (
+      SELECT payment_id, price AS value
+      FROM ${Tables.bills}
+      WHERE month_id = ? AND payment_id IS NOT NULL
+
+      UNION ALL
+
+      SELECT payment_id, price AS value
+      FROM ${Tables.creditCardsInvoices}
+      WHERE month_id = ? AND payment_id IS NOT NULL
+    )
+    GROUP BY payment_id
+  ''', [monthId, monthId]);
+
+    return {
+      for (final row in result)
+        row['payment_id'] as String: (row['total_used'] as double?) ?? 0.0
+    };
   }
 
   static Future<double> getBoundBillsTotalByMonth(int monthId) async {
@@ -825,14 +906,31 @@ class Db {
     }
   }
 
-  static Future<int> insertInvoiceBill(InvoiceBillModel invoice) async {
+  static Future<int> insertInvoiceBill(InvoiceBillModel bill) async {
     final db = await Db.dataBase();
-    final data = invoice.toJson();
+    final data = bill.toJson();
     try {
-      return await db.insert(
-        Tables.creditCardsBills,
-        data,
-        conflictAlgorithm: sql.ConflictAlgorithm.replace,
+      return await db.transaction(
+        (txn) async {
+          // 1. Insere a conta
+          final int result = await txn.insert(
+            Tables.creditCardsBills,
+            data,
+            conflictAlgorithm: sql.ConflictAlgorithm.replace,
+          );
+
+          if (result <= 0) {
+            throw Exception('Erro ao inserir conta');
+          }
+
+          // 2. Atualiza o valor da fatura
+          await _updateInvoiceTotalTx(
+            txn: txn,
+            invoiceId: bill.invoiceId!,
+          );
+
+          return result;
+        },
       );
     } catch (e) {
       log('$e', name: 'insertInvoiceBill');
@@ -893,14 +991,6 @@ class Db {
             whereArgs: [creditCard.id, monthId],
             limit: 1,
           );
-
-          final cat = await txn.query(
-            Tables.category,
-            where: 'id = ?',
-            whereArgs: [Constants.creditCardCategoryId],
-          );
-
-          log('categoria fixa existe? ${cat.isNotEmpty}');
 
           if (existing.isEmpty) {
             final newInvoice = InvoiceModel(
@@ -1006,6 +1096,37 @@ class Db {
     }
   }
 
+  static Future<int> deleteInvoiceBill({
+    required String billId,
+    required String invoiceId,
+  }) async {
+    final db = await Db.dataBase();
+    try {
+      return await db.transaction(
+        (txn) async {
+          // 1. Remove a conta
+          final int result = await txn.delete(
+            Tables.creditCardsBills,
+            where: 'id = ?',
+            whereArgs: [billId],
+          );
+          if (result <= 0) {
+            throw Exception('Erro ao remover a compra');
+          }
+
+          // 2. Atualiza o valor da fatura
+          await _updateInvoiceTotalTx(
+            txn: txn,
+            invoiceId: invoiceId,
+          );
+          return result;
+        },
+      );
+    } catch (e) {
+      throw Exception("Erro ao remover a compra: $e");
+    }
+  }
+
   static Future<int> disableCreditCard(String id) async {
     final db = await Db.dataBase();
     try {
@@ -1095,6 +1216,37 @@ class Db {
     }
   }
 
+  static Future<int> updateInvoiceBill(InvoiceBillModel newData) async {
+    final db = await Db.dataBase();
+    final updatedData = newData.toJson();
+
+    try {
+      return await db.transaction(
+        (txn) async {
+          // 1. Atualiza a conta
+          final int result = await txn.update(
+            Tables.creditCardsBills,
+            updatedData,
+            where: 'id = ?',
+            whereArgs: [newData.id],
+            conflictAlgorithm: sql.ConflictAlgorithm.replace,
+          );
+          if (result <= 0) {
+            throw Exception('Erro ao atualizar conta');
+          }
+          // 2. Atualiza o valor da fatura
+          await _updateInvoiceTotalTx(
+            txn: txn,
+            invoiceId: newData.invoiceId!,
+          );
+          return result;
+        },
+      );
+    } catch (e) {
+      throw Exception("Erro ao atualizar a compra: $e");
+    }
+  }
+
   static Future<int> updateCreditCard(CreditCardModel creditCard) async {
     final db = await Db.dataBase();
     final cardId = creditCard.id!;
@@ -1125,6 +1277,24 @@ class Db {
       );
     } catch (e) {
       throw Exception('Erro ao atualizar o status da conta : $e');
+    }
+  }
+
+  static Future<int> updateInvoicePaymentStatus(
+      {required String invoiceId, required String paymentId}) async {
+    final db = await Db.dataBase();
+    try {
+      return await db.update(
+        Tables.creditCardsInvoices,
+        {
+          'is_paid': 1,
+          'payment_id' : paymentId,
+        },
+        where: 'id = ?',
+        whereArgs: [invoiceId],
+      );
+    } catch (e) {
+      throw Exception('Erro ao atualizar o status da fatura : $e');
     }
   }
 

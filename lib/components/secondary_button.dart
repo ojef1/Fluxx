@@ -1,9 +1,12 @@
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
-class AddButton extends StatelessWidget {
+class SecondaryButton extends StatelessWidget {
+  final String title;
+  final IconData? icon;
   final Function() onPressed;
-  const AddButton({super.key, required this.onPressed});
+  const SecondaryButton(
+      {super.key, required this.onPressed, required this.title, this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +28,7 @@ class AddButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Adicionar',
+                title,
                 textAlign: TextAlign.center,
                 style: AppTheme.textStyles.bodyTextStyle.copyWith(
                   color: AppTheme.colors.primaryTextColor,
@@ -33,11 +36,12 @@ class AddButton extends StatelessWidget {
               ),
             ],
           ),
-          Icon(
-            Icons.add,
-            size: 22,
-            color: AppTheme.colors.hintColor,
-          ),
+          if (icon != null)
+            Icon(
+              icon,
+              size: 22,
+              color: AppTheme.colors.hintColor,
+            ),
         ],
       ),
       onTap: onPressed,

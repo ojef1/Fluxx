@@ -36,6 +36,24 @@ class RevenueModel extends Equatable {
     };
   }
 
+  RevenueModel copyWith({
+    String? id,
+    String? name,
+    double? value,
+    int? startMonthId,
+    int? endMonthId,
+    int? isMonthly,
+  }) {
+    return RevenueModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      value: value ?? this.value,
+      startMonthId: startMonthId ?? this.startMonthId,
+      endMonthId: endMonthId ?? this.endMonthId,
+      isMonthly: isMonthly ?? this.isMonthly,
+    );
+  }
+
   @override
   String toString() {
     return 'RevenueModel{id: $id, name: $name, value: $value, '

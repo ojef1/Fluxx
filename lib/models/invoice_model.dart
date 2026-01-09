@@ -1,5 +1,6 @@
+import 'package:equatable/equatable.dart';
 
-class InvoiceModel {
+class InvoiceModel extends Equatable {
   String? id;
   String? creditCardId;
   String? categoryId;
@@ -11,18 +12,39 @@ class InvoiceModel {
   double? price;
   int? isPaid;
 
-  InvoiceModel({
-    this.id,
-    this.creditCardId,
-    this.categoryId,
-    this.paymentId,
-    this.monthId,
-    this.dueDate,
-    this.startDate,
-    this.endDate,
-    this.price,
-    this.isPaid,
-  });
+  //extra
+  int? invoiceBillsLength;
+
+  InvoiceModel(
+      {this.id,
+      this.creditCardId,
+      this.categoryId,
+      this.paymentId,
+      this.monthId,
+      this.dueDate,
+      this.startDate,
+      this.endDate,
+      this.price,
+      this.isPaid,
+      this.invoiceBillsLength});
+
+  InvoiceModel copyWith({
+    int? invoiceBillsLength,
+  }) {
+    return InvoiceModel(
+      id: id,
+      creditCardId: creditCardId,
+      categoryId: categoryId,
+      paymentId: paymentId,
+      monthId: monthId,
+      dueDate: dueDate,
+      startDate: startDate,
+      endDate: endDate,
+      price: price,
+      isPaid: isPaid,
+      invoiceBillsLength: invoiceBillsLength ?? this.invoiceBillsLength,
+    );
+  }
 
   InvoiceModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -54,6 +76,21 @@ class InvoiceModel {
 
   @override
   String toString() {
-    return 'InvoiceModel{id: $id, creditCardId: $creditCardId, categoryId: $categoryId, paymentId: $paymentId, monthId: $monthId, dueDate : $dueDate, startDate: $startDate, endDate: $endDate, price: $price, isPaid: $isPaid}';
+    return 'InvoiceModel{id: $id, creditCardId: $creditCardId, categoryId: $categoryId, paymentId: $paymentId, monthId: $monthId, dueDate : $dueDate, startDate: $startDate, endDate: $endDate, price: $price, isPaid: $isPaid, invoiceBillsLength: $invoiceBillsLength}';
   }
+
+  @override
+  List<Object?> get props => [
+    id,
+        creditCardId,
+        categoryId,
+        paymentId,
+        monthId,
+        dueDate,
+        startDate,
+        endDate,
+        price,
+        isPaid,
+        invoiceBillsLength,
+      ];
 }

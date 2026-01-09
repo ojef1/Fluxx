@@ -36,7 +36,6 @@ class InvoiceBillFormState extends Equatable {
   });
 
   InvoiceBillFormState copyWith({
-    String? id,
     String? name,
     double? price,
     String? date,
@@ -46,11 +45,9 @@ class InvoiceBillFormState extends Equatable {
     CreditCardModel? cardSelected,
     bool? repeatBill,
     int? repeatCount,
-    String? repeatMonthName,
     ResponseStatus? responseStatus,
     String? responseMessage,
     InvoiceBillFormMode? billFormMode,
-    List<MonthModel>? monthsWithoutBalance,
     List<CreditCardModel>? cardsList,
   }) {
     return InvoiceBillFormState(
