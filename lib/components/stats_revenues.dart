@@ -2,7 +2,6 @@ import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
 import 'package:Fluxx/components/empty_list_placeholder/empty_revenue_list.dart';
 import 'package:Fluxx/components/revenue_item.dart';
-import 'package:Fluxx/components/shimmers/revenues_shimmer.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
@@ -23,7 +22,7 @@ class StatsRevenues extends StatelessWidget {
           previous.availableRevenues != current.availableRevenues,
       builder: (context, state) {
         if (state.getRevenueResponse == GetRevenueResponse.loading) {
-          return const RevenuesShimmer();
+          return const SizedBox();
         } else if (state.getRevenueResponse == GetRevenueResponse.error) {
           return Padding(
             padding: const EdgeInsets.only(top: 28.0),

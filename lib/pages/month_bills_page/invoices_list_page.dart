@@ -1,4 +1,5 @@
 import 'package:Fluxx/blocs/invoices_cubits/invoices_list_cubit.dart';
+import 'package:Fluxx/components/empty_list_placeholder/empty_credit_card_list.dart';
 import 'package:Fluxx/components/secondary_button.dart';
 import 'package:Fluxx/components/custom_loading.dart';
 import 'package:Fluxx/components/empty_list_placeholder/empty_bill_list.dart';
@@ -37,7 +38,15 @@ class InvoicesListPage extends StatelessWidget {
                 ),
               );
             case ResponseStatus.success:
-              return const _InvoiceListPageContent();
+              if (state.invoicesList.isEmpty) {
+                return EmptyCreditCardList(
+                  onPressed: () => goToCreditCardForm(context: context),
+                  title: 'Parece que você não possui nenhum cartão ainda',
+                  subTitle: 'Clique aqui para criar',
+                );
+              } else {
+                return const _InvoiceListPageContent();
+              }
           }
         },
       ),
@@ -92,7 +101,7 @@ class __InvoiceListPageContentState extends State<_InvoiceListPageContent> {
                             invoice: state.invoicesList[index],
                             card: card,
                           ),
-                          if (index == state.invoicesList.length -1)
+                          if (index == state.invoicesList.length - 1)
                             SizedBox(height: mediaQuery.height * .5),
                         ],
                       );

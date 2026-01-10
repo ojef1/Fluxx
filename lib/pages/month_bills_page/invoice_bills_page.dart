@@ -4,10 +4,10 @@ import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_list_cubit.dart';
 import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_form_cubit.dart'
     as invoiceform;
 import 'package:Fluxx/blocs/invoices_cubits/invoice_payment_cubit.dart' as invoicepayment;
+import 'package:Fluxx/components/empty_list_placeholder/empty_invoice_bill_list.dart';
 import 'package:Fluxx/components/secondary_button.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/custom_loading.dart';
-import 'package:Fluxx/components/empty_list_placeholder/empty_bill_list.dart';
 import 'package:Fluxx/components/invoice_bill_item.dart';
 import 'package:Fluxx/services/credit_card_services.dart';
 import 'package:Fluxx/themes/app_theme.dart';
@@ -61,7 +61,17 @@ class _InvoiceBillsPageState extends State<InvoiceBillsPage> {
                         ),
                       );
                     case ResponseStatus.success:
+                    if(state.bills.isEmpty){
+                      return EmptyInvoiceBillList(
+                          onPressed: () => goToInvoiceBillForm(context: context),
+                          title:
+                              'Parece que você não possui compras',
+                          subTitle: 'Clique aqui para adicionar',
+                        );
+                    }else{
+
                       return const _InvoiceBillsPageContent();
+                    }
                   }
                 },
               ),
@@ -107,9 +117,7 @@ class __InvoiceBillsPageContentState extends State<_InvoiceBillsPageContent> {
                 ),
               ),
             const SizedBox(height: 40),
-            state.bills.isEmpty
-                ? EmptyBillList(onPressed: () {})
-                : ListView.builder(
+            ListView.builder(
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),

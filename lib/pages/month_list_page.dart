@@ -1,8 +1,8 @@
 import 'package:Fluxx/blocs/months_list_bloc/months__list_cubit.dart';
 import 'package:Fluxx/blocs/months_list_bloc/months_list_state.dart';
 import 'package:Fluxx/components/app_bar.dart';
+import 'package:Fluxx/components/custom_loading.dart';
 import 'package:Fluxx/components/month.dart';
-import 'package:Fluxx/components/shimmers/months_shimmer.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/constants.dart';
@@ -67,7 +67,7 @@ class _MonthListPageState extends State<MonthListPage> {
                   bloc: GetIt.I(),
                   builder: (context, state) {
                     if (state.getMonthsResponse == GetMonthsResponse.loading) {
-                      return const MonthsShimmer();
+                      return const CustomLoading();
                     } else if (state.getMonthsResponse ==
                         GetMonthsResponse.error) {
                       return const Padding(
@@ -78,7 +78,7 @@ class _MonthListPageState extends State<MonthListPage> {
                       jumpToCurrentMonth(state.months, mediaQuery);
                       return Column(
                         children: [
-                          const yearHandleWidget(),
+                          const _yearHandleWidget(),
                           const SizedBox(height: 30),
                           ListView.builder(
                             shrinkWrap: true,
@@ -104,10 +104,8 @@ class _MonthListPageState extends State<MonthListPage> {
   }
 }
 
-class yearHandleWidget extends StatelessWidget {
-  const yearHandleWidget({
-    super.key,
-  });
+class _yearHandleWidget extends StatelessWidget {
+  const _yearHandleWidget();
 
   @override
   Widget build(BuildContext context) {

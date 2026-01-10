@@ -1,11 +1,11 @@
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
-class EmptyCreditCardList extends StatelessWidget {
+class EmptyInvoiceBillList extends StatelessWidget {
   final Function() onPressed;
   final String title;
   final String subTitle;
-  const EmptyCreditCardList({super.key, required this.onPressed, required this.title, required this.subTitle});
+  const EmptyInvoiceBillList({super.key, required this.onPressed, required this.title, required this.subTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class EmptyCreditCardList extends StatelessWidget {
                     .copyWith(fontSize: AppTheme.fontSizes.small),
               ),
               Image.asset(
-                'assets/images/empty_card.png',
+                'assets/images/empty_invoice.png',
                 height: 200,
               ),
       

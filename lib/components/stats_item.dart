@@ -27,7 +27,6 @@ class StatsCategoryItem extends StatelessWidget {
         horizontal: mediaQuery.width * .04,
       ),
       width: mediaQuery.width * .65,
-      height: 20,
       decoration: BoxDecoration(
         color: AppTheme.colors.itemBackgroundColor,
         borderRadius: BorderRadius.circular(10),
