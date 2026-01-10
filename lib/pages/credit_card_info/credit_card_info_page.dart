@@ -1,10 +1,10 @@
 
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_info_cubit.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/pages/credit_card_info/credit_card_detail_page.dart';
 import 'package:Fluxx/pages/credit_card_info/credit_card_stats_page.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +23,7 @@ class _CreditCardInfoPageState extends State<CreditCardInfoPage> {
 
   @override
   void initState() {
-    _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
+    _currentMonth = AppPeriodService().monthInFocus;
 
     GetIt.I<CreditCardInfoCubit>().init(_currentMonth.id!);
     super.initState();

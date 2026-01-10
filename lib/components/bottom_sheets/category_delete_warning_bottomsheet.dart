@@ -1,6 +1,6 @@
 import 'package:Fluxx/blocs/category_form_cubit/category_form_cubit.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/components/primary_button.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -65,7 +65,7 @@ class CategoryDisableWarningBottomsheet extends StatelessWidget {
               text: 'Tenho certeza',
               onPressed: () async {
                 var currentMonthId =
-                    GetIt.I<ResumeCubit>().state.monthInFocus!.id;
+                    AppPeriodService().monthInFocus.id;
                 Navigator.of(context).pop();
                 await GetIt.I<CategoryFormCubit>().disableCategory(currentMonthId!);
               },

@@ -127,7 +127,7 @@ class _RepeatBillHandleState extends State<_RepeatBillHandle> {
 
   @override
   void initState() {
-    _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
+    _currentMonth = AppPeriodService().monthInFocus;
     monthsList = getNextMonthsUntilDecember(_currentMonth);
     super.initState();
   }

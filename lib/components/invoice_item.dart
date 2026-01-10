@@ -23,12 +23,11 @@ class _InvoiceItemState extends State<InvoiceItem> {
   @override
   void initState() {
     bank = getBank(widget.card.bankId ?? 0);
-    hasOnlyOneBill = (widget.invoice.invoiceBillsLength ?? 0) >= 1;
+    hasOnlyOneBill = (widget.invoice.invoiceBillsLength ?? 0) <= 1;
     super.initState();
   }
 
-  //atualizar a fatura do resumePage quando adicionar uma conta na fatura
-  //definir images novas para o app 
+
 
   @override
   Widget build(BuildContext context) {

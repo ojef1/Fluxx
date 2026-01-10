@@ -78,3 +78,12 @@ Future<String> getVersion() async {
   final version = yaml['version'] as String;
   return version; // Retorna a versão completa, incluindo o número de build
 }
+
+  double calcPercent({required double income, required double total}) {
+    if (income == 0.0) {
+      // Não tem receita, então não calcula porcentagem
+      return 0.0;
+    } else {
+      return (total / income) * 100;
+    }
+  }

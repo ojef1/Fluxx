@@ -1,7 +1,7 @@
 import 'package:Fluxx/blocs/bills_cubit/bill_form_cubit.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/revenue_form_cubit/revenue_form_cubit.dart';
 import 'package:Fluxx/components/primary_button.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,8 +12,7 @@ class RevenueDisableWarningBottomsheet extends StatelessWidget {
   const RevenueDisableWarningBottomsheet({super.key});
 
   String get nextMonth {
-    var monthInFocus = GetIt.I<ResumeCubit>().state.monthInFocus;
-    if (monthInFocus != null) {
+    
       var nextMonthDate = DateTime.now().month + 1;
       // Se o mês for 13 (janeiro do próximo ano), ajusta para 1 (janeiro)
       if (nextMonthDate > 12) {
@@ -21,9 +20,7 @@ class RevenueDisableWarningBottomsheet extends StatelessWidget {
       }
     // Retorna o nome do mês
     return DateFormat('MMMM', 'pt_BR').format(DateTime(DateTime.now().year, nextMonthDate));
-    } else {
-      return '';
-    }
+   
   }
 
   @override
@@ -94,7 +91,7 @@ class RevenueDisableWarningBottomsheet extends StatelessWidget {
                     text: 'Tenho certeza',
                     onPressed: () async {
                       var currentMonthId =
-                          GetIt.I<ResumeCubit>().state.monthInFocus!.id;
+                          AppPeriodService().monthInFocus.id;
                       Navigator.of(context).pop();
                       await GetIt.I<RevenueFormCubit>()
                           .desactiveRevenue(currentMonthId!);

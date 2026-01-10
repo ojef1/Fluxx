@@ -3,6 +3,7 @@ import 'package:Fluxx/blocs/user_cubit/user_cubit.dart';
 import 'package:Fluxx/components/custom_loading.dart';
 import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/month_model.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class _IntroPageState extends State<IntroPage> {
       await Future.wait([
         _loadGreeting(),
         _loadUserInfos(),
-        _loadActualMonth(),
+        _initAppPeriod(),
       ]);
       _onInitComplete();
     } catch (e) {
@@ -55,9 +56,8 @@ class _IntroPageState extends State<IntroPage> {
     GetIt.I<UserCubit>().getUserInfos();
   }
 
-  Future<void> _loadActualMonth() async {
-    actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
-    GetIt.I<ResumeCubit>().updateMonthInFocus(actualMonth);
+  Future<void> _initAppPeriod() async {
+    await AppPeriodService().init(DateTime.now().year);
   }
 
   void _onInitComplete() {

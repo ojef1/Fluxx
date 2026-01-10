@@ -1,10 +1,10 @@
 import 'package:Fluxx/blocs/category_cubit/category_cubit.dart';
 import 'package:Fluxx/blocs/category_cubit/category_state.dart';
 import 'package:Fluxx/blocs/category_form_cubit/category_form_cubit.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/components/secondary_button.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/empty_list_placeholder/empty_category_list.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:Fluxx/utils/navigations.dart';
@@ -28,8 +28,8 @@ class _CategoryListPageState extends State<CategoryListPage> {
   }
 
   Future<void> init() async {
-    var actualMonth = await GetIt.I<ResumeCubit>().getActualMonth();
-    GetIt.I<CategoryCubit>().getCategorys(actualMonth.id!);
+    var currentMonth = AppPeriodService().currentMonth;
+    GetIt.I<CategoryCubit>().getCategorys(currentMonth.id!);
   }
 
   @override

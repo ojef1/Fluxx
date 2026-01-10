@@ -1,7 +1,6 @@
 import 'package:Fluxx/blocs/bills_cubit/bill_form_cubit.dart';
 import 'package:Fluxx/blocs/category_cubit/category_cubit.dart';
 import 'package:Fluxx/blocs/category_cubit/category_state.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
 import 'package:Fluxx/components/app_bar.dart';
@@ -14,6 +13,7 @@ import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/helpers.dart';
@@ -53,7 +53,7 @@ class _BillFormPageviewState extends State<BillFormPageview> {
   @override
   void initState() {
     _pageController = PageController();
-    _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
+    _currentMonth = AppPeriodService().monthInFocus;
     //TODO trocar string por variável constante
     isDecember = _currentMonth.name == 'Dezembro';
     billFormMode = GetIt.I<BillFormCubit>().state.billFormMode;

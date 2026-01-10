@@ -1,10 +1,10 @@
 import 'package:Fluxx/blocs/category_form_cubit/category_form_cubit.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/bottom_sheets/category_delete_warning_bottomsheet.dart';
 import 'package:Fluxx/components/custom_text_field.dart';
 import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/month_model.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
@@ -37,7 +37,7 @@ class _CategoryFormPageviewState extends State<CategoryFormPageview> {
   @override
   void initState() {
     _pageController = PageController();
-    _currentMonth = GetIt.I<ResumeCubit>().state.monthInFocus!;
+    _currentMonth = AppPeriodService().monthInFocus;
     categoryFormMode = GetIt.I<CategoryFormCubit>().state.categoryFormMode;
     isEditingMode = categoryFormMode == CategoryFormMode.editing;
     canDesactive = GetIt.I<CategoryFormCubit>().canDesactive(_currentMonth.id!);

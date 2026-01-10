@@ -4,8 +4,8 @@ class MonthModel {
   String? name;
   double? total;
   int? monthNumber;
-  String? categoryMostUsed; 
-  String? revenueMostUsed; 
+  String? categoryMostUsed;
+  String? revenueMostUsed;
 
   MonthModel({
     this.id,
@@ -21,10 +21,10 @@ class MonthModel {
     id = json['id'];
     yearId = json['year_id'] ?? json['yearId'];
     name = json['name'];
-    total = json['total'];
+    total = (json['total_spent'] as num?)?.toDouble();
     monthNumber = json['month_number'];
-    categoryMostUsed = json['categoryMostUsed'];
-    revenueMostUsed = json['revenueMostUsed'];
+    categoryMostUsed = json['most_used_category'] as String?;
+    revenueMostUsed = json['most_used_revenue'] as String?;
   }
 
   @override

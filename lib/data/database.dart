@@ -6,6 +6,7 @@ import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
 import 'package:Fluxx/models/invoice_bill_model.dart';
 import 'package:Fluxx/models/invoice_model.dart';
+import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/models/user_model.dart';
 import 'package:Fluxx/services/credit_card_services.dart';
@@ -223,7 +224,7 @@ class Db {
 
         await constValues(db); // preenche as tabelas que terão valores fixos
       },
-      version: 30,
+      version: 31,
     );
     return _db!;
   }
@@ -302,7 +303,7 @@ class Db {
     return db.query(table);
   }
 
-  static Future<List<Map<String, dynamic>>> getMonths(int year) async {
+  static Future<List<MonthModel>> getMonths(int year) async {
     final db = await Db.dataBase();
 
     // Busca o id do ano atual na tabela 'years'
@@ -318,12 +319,62 @@ class Db {
 
     final yearId = yearResult.first['id'] as int;
 
-    // Busca os meses que pertencem ao ano atual
-    return await db.query(
-      Tables.months,
-      where: 'year_id = ?',
-      whereArgs: [yearId],
-    );
+    final result = await db.rawQuery('''
+    WITH all_bills AS (
+        -- contas normais
+        SELECT price, category_id, payment_id AS revenue_id, month_id 
+        FROM ${Tables.bills}
+    
+        UNION ALL
+    
+        -- contas de cartão de crédito, pegando o payment_id da fatura
+        SELECT cb.price, cb.category_id, ci.payment_id AS revenue_id, ci.month_id
+        FROM ${Tables.creditCardsBills} cb
+        JOIN ${Tables.creditCardsInvoices} ci ON ci.id = cb.invoice_id
+    ),
+    category_count AS (
+        SELECT month_id, category_id, COUNT(*) AS cnt
+        FROM all_bills
+        GROUP BY month_id, category_id
+    ),
+    revenue_count AS (
+        SELECT ab.month_id, ab.revenue_id, COUNT(*) AS cnt
+        FROM all_bills ab
+        JOIN revenue r ON r.id = ab.revenue_id
+        WHERE r.start_month_id <= ab.month_id
+          AND (r.end_month_id IS NULL OR r.end_month_id >= ab.month_id)
+        GROUP BY ab.month_id, ab.revenue_id
+    )
+    SELECT
+        m.id,
+        m.year_id,
+        m.name,
+        m.month_number,
+        COALESCE((
+            SELECT SUM(price) FROM all_bills ab WHERE ab.month_id = m.id
+        ), 0) AS total_spent,
+        (
+            SELECT c.name
+            FROM category_count cc
+            JOIN ${Tables.category} c ON c.id = cc.category_id
+            WHERE cc.month_id = m.id
+            ORDER BY cc.cnt DESC
+            LIMIT 1
+        ) AS most_used_category,
+        (
+            SELECT r.name
+            FROM revenue_count rc
+            JOIN ${Tables.revenue} r ON r.id = rc.revenue_id
+            WHERE rc.month_id = m.id
+            ORDER BY rc.cnt DESC
+            LIMIT 1
+        ) AS most_used_revenue
+    FROM ${Tables.months} m
+    WHERE m.year_id = ?
+    ORDER BY m.month_number
+  ''', [yearId]);
+
+    return result.map((json) => MonthModel.fromJson(json)).toList();
   }
 
   static Future<Map<String, dynamic>?> getMonthById(int monthId) async {
@@ -644,48 +695,6 @@ class Db {
       return result;
     } catch (e) {
       throw Exception('Erro ao consultar as categorias exclusivas: $e');
-    }
-  }
-
-  static Future<String?> getMostUsedCategoryByMonth(int monthId) async {
-    final db = await Db.dataBase();
-
-    try {
-      final result = await db.rawQuery('''
-      SELECT c.name, SUM(b.price) as total
-      FROM ${Tables.bills} b
-      JOIN ${Tables.category} c ON b.category_id = c.id
-      WHERE b.month_id = ?
-      GROUP BY c.name
-      ORDER BY total DESC
-      LIMIT 1
-    ''', [monthId]);
-
-      return result.isNotEmpty ? result.first['name'] as String : null;
-    } catch (e) {
-      debugPrint("Erro ao buscar categoria mais usada: $e");
-      return null;
-    }
-  }
-
-  static Future<String?> getMostUsedRevenueByMonth(int monthId) async {
-    final db = await Db.dataBase();
-
-    try {
-      final result = await db.rawQuery('''
-      SELECT r.name, SUM(b.price) as total
-      FROM ${Tables.bills} b
-      JOIN ${Tables.revenue} r ON b.payment_id = r.id
-      WHERE b.month_id = ?
-      GROUP BY r.name
-      ORDER BY total DESC
-      LIMIT 1
-    ''', [monthId]);
-
-      return result.isNotEmpty ? result.first['name'] as String : null;
-    } catch (e) {
-      debugPrint("Erro ao buscar receita mais usada: $e");
-      return null;
     }
   }
 
@@ -1288,7 +1297,7 @@ class Db {
         Tables.creditCardsInvoices,
         {
           'is_paid': 1,
-          'payment_id' : paymentId,
+          'payment_id': paymentId,
         },
         where: 'id = ?',
         whereArgs: [invoiceId],

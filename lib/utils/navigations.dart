@@ -183,3 +183,13 @@ void goToRevenuesListPage({
     AppRoutes.revenueListPage,
   );
 }
+
+//mudar images do app todo
+//tirar uso dos shimmers
+
+void goToBillStatsPage({required BuildContext context,}){
+   Navigator.pushNamed(
+    context,
+    AppRoutes.billStatsPage,
+  );
+}

@@ -6,11 +6,11 @@ import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_cubit.dart' as invoicec
 import 'package:Fluxx/blocs/invoices_cubits/invoice_payment_cubit.dart' as invoicepayment;
 import 'package:Fluxx/blocs/bills_cubit/bill_list_cubit.dart';
 import 'package:Fluxx/blocs/invoices_cubits/invoices_list_cubit.dart';
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/pages/month_bills_page/commons_bills_page.dart';
 import 'package:Fluxx/pages/month_bills_page/invoices_list_page.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +29,7 @@ class _MonthBillsPageState extends State<MonthBillsPage> {
   late final MonthModel? monthInFocus;
   @override
   void initState() {
-    monthInFocus = GetIt.I<ResumeCubit>().state.monthInFocus;
+    monthInFocus = AppPeriodService().monthInFocus;
     GetIt.I<BillListCubit>().getAllBills(
       monthInFocus!.id!,
     );
@@ -95,16 +95,16 @@ class _ListenerWrapper extends StatelessWidget {
   const _ListenerWrapper({required this.child});
 
   void _getBills() {
-    var monthInFocus = GetIt.I<ResumeCubit>().state.monthInFocus;
+    var monthInFocus = AppPeriodService().monthInFocus;
     GetIt.I<BillListCubit>().getAllBills(
-      monthInFocus!.id!,
+      monthInFocus.id!,
     );
   }
 
   void _getInvoices() {
-    var monthInFocus = GetIt.I<ResumeCubit>().state.monthInFocus;
+    var monthInFocus = AppPeriodService().monthInFocus;
     GetIt.I<InvoicesListCubit>().getInvoices(
-      monthInFocus!.id!,
+      monthInFocus.id!,
     );
   }
 

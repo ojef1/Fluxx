@@ -1,11 +1,11 @@
 import 'package:Fluxx/blocs/bills_cubit/bill_form_cubit.dart' as bill_cubit;
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/revenue_form_cubit/revenue_form_cubit.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/bottom_sheets/revenue_desactive_warning_bottomsheet.dart';
 import 'package:Fluxx/components/custom_text_field.dart';
 import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/month_model.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
@@ -44,7 +44,7 @@ class _RevenueFormPageviewState extends State<RevenueFormPageview> {
     //deve-se usar a data do mês selecionado no formulário de conta
     //se for null é porque veio de outro fluxo, então pega o mês em foco do resumo
     _currentMonth = GetIt.I<bill_cubit.BillFormCubit>().state.selectedMonth ??
-        GetIt.I<ResumeCubit>().state.monthInFocus!;
+        AppPeriodService().monthInFocus;
     revenueFormMode = GetIt.I<RevenueFormCubit>().state.revenueFormMode;
     isEditingMode = revenueFormMode == RevenueFormMode.editing;
     canDesactive = GetIt.I<RevenueFormCubit>().canDesactive(_currentMonth.id!);

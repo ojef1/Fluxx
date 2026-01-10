@@ -84,7 +84,6 @@ class _QuickAccessItem extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         alignment: Alignment.center,
-        margin: const EdgeInsets.only(bottom: 5),
         width: 80,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),

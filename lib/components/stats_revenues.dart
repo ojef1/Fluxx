@@ -1,10 +1,10 @@
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
 import 'package:Fluxx/components/empty_list_placeholder/empty_revenue_list.dart';
 import 'package:Fluxx/components/revenue_item.dart';
 import 'package:Fluxx/components/shimmers/revenues_shimmer.dart';
 import 'package:Fluxx/models/revenue_model.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/material.dart';
@@ -37,7 +37,7 @@ class StatsRevenues extends StatelessWidget {
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () => GetIt.I<RevenueCubit>().getRevenues(
-                        GetIt.I<ResumeCubit>().state.currentMonth!.id!),
+                        AppPeriodService().currentMonth.id!),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.colors.hintColor,
                       minimumSize: const Size(50, 50),

@@ -6,6 +6,7 @@ import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/stats_categorys.dart';
 import 'package:Fluxx/components/stats_revenues.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:Fluxx/utils/helpers.dart';
@@ -40,18 +41,15 @@ class _StatsPageState extends State<StatsPage> {
   }
 
   Future<void> _init() async {
-
-    final state = GetIt.I<ResumeCubit>().state;
+    var monthInFocus = AppPeriodService().monthInFocus;
     var totalRevenues = await GetIt.I<RevenueCubit>().calculateTotalRevenues();
 
-    await GetIt.I<ResumeCubit>().getTotalSpent(state.monthInFocus!.id!);
+    await GetIt.I<ResumeCubit>().getTotalSpent(monthInFocus.id!);
     await GetIt.I<ResumeCubit>().calculatePercent(totalRevenues);
-    await GetIt.I<RevenueCubit>()
-        .getRevenues(state.monthInFocus!.id!);
-    await GetIt.I<RevenueCubit>()
-        .calculateRemainigRevenues(state.monthInFocus!.id!);
-    await GetIt.I<BillListCubit>().getAllBills(state.monthInFocus!.id!);
-    await GetIt.I<CategoryCubit>().getTotalByCategory(state.monthInFocus!.id!);
+    await GetIt.I<RevenueCubit>().getRevenues(monthInFocus.id!);
+    await GetIt.I<RevenueCubit>().calculateRemainigRevenues(monthInFocus.id!);
+    await GetIt.I<BillListCubit>().getAllBills(monthInFocus.id!);
+    await GetIt.I<CategoryCubit>().getTotalByCategory(monthInFocus.id!);
   }
 
   @override
@@ -107,8 +105,8 @@ class _StatsPageState extends State<StatsPage> {
                                           current.totalSpent,
                                       builder: (context, state) => Text(
                                         'R\$${formatPrice(state.totalSpent)}',
-                                        style:
-                                            AppTheme.textStyles.subTileTextStyle,
+                                        style: AppTheme
+                                            .textStyles.subTileTextStyle,
                                       ),
                                     ),
                                     BlocBuilder<RevenueCubit, RevenueState>(
@@ -118,8 +116,8 @@ class _StatsPageState extends State<StatsPage> {
                                           current.totalRevenue,
                                       builder: (context, state) => Text(
                                         'R\$${formatPrice(state.totalRevenue)}',
-                                        style:
-                                            AppTheme.textStyles.subTileTextStyle,
+                                        style: AppTheme
+                                            .textStyles.subTileTextStyle,
                                       ),
                                     ),
                                   ],

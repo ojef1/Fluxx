@@ -4,8 +4,6 @@ enum TotalSpentStatus { initial, loading, success, error }
 enum GetPriorityInvoiceStatus { initial, loading, success, error }
 
 class ResumeState extends Equatable {
-  final MonthModel? currentMonth;
-  final MonthModel? monthInFocus;
   final InvoiceModel? priorityInvoice;
   final List<CreditCardModel> cardsList;
   final TotalSpentStatus totalSpentStatus;
@@ -13,8 +11,6 @@ class ResumeState extends Equatable {
   final double totalSpent;
   final double percentSpent;
   const ResumeState({
-    this.currentMonth,
-    this.monthInFocus,
     this.priorityInvoice,
     this.cardsList = const [],
     this.totalSpentStatus = TotalSpentStatus.initial,
@@ -24,8 +20,6 @@ class ResumeState extends Equatable {
   });
 
   ResumeState copyWith({
-    MonthModel? currentMonth,
-    MonthModel? monthInFocus,
     InvoiceModel? priorityInvoice,
     List<CreditCardModel>? cardsList,
     TotalSpentStatus? totalSpentStatus,
@@ -34,8 +28,6 @@ class ResumeState extends Equatable {
     double? percentSpent,
   }) {
     return ResumeState(
-      currentMonth: currentMonth ?? this.currentMonth,
-      monthInFocus: monthInFocus ?? this.monthInFocus,
       priorityInvoice: priorityInvoice ?? this.priorityInvoice,
       cardsList: cardsList ?? this.cardsList,
       totalSpentStatus: totalSpentStatus ?? this.totalSpentStatus,
@@ -47,8 +39,6 @@ class ResumeState extends Equatable {
 
   @override
   List<Object?> get props => [
-        currentMonth,
-        monthInFocus,
         priorityInvoice,
         cardsList,
         totalSpentStatus,

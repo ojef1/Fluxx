@@ -1,11 +1,9 @@
-
-import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/models/month_model.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
 class Month extends StatelessWidget {
   final MonthModel month;
@@ -16,7 +14,7 @@ class Month extends StatelessWidget {
     var mediaQuery = MediaQuery.of(context).size;
     return GestureDetector(
       onTap: () {
-        GetIt.I<ResumeCubit>().updateMonthInFocus(month);
+        AppPeriodService().updateMonthInFocus(month);
         Navigator.pushNamed(context, AppRoutes.monthBillsPage);
       },
       child: Container(

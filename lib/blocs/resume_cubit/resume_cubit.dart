@@ -3,8 +3,9 @@ import 'dart:developer';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
 import 'package:Fluxx/models/invoice_model.dart';
-import 'package:Fluxx/models/month_model.dart';
+import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/services/credit_card_services.dart';
+import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -25,36 +26,6 @@ class ResumeCubit extends Cubit<ResumeState> {
     } else {
       return 'Boa noite,';
     }
-  }
-
-  Future<MonthModel> getActualMonth() async {
-    try{
-      
-      var result = await Db.getMonths(DateTime.now().year);
-      List<MonthModel> monthsList = result
-          .map<MonthModel>((monthMap) => MonthModel.fromJson(monthMap))
-          .toList();
-      final currentMonthNumber = DateTime.now().month;
-      final actualMonth = monthsList
-          .firstWhere((month) => month.monthNumber == currentMonthNumber);
-      final totalSpent = await Db.sumPricesByMonth(actualMonth.id!);
-      final monthModel = MonthModel(
-        id: actualMonth.id,
-        yearId: actualMonth.yearId,
-        name: actualMonth.name,
-        monthNumber: actualMonth.monthNumber,
-        total: totalSpent,
-      );
-      emit(state.copyWith(currentMonth: monthModel));
-      return monthModel;
-    } catch (error) {
-      log('Erro ao obter mês atual: $error');
-      rethrow;
-    }
-  }
-
-  void updateMonthInFocus(MonthModel month) {
-    emit(state.copyWith(monthInFocus: month));
   }
 
   Future<void> getTotalSpent(int monthId) async {
@@ -80,25 +51,24 @@ class ResumeCubit extends Cubit<ResumeState> {
   }
 
   Future<void> calculatePercent(double totalIncome) async {
-    final totalSpent = state.totalSpent;
-    if (totalIncome == 0.0) {
-      // Não tem receita, então não calcula porcentagem
-      emit(state.copyWith(percentSpent: 0.0));
-      return;
-    } else {
-      final percent = (totalSpent / totalIncome) * 100;
-      emit(state.copyWith(percentSpent: percent));
-      return;
-    }
+    final percent = calcPercent(
+      income: totalIncome,
+      total: state.totalSpent,
+    );
+    emit(state.copyWith(percentSpent: percent));
+    return;
   }
 
   Future<void> getPriorityInvoice() async {
     _updatePriorityInvoiceStatus(GetPriorityInvoiceStatus.loading);
     try {
-      int monthId = state.monthInFocus!.id!;
+      int monthId = AppPeriodService().monthInFocus.id!;
       final invoices = await getInvoicesByMonth(monthId);
       final cards = await getAllCardsList();
-      if (invoices.isEmpty) return;
+      if (invoices.isEmpty) {
+        _updatePriorityInvoiceStatus(GetPriorityInvoiceStatus.success);
+        return;
+      }
 
       emit(state.copyWith(cardsList: cards));
       final now = DateTime.now();
