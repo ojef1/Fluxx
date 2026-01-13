@@ -66,7 +66,7 @@ class _BillItemState extends State<BillItem> {
                     children: [
                       Text(
                         widget.bill.name ?? '',
-                        style: AppTheme.textStyles.titleTextStyle,
+                        style: AppTheme.textStyles.bodyTextStyle.copyWith(fontSize: 20),
                       ),
                       const SizedBox(height: 6),
                       AnimatedCrossFade(

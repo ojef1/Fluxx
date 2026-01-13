@@ -59,104 +59,133 @@ class _DetailCommonBillPageState extends State<DetailCommonBillPage> {
                   bloc: GetIt.I(),
                   buildWhen: (previous, current) =>
                       previous.detailBill != current.detailBill,
-                  builder: (context, state) => Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 25),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton.filled(
-                            onPressed: () => goToBillForm(
-                                context: context, bill: state.detailBill),
-                            icon: Icon(
-                              Icons.mode_edit_rounded,
-                              color: AppTheme.colors.white,
+                  builder: (context, state) {
+                    bool hasPaymentId =
+                        (state.detailBill?.paymentId?.isNotEmpty) != null;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 25),
+                        Row(
+                          spacing: 5,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton.filled(
+                              onPressed: () => goToBillForm(
+                                  context: context, bill: state.detailBill),
+                              icon: Icon(
+                                Icons.mode_edit_rounded,
+                                color: AppTheme.colors.white,
+                              ),
+                              style: IconButton.styleFrom(
+                                  minimumSize: const Size(55, 55),
+                                  backgroundColor: AppTheme.colors.hintColor),
                             ),
-                            style: IconButton.styleFrom(
-                                minimumSize: const Size(55, 55),
-                                backgroundColor: AppTheme.colors.hintColor),
-                          ),
-                          const SizedBox(width: 5),
-                          IconButton.filled(
-                            onPressed: () =>
-                                _showDeleteDialog(context, state.detailBill!),
-                            icon: Icon(
-                              Icons.delete_forever_rounded,
-                              color: AppTheme.colors.white,
+                            IconButton.filled(
+                              onPressed: () =>
+                                  _showDeleteDialog(context, state.detailBill!),
+                              icon: Icon(
+                                Icons.delete_forever_rounded,
+                                color: AppTheme.colors.white,
+                              ),
+                              style: IconButton.styleFrom(
+                                  minimumSize: const Size(55, 55),
+                                  backgroundColor: AppTheme.colors.hintColor),
                             ),
-                            style: IconButton.styleFrom(
-                                minimumSize: const Size(55, 55),
-                                backgroundColor: AppTheme.colors.hintColor),
-                          ),
-                          const SizedBox(width: 5),
-                          AnimatedToggleSwitch<bool>.dual(
-                            current: state.detailBill?.isPayed == 1,
-                            first: false,
-                            second: true,
-                            spacing: 55.0,
-                            style: const ToggleStyle(
-                              borderColor: Colors.transparent,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  spreadRadius: 1,
-                                  blurRadius: 2,
-                                  offset: Offset(0, 1.5),
+                            AnimatedToggleSwitch<bool>.dual(
+                              current: state.detailBill?.isPayed == 1,
+                              first: false,
+                              second: true,
+                              spacing: 55.0,
+                              style: const ToggleStyle(
+                                borderColor: Colors.transparent,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black26,
+                                    spreadRadius: 1,
+                                    blurRadius: 2,
+                                    offset: Offset(0, 1.5),
+                                  ),
+                                ],
+                              ),
+                              borderWidth: 5.0,
+                              height: 55,
+                              active: hasPaymentId,
+                              onChanged: (b) {
+                                GetIt.I<BillCubit>()
+                                    .updateBillPaymentStatus(b ? 1 : 0);
+                              },
+                              styleBuilder: (b) => ToggleStyle(
+                                  backgroundColor: b
+                                      ? AppTheme.colors.hintColor
+                                      : AppTheme.colors.lightHintColor,
+                                  indicatorColor: AppTheme.colors.white),
+                              iconBuilder: (value) => value
+                                  ? const Icon(Icons.check_rounded)
+                                  : const Icon(Icons.close_rounded),
+                              textBuilder: (value) => value
+                                  ? Center(
+                                      child: Text(
+                                      'Pago',
+                                      style: AppTheme.textStyles.bodyTextStyle,
+                                    ))
+                                  : Center(
+                                      child: Text(
+                                        'Pendente',
+                                        style:
+                                            AppTheme.textStyles.bodyTextStyle,
+                                      ),
+                                    ),
+                            ),
+                          ],
+                        ),
+                        if (!hasPaymentId) const SizedBox(height: 45),
+                        if (!hasPaymentId)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(
+                                Icons.info_outline_rounded,
+                                color: AppTheme.colors.hintColor,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'Vincule uma receita na edição para habilitar a confirmação de pagamento.',
+                                  style: AppTheme.textStyles.secondaryTextStyle,
+                                  overflow: TextOverflow.visible,
+                                  textAlign: TextAlign.start,
                                 ),
-                              ],
-                            ),
-                            borderWidth: 5.0,
-                            height: 55,
-                            onChanged: (b) {
-                              GetIt.I<BillCubit>()
-                                  .updateBillPaymentStatus(b ? 1 : 0);
-                            },
-                            styleBuilder: (b) => ToggleStyle(
-                                backgroundColor: b
-                                    ? AppTheme.colors.hintColor
-                                    : AppTheme.colors.lightHintColor,
-                                indicatorColor: AppTheme.colors.white),
-                            iconBuilder: (value) => value
-                                ? const Icon(Icons.check_rounded)
-                                : const Icon(Icons.close_rounded),
-                            textBuilder: (value) => value
-                                ? Center(
-                                    child: Text(
-                                    'Pago',
-                                    style: AppTheme.textStyles.bodyTextStyle,
-                                  ))
-                                : Center(
-                                    child: Text(
-                                    'Pendente',
-                                    style: AppTheme.textStyles.bodyTextStyle,
-                                  )),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 65),
-                      _DataItem(
-                          title: 'Nome da conta',
-                          subtitle: state.detailBill?.name ?? ''),
-                      _DataItem(
-                          title: 'Data de Pagamento',
-                          subtitle:
-                              formatDate(state.detailBill?.paymentDate) ?? ''),
-                      _DataItem(
-                          title: 'Valor',
-                          subtitle:
-                              'R\$${formatPrice(state.detailBill?.price ?? 0.0)}'),
-                      _DataItem(
-                          title: 'Receita usada',
-                          subtitle: state.detailBill?.paymentName ?? ''),
-                      _DataItem(
-                          title: 'Categoria',
-                          subtitle: state.detailBill?.categoryName ?? ''),
-                      _DataItem(
-                          title: 'Descrição',
-                          subtitle: state.detailBill?.description ?? ''),
-                    ],
-                  ),
+                        const SizedBox(height: 45),
+                        _DataItem(
+                            title: 'Nome da conta',
+                            subtitle: state.detailBill?.name ?? ''),
+                        _DataItem(
+                            title: 'Data de Pagamento',
+                            subtitle:
+                                formatDate(state.detailBill?.paymentDate) ??
+                                    ''),
+                        _DataItem(
+                            title: 'Valor',
+                            subtitle:
+                                'R\$${formatPrice(state.detailBill?.price ?? 0.0)}'),
+                        _DataItem(
+                            title: 'Receita usada',
+                            subtitle: state.detailBill?.paymentName ?? ''),
+                        _DataItem(
+                            title: 'Categoria',
+                            subtitle: state.detailBill?.categoryName ?? ''),
+                        _DataItem(
+                            title: 'Descrição',
+                            subtitle: state.detailBill?.description ?? ''),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -252,7 +281,6 @@ class _DataItem extends StatelessWidget {
           text: title,
           style: AppTheme.textStyles.secondaryTextStyle
               .copyWith(color: AppTheme.colors.hintTextColor.withAlpha(100)),
-          
         ),
         Text(
           subtitle.isNotEmpty

@@ -6,6 +6,7 @@ import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/bottom_sheets/revenue_missing_warning_bottomsheet.dart';
 import 'package:Fluxx/components/custom_big_text_field.dart';
+import 'package:Fluxx/components/custom_loading.dart';
 import 'package:Fluxx/components/custom_text_field.dart';
 import 'package:Fluxx/components/empty_list_placeholder/empty_category_list.dart';
 import 'package:Fluxx/components/empty_list_placeholder/empty_revenue_list.dart';
@@ -17,6 +18,7 @@ import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/helpers.dart';
+import 'package:Fluxx/utils/navigations.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -235,7 +237,7 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                                         }
                                       },
                                 width: mediaQuery.width * .85,
-                                color: AppTheme.colors.itemBackgroundColor,
+                                color: AppTheme.colors.hintColor,
                                 textStyle: AppTheme.textStyles.bodyTextStyle,
                               );
                             }),

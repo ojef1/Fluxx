@@ -704,12 +704,31 @@ class Db {
 
     try {
       final result = await db.rawQuery('''
-      SELECT c.name AS category_name, SUM(b.price) AS total
-      FROM ${Tables.bills} b
-      INNER JOIN ${Tables.category} c ON b.category_id = c.id
-      WHERE b.month_id = ?
-      GROUP BY b.category_id, c.name
-    ''', [monthId]);
+      SELECT 
+        category_name,
+        SUM(total) AS total
+      FROM (
+        -- Contas normais
+        SELECT 
+          c.name AS category_name,
+          b.price AS total
+        FROM ${Tables.bills} b
+        INNER JOIN ${Tables.category} c ON b.category_id = c.id
+        WHERE b.month_id = ?
+
+        UNION ALL
+
+        -- Contas de cartão de crédito (via fatura)
+        SELECT 
+          c.name AS category_name,
+          cb.price AS total
+        FROM ${Tables.creditCardsBills} cb
+        INNER JOIN ${Tables.category} c ON cb.category_id = c.id
+        INNER JOIN ${Tables.creditCardsInvoices} i ON cb.invoice_id = i.id
+        WHERE i.month_id = ?
+      )
+      GROUP BY category_name
+    ''', [monthId, monthId]);
 
       return result;
     } catch (e) {

@@ -23,7 +23,7 @@ class _InvoiceItemState extends State<InvoiceItem> {
   @override
   void initState() {
     bank = getBank(widget.card.bankId ?? 0);
-    hasOnlyOneBill = (widget.invoice.invoiceBillsLength ?? 0) <= 1;
+    hasOnlyOneBill = (widget.invoice.invoiceBillsLength ?? 0) == 1;
     super.initState();
   }
 

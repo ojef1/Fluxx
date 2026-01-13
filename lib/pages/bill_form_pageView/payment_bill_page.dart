@@ -50,145 +50,164 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
         BlocBuilder<RevenueCubit, RevenueState>(
           bloc: GetIt.I(),
           buildWhen: (previous, current) =>
-              previous.availableRevenues != current.availableRevenues,
+              previous.getRevenueResponse != current.getRevenueResponse,
           builder: (context, state) {
-            if (state.getRevenueResponse == GetRevenueResponse.loading) {
-              return const Center(child: CircularProgressIndicator());
-            } else {
-              if (state.availableRevenues.isEmpty) {
-                return EmptyRevenueList(
-                  onPressed: () {
-                      RevenueModel revenue = RevenueModel();
-                    Navigator.pushNamed(context, AppRoutes.revenueFormPage,
-                            arguments: revenue)
-                        .then(
-                      (value) => init(),
-                    );
-                  },
-                );
-              } else {
-                return BlocBuilder<BillFormCubit, BillFormState>(
-                    bloc: GetIt.I(),
-                    buildWhen: (previous, current) =>
-                        previous.revenueSelected != current.revenueSelected,
-                    builder: (context, addState) {
-                      return Expanded(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: state.availableRevenues.length,
-                          itemBuilder: (context, index) {
-                            bool available = _verifyAvailability(addState.price,
-                                state.availableRevenues[index].value ?? 0.0);
-                            bool isSelected = state.availableRevenues[index].id ==
-                                addState.revenueSelected?.id;
-                             return Column(
-                              children: [
-                                PrimaryButton(
-                                  color: isSelected
-                                      ? AppTheme.colors.hintColor
-                                      : AppTheme.colors.itemBackgroundColor,
-                                  textStyle: AppTheme.textStyles.bodyTextStyle,
-                                  width: mediaQuery.width * .85,
-                                  text:
-                                      state.availableRevenues[index].name ?? '',
-                                  onPressed: !available
-                                      ? () => _showUnavailableDialog(
-                                            context,
-                                            state.availableRevenues[index]
-                                                    .name ??
-                                                '',
-                                          )
-                                      : () => _selectRevenue(
-                                            state.availableRevenues[index],
-                                          ),
-                                ),
-                                if (state.availableRevenues.length - 1 == index)
-                                  const SizedBox(height: 24),
-                                if (state.availableRevenues.length - 1 == index)
-                                  PrimaryButton(
-                                    color: AppTheme.colors.itemBackgroundColor,
-                                    textStyle: AppTheme.textStyles.bodyTextStyle
-                                        .copyWith(
-                                            color: AppTheme.colors.hintColor),
-                                    width: mediaQuery.width * .85,
-                                    text: 'Adicionar mais Receitas',
-                                    onPressed: () {
-                                      RevenueModel revenue = RevenueModel();
-                                      return Navigator.pushNamed(
-                                              context, AppRoutes.revenueFormPage,
-                                              arguments: revenue)
-                                          .then(
-                                        (value) => init(),
-                                      );
-                                    },
-                                  ),
-                              ],
-                            );
-                          },
+            switch (state.getRevenueResponse) {
+              case GetRevenueResponse.initial:
+              case GetRevenueResponse.loading:
+                return const CustomLoading();
+              case GetRevenueResponse.error:
+                return Padding(
+                  padding: const EdgeInsets.only(top: 28.0),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Text(
+                          'Erro ao carregar as receitas!',
+                          style: AppTheme.textStyles.subTileTextStyle,
                         ),
-                      );
-                    });
-              }
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () => init(),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.colors.hintColor,
+                            minimumSize: const Size(50, 50),
+                          ),
+                          child: Text('Tentar novamente',
+                              style: AppTheme.textStyles.bodyTextStyle),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              case GetRevenueResponse.success:
+                if (state.availableRevenues.isEmpty) {
+                  return EmptyRevenueList(
+                    onPressed: () => goToRevenueForm(context: context),
+                  );
+                } else {
+                  return _PaymentBillPageContent(
+                      availableRevenues: state.availableRevenues);
+                }
             }
           },
         ),
       ],
     );
   }
+}
 
-  void _showUnavailableDialog(BuildContext context, String name) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          backgroundColor: AppTheme.colors.appBackgroundColor,
-          contentPadding: const EdgeInsets.all(16.0),
-          title: Text(
-            maxLines: 4,
-            textAlign: TextAlign.center,
-            'Oops!',
-            style: AppTheme.textStyles.tileTextStyle,
-          ),
-          content: Text(
-            maxLines: 4,
-            textAlign: TextAlign.center,
-            '" $name " não está disponível pois o valor da conta é maior que o valor disponível.',
-            style: AppTheme.textStyles.subTileTextStyle,
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.colors.hintColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: Text(
-                'OK',
-                style: AppTheme.textStyles.bodyTextStyle,
+void _showUnavailableDialog(BuildContext context, String name) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        backgroundColor: AppTheme.colors.appBackgroundColor,
+        contentPadding: const EdgeInsets.all(16.0),
+        title: Text(
+          maxLines: 4,
+          textAlign: TextAlign.center,
+          'Oops!',
+          style: AppTheme.textStyles.tileTextStyle,
+        ),
+        content: Text(
+          maxLines: 4,
+          textAlign: TextAlign.center,
+          '" $name " não está disponível pois o valor da conta é maior que o valor disponível.',
+          style: AppTheme.textStyles.subTileTextStyle,
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.colors.hintColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
               ),
             ),
-          ],
-        );
-      },
-    );
-  }
+            child: Text(
+              'OK',
+              style: AppTheme.textStyles.bodyTextStyle,
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
 
-  void _selectRevenue(RevenueModel revenue) {
-    GetIt.I<BillFormCubit>().updateRevenue(revenue);
-  }
+void _selectRevenue(RevenueModel revenue) {
+  GetIt.I<BillFormCubit>().updateRevenue(revenue);
+}
 
-  bool _verifyAvailability(double billValue, double revenueValue) {
-    if (billValue <= revenueValue) {
-      return true;
-    } else {
-      return false;
-    }
+bool _verifyAvailability(double billValue, double revenueValue) {
+  if (billValue <= revenueValue) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+class _PaymentBillPageContent extends StatelessWidget {
+  final List<RevenueModel> availableRevenues;
+  const _PaymentBillPageContent({required this.availableRevenues});
+
+  @override
+  Widget build(BuildContext context) {
+    var mediaQuery = MediaQuery.of(context).size;
+    return BlocBuilder<BillFormCubit, BillFormState>(
+        bloc: GetIt.I(),
+        buildWhen: (previous, current) =>
+            previous.revenueSelected != current.revenueSelected,
+        builder: (context, addState) {
+          return Expanded(
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: availableRevenues.length,
+              itemBuilder: (context, index) {
+                bool available = _verifyAvailability(
+                    addState.price, availableRevenues[index].value ?? 0.0);
+                bool isSelected =
+                    availableRevenues[index].id == addState.revenueSelected?.id;
+                return Column(
+                  children: [
+                    PrimaryButton(
+                      color: isSelected
+                          ? AppTheme.colors.hintColor
+                          : AppTheme.colors.itemBackgroundColor,
+                      textStyle: AppTheme.textStyles.bodyTextStyle,
+                      width: mediaQuery.width * .85,
+                      text: availableRevenues[index].name ?? '',
+                      onPressed: !available
+                          ? () => _showUnavailableDialog(
+                                context,
+                                availableRevenues[index].name ?? '',
+                              )
+                          : () => _selectRevenue(
+                                availableRevenues[index],
+                              ),
+                    ),
+                    if (availableRevenues.length - 1 == index)
+                      const SizedBox(height: 24),
+                    if (availableRevenues.length - 1 == index)
+                      PrimaryButton(
+                        color: AppTheme.colors.itemBackgroundColor,
+                        textStyle: AppTheme.textStyles.bodyTextStyle
+                            .copyWith(color: AppTheme.colors.hintColor),
+                        width: mediaQuery.width * .85,
+                        text: 'Adicionar mais Receitas',
+                        onPressed: () => goToRevenueForm(context: context),
+                      ),
+                  ],
+                );
+              },
+            ),
+          );
+        });
   }
 }

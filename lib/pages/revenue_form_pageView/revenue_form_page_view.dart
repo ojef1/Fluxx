@@ -220,7 +220,7 @@ class _RevenueFormPageviewState extends State<RevenueFormPageview> {
                                         }
                                       },
                                 width: mediaQuery.width * .85,
-                                color: AppTheme.colors.itemBackgroundColor,
+                                color: AppTheme.colors.hintColor,
                                 textStyle: AppTheme.textStyles.bodyTextStyle,
                               );
                             }),

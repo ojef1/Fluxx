@@ -1,4 +1,6 @@
+import 'package:Fluxx/blocs/bills_cubit/bill_cubit.dart';
 import 'package:Fluxx/blocs/bills_cubit/bill_form_cubit.dart';
+import 'package:Fluxx/blocs/bills_cubit/bill_state.dart';
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_cubit.dart';
 import 'package:Fluxx/blocs/revenue_cubit/revenue_state.dart';
@@ -12,6 +14,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+
+import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_cubit.dart'
+    as invoicebill;
+
+import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_form_cubit.dart'
+    as invoiceform;
 
 class MonthResumeData extends StatefulWidget {
   const MonthResumeData({super.key});
@@ -73,10 +81,10 @@ class _MonthResumeDataState extends State<MonthResumeData> {
                             style: AppTheme.textStyles.titleTextStyle,
                           ),
                           Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    color: AppTheme.colors.white,
-                    size: 15,
-                  ),
+                            Icons.arrow_forward_ios_rounded,
+                            color: AppTheme.colors.white,
+                            size: 15,
+                          ),
                         ],
                       ),
                     ),
@@ -163,7 +171,38 @@ class _ListenerWrapper extends StatelessWidget {
         listenWhen: (previous, current) =>
             previous.totalRevenue != current.totalRevenue,
         listener: (context, state) {
-          GetIt.I<ResumeCubit>().calculatePercent(state.totalRevenue);
+          _recalcData();
+        },
+      ),
+      BlocListener<invoicebill.InvoiceBillCubit, invoicebill.InvoiceBillState>(
+        bloc: GetIt.I(),
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.status == invoicebill.ResponseStatus.success) {
+            _recalcData();
+          }
+        },
+      ),
+      BlocListener<invoiceform.InvoiceBillFormCubit,
+          invoiceform.InvoiceBillFormState>(
+        listenWhen: (previous, current) =>
+            previous.responseStatus != current.responseStatus,
+        bloc: GetIt.I(),
+        listener: (context, state) {
+          if (state.responseStatus == invoiceform.ResponseStatus.success) {
+            _recalcData();
+          }
+        },
+      ),
+      BlocListener<BillCubit, BillState>(
+        listenWhen: (previous, current) =>
+            previous.editBillsResponse != current.editBillsResponse ||
+            previous.removeBillsResponse != current.removeBillsResponse,
+        bloc: GetIt.I(),
+        listener: (context, state) {
+          if (state.editBillsResponse == EditBillsResponse.success) {
+            _recalcData();
+          }
         },
       ),
     ], child: child);

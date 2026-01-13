@@ -45,15 +45,15 @@ class InvoicePaymentConfirmationBottomsheet extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 60),
                   child: Center(
                     child: Text(
-                      'Erro ao carregar as estísticas. ${state.responseMessage}',
+                      'Erro ao carregar as estatísticas. ${state.responseMessage}',
                     ),
                   ),
                 );
+              case PaymentResponseStatus.initial:
               case PaymentResponseStatus.loading:
                 return const CustomLoading(
                   padding: EdgeInsets.zero,
                 );
-              case PaymentResponseStatus.initial:
               case PaymentResponseStatus.success:
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,

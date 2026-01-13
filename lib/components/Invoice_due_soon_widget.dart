@@ -1,5 +1,10 @@
 import 'package:Fluxx/blocs/credit_card_cubits/credit_card_form_cubit.dart';
-import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_form_cubit.dart' as invoicebill;
+import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_form_cubit.dart'
+    as invoicebillform;
+import 'package:Fluxx/blocs/invoices_cubits/invoice_bill_cubit.dart'
+    as invoicebill;
+import 'package:Fluxx/blocs/invoices_cubits/invoice_payment_cubit.dart'
+    as paymentbill;
 import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/components/invoice_item.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
@@ -78,7 +83,6 @@ class _ListenerWrapper extends StatelessWidget {
   final Widget child;
   const _ListenerWrapper({required this.child});
 
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(listeners: [
@@ -92,12 +96,32 @@ class _ListenerWrapper extends StatelessWidget {
           }
         },
       ),
-      BlocListener<invoicebill.InvoiceBillFormCubit, invoicebill.InvoiceBillFormState>(
+      BlocListener<invoicebillform.InvoiceBillFormCubit,
+          invoicebillform.InvoiceBillFormState>(
         bloc: GetIt.I(),
         listenWhen: (previous, current) =>
             previous.responseStatus != current.responseStatus,
         listener: (context, state) {
-          if (state.responseStatus == invoicebill.ResponseStatus.success) {
+          if (state.responseStatus == invoicebillform.ResponseStatus.success) {
+            GetIt.I<ResumeCubit>().getPriorityInvoice();
+          }
+        },
+      ),
+      BlocListener<invoicebill.InvoiceBillCubit, invoicebill.InvoiceBillState>(
+        bloc: GetIt.I(),
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.status == invoicebill.ResponseStatus.success) {
+            GetIt.I<ResumeCubit>().getPriorityInvoice();
+          }
+        },
+      ),
+      BlocListener<paymentbill.InvoicePaymentCubit,
+          paymentbill.InvoicePaymentState>(
+        bloc: GetIt.I(),
+        listenWhen: (previous, current) => previous.paymentStatus != current.paymentStatus,
+        listener: (context, state) {
+          if (state.paymentStatus == paymentbill.PaymentResponseStatus.success) {
             GetIt.I<ResumeCubit>().getPriorityInvoice();
           }
         },

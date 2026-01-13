@@ -44,7 +44,7 @@ class CreditCardInfoBottomsheet extends StatelessWidget {
             style: AppTheme.textStyles.bodyTextStyle,
             textAlign: TextAlign.start,
             softWrap: true,
-            maxLines: 3,
+            overflow: TextOverflow.visible,
           ),
           const SizedBox(height: 20),
           Text(
@@ -52,7 +52,7 @@ class CreditCardInfoBottomsheet extends StatelessWidget {
             style: AppTheme.textStyles.bodyTextStyle,
             textAlign: TextAlign.start,
             softWrap: true,
-            maxLines: 3,
+            overflow: TextOverflow.visible,
           ),
           const Spacer(),
           const SizedBox(height: 30),
