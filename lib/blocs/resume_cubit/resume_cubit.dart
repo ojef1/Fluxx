@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
 import 'package:Fluxx/models/invoice_model.dart';
+import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/services/credit_card_services.dart';
 import 'package:Fluxx/utils/helpers.dart';
@@ -62,8 +63,8 @@ class ResumeCubit extends Cubit<ResumeState> {
   Future<void> getPriorityInvoice() async {
     _updatePriorityInvoiceStatus(GetPriorityInvoiceStatus.loading);
     try {
-      int monthId = AppPeriodService().monthInFocus.id!;
-      final invoices = await getInvoicesByMonth(monthId);
+      MonthModel currentMonth = AppPeriodService().currentMonth;
+      final invoices = await getInvoicesByMonth(currentMonth.id!);
       final cards = await getAllCardsList();
       if (invoices.isEmpty) {
         _updatePriorityInvoiceStatus(GetPriorityInvoiceStatus.success);
@@ -71,7 +72,13 @@ class ResumeCubit extends Cubit<ResumeState> {
       }
 
       emit(state.copyWith(cardsList: cards));
-      final now = DateTime.now();
+      final year = DateTime.now().year;
+      final referenceDate = DateTime(
+        year,
+        currentMonth.monthNumber!,
+        1
+      );
+      
 
       // remove pagas e inválidas
       final validInvoices = invoices.where((invoice) {
@@ -89,15 +96,15 @@ class ResumeCubit extends Cubit<ResumeState> {
         final dueDay = int.parse(invoice.dueDate!);
 
         final dueDate = DateTime(
-          now.year,
-          now.month,
+          year,
+          referenceDate.month,
           dueDay,
           23,
           59,
           59,
         );
 
-        if (dueDate.isBefore(now)) {
+        if (dueDate.isBefore(referenceDate)) {
           overdue.add(invoice);
         } else {
           upcoming.add(invoice);
@@ -109,8 +116,8 @@ class ResumeCubit extends Cubit<ResumeState> {
       // Se houver vencidas → pega a MAIS atrasada
       if (overdue.isNotEmpty) {
         overdue.sort((a, b) {
-          final aDue = DateTime(now.year, now.month, int.parse(a.dueDate!));
-          final bDue = DateTime(now.year, now.month, int.parse(b.dueDate!));
+          final aDue = DateTime(referenceDate.year, referenceDate.month, int.parse(a.dueDate!));
+          final bDue = DateTime(referenceDate.year, referenceDate.month, int.parse(b.dueDate!));
 
           return aDue.compareTo(bDue); // mais antiga primeiro
         });
@@ -119,8 +126,8 @@ class ResumeCubit extends Cubit<ResumeState> {
       } else {
         // Senão → pega a que vence primeiro
         upcoming.sort((a, b) {
-          final aDue = DateTime(now.year, now.month, int.parse(a.dueDate!));
-          final bDue = DateTime(now.year, now.month, int.parse(b.dueDate!));
+          final aDue = DateTime(referenceDate.year, referenceDate.month, int.parse(a.dueDate!));
+          final bDue = DateTime(referenceDate.year, referenceDate.month, int.parse(b.dueDate!));
 
           return aDue.compareTo(bDue);
         });

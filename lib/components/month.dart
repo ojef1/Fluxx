@@ -1,8 +1,8 @@
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
-import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/helpers.dart';
+import 'package:Fluxx/utils/navigations.dart';
 import 'package:flutter/material.dart';
 
 class Month extends StatelessWidget {
@@ -15,7 +15,7 @@ class Month extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         AppPeriodService().updateMonthInFocus(month);
-        Navigator.pushNamed(context, AppRoutes.monthBillsPage);
+        goToMonthBillsPage(context: context);
       },
       child: Container(
         margin: EdgeInsets.symmetric(

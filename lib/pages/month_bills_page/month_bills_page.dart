@@ -40,6 +40,9 @@ class _MonthBillsPageState extends State<MonthBillsPage> {
   @override
   void dispose() {
     GetIt.I<BillListCubit>().resetState();
+    //ao sair de qualquer lista de contas, voltar o mês em foco para o atual
+    MonthModel currentMonth = AppPeriodService().currentMonth;
+    AppPeriodService().updateMonthInFocus(currentMonth);
     super.dispose();
   }
 
