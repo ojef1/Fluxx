@@ -3,8 +3,14 @@ part of 'bill_form_page_view.dart';
 class CheckBillPage extends StatefulWidget {
   final void Function(Future<bool> Function()) registerValidator;
   final void Function(String) onError;
+  final void Function(int pageIndex) onEdit;
+  final int? repeatPageIndex; // null quando a página de repetição não existe
   const CheckBillPage(
-      {super.key, required this.registerValidator, required this.onError});
+      {super.key,
+      required this.registerValidator,
+      required this.onError,
+      required this.onEdit,
+      this.repeatPageIndex});
   @override
   State<CheckBillPage> createState() => _CheckBillPageState();
 }
@@ -61,25 +67,38 @@ class _CheckBillPageState extends State<CheckBillPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _DataItem(title: 'Nome da conta', subtitle: state.name),
+                      _DataItem(
+                          title: 'Nome da conta',
+                          subtitle: state.name,
+                          onEdit: () => widget.onEdit(0)),
                       _DataItem(
                           title: 'Data de Pagamento',
-                          subtitle: formatDate(state.date) ?? 'Nenhuma'),
+                          subtitle: formatDate(state.date) ?? 'Nenhuma',
+                          onEdit: () => widget.onEdit(2)),
                       _DataItem(
                           title: 'Valor',
-                          subtitle: 'R\$${formatPrice(state.price)}'),
+                          subtitle: 'R\$${formatPrice(state.price)}',
+                          onEdit: () => widget.onEdit(1)),
                       _DataItem(
                           title: 'Receita usada',
-                          subtitle: state.revenueSelected?.name ?? 'Nenhuma'),
+                          subtitle: state.revenueSelected?.name ?? 'Nenhuma',
+                          onEdit: () => widget.onEdit(5)),
                       _DataItem(
                           title: 'Categoria',
                           subtitle: state.categorySelected!.categoryName ??
-                              'Nenhuma'),
+                              'Nenhuma',
+                          onEdit: () => widget.onEdit(4)),
                       if (state.repeatBill)
                         _DataItem(
                             title: 'Repetição',
-                            subtitle: 'até ${state.repeatMonthName}'),
-                      _DataItem(title: 'Descrição', subtitle: state.desc),
+                            subtitle: 'até ${state.repeatMonthName}',
+                            onEdit: widget.repeatPageIndex == null
+                                ? null
+                                : () => widget.onEdit(widget.repeatPageIndex!)),
+                      _DataItem(
+                          title: 'Descrição',
+                          subtitle: state.desc,
+                          onEdit: () => widget.onEdit(3)),
                     ],
                   ),
                 );
@@ -94,9 +113,11 @@ class _CheckBillPageState extends State<CheckBillPage> {
 class _DataItem extends StatelessWidget {
   final String title;
   final String subtitle;
+  final VoidCallback? onEdit;
   const _DataItem({
     required this.title,
     required this.subtitle,
+    this.onEdit,
   });
 
   @override
@@ -112,11 +133,30 @@ class _DataItem extends StatelessWidget {
           softWrap: true,
           overflow: TextOverflow.visible,
         ),
-        Text(
-          subtitle.isNotEmpty ? subtitle : 'sem ${title.toLowerCase()} informado(a)',
-          style: AppTheme.textStyles.subTileTextStyle,
-          softWrap: true,
-          overflow: TextOverflow.visible,
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                subtitle.isNotEmpty
+                    ? subtitle
+                    : 'sem ${title.toLowerCase()} informado(a)',
+                style: AppTheme.textStyles.subTileTextStyle,
+                softWrap: true,
+                overflow: TextOverflow.visible,
+              ),
+            ),
+            if (onEdit != null)
+              IconButton.filled(
+                style: IconButton.styleFrom(
+                  backgroundColor: AppTheme.colors.itemBackgroundColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                icon: Icon(Icons.edit_rounded,
+                    size: 20, color: AppTheme.colors.hintColor),
+                onPressed: onEdit,
+              ),
+          ],
         ),
         Divider(
           color: AppTheme.colors.hintTextColor,

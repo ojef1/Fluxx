@@ -66,6 +66,11 @@ class BillFormCubit extends Cubit<BillFormState> {
     emit(state.copyWith(repeatMonthName: repeatMonthName));
   }
 
+  void markReviewReached() {
+    if (state.reviewReached) return;
+    emit(state.copyWith(reviewReached: true));
+  }
+
   resetState() {
     emit(const BillFormState());
   }

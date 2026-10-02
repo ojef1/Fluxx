@@ -112,6 +112,8 @@ class _BillFormPageviewState extends State<BillFormPageview> {
       CheckBillPage(
         registerValidator: _registerValidator,
         onError: (p0) => _showError(p0),
+        onEdit: (index) => _pageController.jumpToPage(index),
+        repeatPageIndex: shouldShowRepeatPage ? 6 : null,
       ),
     );
 
@@ -198,6 +200,9 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                             onPageChanged: (index) {
                               FocusManager.instance.primaryFocus?.unfocus();
                               setState(() => _currentIndex = index);
+                              if (index == _listPageWidgets.length - 1) {
+                                GetIt.I<BillFormCubit>().markReviewReached();
+                              }
                             },
                             children: _listPageWidgets,
                           ),
@@ -239,6 +244,26 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                                 textStyle: AppTheme.textStyles.bodyTextStyle,
                               );
                             }),
+                        BlocBuilder<BillFormCubit, BillFormState>(
+                            bloc: GetIt.I(),
+                            buildWhen: (previous, current) =>
+                                previous.reviewReached != current.reviewReached,
+                            builder: (context, state) {
+                              final isReview =
+                                  _currentIndex == _listPageWidgets.length - 1;
+                              if (!state.reviewReached || isReview) {
+                                return const SizedBox.shrink();
+                              }
+                              return TextButton(
+                                onPressed: _goToReview,
+                                child: Text(
+                                  'Ir para revisão',
+                                  style: AppTheme.textStyles.bodyTextStyle
+                                      .copyWith(
+                                          color: AppTheme.colors.hintColor),
+                                ),
+                              );
+                            }),
                         SizedBox(height: mediaQuery.height * .03),
                       ],
                     ),
@@ -246,6 +271,12 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                 );
               }),
         ));
+  }
+
+  Future<void> _goToReview() async {
+    // valida (e salva no cubit) a página atual antes de pular para a revisão
+    if (_currentValidator == null || !await _currentValidator!()) return;
+    _pageController.jumpToPage(_listPageWidgets.length - 1);
   }
 
   void _showError(String msg) {

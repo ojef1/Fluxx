@@ -20,6 +20,7 @@ class BillFormState extends Equatable {
   final String responseMessage;
   final BillFormMode billFormMode;
   final List<MonthModel> monthsWithoutBalance;
+  final bool reviewReached; // true após o usuário chegar na tela de revisão
 
   const BillFormState({
     this.id = '',
@@ -37,6 +38,7 @@ class BillFormState extends Equatable {
     this.responseMessage = '',
     this.billFormMode = BillFormMode.adding,
     this.monthsWithoutBalance = const [],
+    this.reviewReached = false,
   });
 
   BillFormState copyWith({
@@ -55,6 +57,7 @@ class BillFormState extends Equatable {
     String? responseMessage,
     BillFormMode? billFormMode,
     List<MonthModel>? monthsWithoutBalance,
+    bool? reviewReached,
   }) {
     return BillFormState(
       id: id ?? this.id,
@@ -72,6 +75,7 @@ class BillFormState extends Equatable {
       responseMessage: responseMessage ?? this.responseMessage,
       billFormMode: billFormMode ?? this.billFormMode,
       monthsWithoutBalance: monthsWithoutBalance ?? this.monthsWithoutBalance,
+      reviewReached: reviewReached ?? this.reviewReached,
     );
   }
 
@@ -92,5 +96,6 @@ class BillFormState extends Equatable {
         responseMessage,
         billFormMode,
         monthsWithoutBalance,
+        reviewReached,
       ];
 }
