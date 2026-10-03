@@ -12,6 +12,7 @@ import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/credit_card_model.dart';
 import 'package:Fluxx/models/invoice_bill_model.dart';
 import 'package:Fluxx/models/invoice_model.dart';
+import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/cupertino.dart';
@@ -47,8 +48,14 @@ void goToRevenueForm({required BuildContext context, RevenueModel? revenue}) {
   );
 }
 
-void goToCategoryForm(
-    {required BuildContext context, CategoryModel? category}) {
+//[month] é o mês a partir do qual a categoria passa a valer (ex.: mês da conta
+//quando o formulário é aberto pelo fluxo de adicionar conta)
+Future<void> goToCategoryForm({
+  required BuildContext context,
+  required MonthModel month,
+  CategoryModel? category,
+}) {
+  GetIt.I<CategoryFormCubit>().updateMonth(month);
   if (category != null) {
     //se existe dados da categoria significa que será editado
     //portanto o modo do formulário será para edição
@@ -59,7 +66,7 @@ void goToCategoryForm(
     GetIt.I<CategoryFormCubit>()
         .updateCategoryFormMode(CategoryFormMode.adding);
   }
-  Navigator.pushNamed(
+  return Navigator.pushNamed(
     context,
     AppRoutes.categoryFormPage,
   );

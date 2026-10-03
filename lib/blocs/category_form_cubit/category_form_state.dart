@@ -13,6 +13,8 @@ class CategoryFormState extends Equatable {
   final RecurrenceMode recurrenceMode;
   final ResponseStatus responseStatus;
   final String responseMessage;
+  //mês de referência da categoria: é nele que ela passa a valer
+  final MonthModel? month;
 
   const CategoryFormState({
     this.id = '',
@@ -21,6 +23,7 @@ class CategoryFormState extends Equatable {
     this.recurrenceMode = RecurrenceMode.single,
     this.responseStatus = ResponseStatus.initial,
     this.responseMessage = '',
+    this.month,
   });
 
   CategoryFormState copyWith({
@@ -30,6 +33,7 @@ class CategoryFormState extends Equatable {
     RecurrenceMode? recurrenceMode,
     ResponseStatus? responseStatus,
     String? responseMessage,
+    MonthModel? month,
   }) {
     return CategoryFormState(
       id: id ?? this.id,
@@ -38,6 +42,7 @@ class CategoryFormState extends Equatable {
       recurrenceMode: recurrenceMode ?? this.recurrenceMode,
       responseStatus: responseStatus ?? this.responseStatus,
       responseMessage: responseMessage ?? this.responseMessage,
+      month: month ?? this.month,
     );
   }
 
@@ -49,5 +54,6 @@ class CategoryFormState extends Equatable {
         recurrenceMode,
         responseStatus,
         responseMessage,
+        month,
       ];
 }

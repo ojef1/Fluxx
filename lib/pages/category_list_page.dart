@@ -61,7 +61,9 @@ class _CategoryListPageState extends State<CategoryListPage> {
                   SecondaryButton(
                     title: 'Adicionar',
                     icon: Icons.add_rounded,
-                    onPressed: () => goToCategoryForm(context: context),
+                    onPressed: () => goToCategoryForm(
+                        context: context,
+                        month: AppPeriodService().monthInFocus),
                   ),
                   const SizedBox(height: Constants.topMargin),
                   BlocBuilder<CategoryCubit, CategoryState>(
@@ -71,7 +73,9 @@ class _CategoryListPageState extends State<CategoryListPage> {
                     builder: (context, state) {
                       if (state.categories.isEmpty) {
                         return EmptyCategoryList(
-                          onPressed: () => goToCategoryForm(context: context),
+                          onPressed: () => goToCategoryForm(
+                              context: context,
+                              month: AppPeriodService().monthInFocus),
                           title: 'Parece que você não possui categorias',
                           subTitle: 'Clique aqui para criar',
                         );
@@ -108,6 +112,7 @@ class _CategoryListPageState extends State<CategoryListPage> {
                                   ),
                                   onTap: () => goToCategoryForm(
                                       context: context,
+                                      month: AppPeriodService().monthInFocus,
                                       category: state.categories[index]),
                                 ),
                               );

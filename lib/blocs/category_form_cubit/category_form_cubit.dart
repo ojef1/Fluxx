@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:Fluxx/data/database.dart';
 import 'package:Fluxx/models/category_model.dart';
+import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -34,6 +35,10 @@ class CategoryFormCubit extends Cubit<CategoryFormState> {
 
   Future<void> updateResponseMessage(String responseMessage) async {
     emit(state.copyWith(responseMessage: responseMessage));
+  }
+
+  void updateMonth(MonthModel month) {
+    emit(state.copyWith(month: month));
   }
 
   void updateCategoryFormMode(CategoryFormMode categoryFormMode) {
