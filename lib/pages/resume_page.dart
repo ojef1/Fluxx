@@ -3,9 +3,10 @@ import 'package:Fluxx/blocs/resume_cubit/resume_cubit.dart';
 import 'package:Fluxx/blocs/user_cubit/user_cubit.dart';
 import 'package:Fluxx/blocs/user_cubit/user_state.dart';
 import 'package:Fluxx/components/Invoice_due_soon_widget.dart';
+import 'package:Fluxx/components/add_bill_cta.dart';
 import 'package:Fluxx/components/available_revenues.dart';
 import 'package:Fluxx/components/month_resume_data.dart';
-import 'package:Fluxx/components/quick_access_widget.dart';
+// import 'package:Fluxx/components/quick_access_widget.dart';
 import 'package:Fluxx/models/month_model.dart';
 import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
@@ -120,13 +121,16 @@ class _ResumePageState extends State<ResumePage> {
                     ),
                   ),
                 ),
+                //Adicionar conta (manual, QR Code ou foto)
+                const AddBillCta(),
                 //Resumo
                 const MonthResumeData(),
                 //Acesso Rápido
-                const SizedBox(
-                  height: 80,
-                  child: QuickAccessWidget(),
-                ),
+                //TODO o acesso rápido será realocado em outra issue
+                // const SizedBox(
+                //   height: 80,
+                //   child: QuickAccessWidget(),
+                // ),
                 //Fatura mais próxima de fechar
                 const InvoiceDueSoonWidget(),
                 //Receitas Disponíveis

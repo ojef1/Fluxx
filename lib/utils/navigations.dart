@@ -18,7 +18,11 @@ import 'package:Fluxx/utils/app_routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_it/get_it.dart';
 
-void goToBillForm({required BuildContext context, BillModel? bill}) {
+void goToBillForm({
+  required BuildContext context,
+  BillModel? bill,
+  bool replace = false, // substitui a tela atual (ex.: tela de leitura do QR Code)
+}) {
   if (bill != null) {
     //se existe dados da conta significa que será editado
     //portanto o modo do formulário será para edição
@@ -27,10 +31,18 @@ void goToBillForm({required BuildContext context, BillModel? bill}) {
   } else {
     GetIt.I<BillFormCubit>().updateFormMode(BillFormMode.adding);
   }
-  Navigator.pushNamed(
-    context,
-    AppRoutes.billFormPage,
-  );
+  if (replace) {
+    Navigator.pushReplacementNamed(context, AppRoutes.billFormPage);
+  } else {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.billFormPage,
+    );
+  }
+}
+
+void goToQrScanPage({required BuildContext context}) {
+  Navigator.pushNamed(context, AppRoutes.qrScanPage);
 }
 
 void goToRevenueForm({required BuildContext context, RevenueModel? revenue}) {

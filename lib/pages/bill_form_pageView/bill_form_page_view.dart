@@ -53,12 +53,16 @@ class _BillFormPageviewState extends State<BillFormPageview> {
 
   @override
   void initState() {
-    _pageController = PageController();
     _currentMonth = AppPeriodService().monthInFocus;
     //TODO trocar string por variável constante
     isDecember = _currentMonth.name == 'Dezembro';
     billFormMode = GetIt.I<BillFormCubit>().state.billFormMode;
     shouldShowRepeatPage = !isDecember && billFormMode != BillFormMode.editing;
+    //quando os dados vêm de uma nota fiscal, o formulário abre direto na revisão
+    if (GetIt.I<BillFormCubit>().state.startOnReview) {
+      _currentIndex = _listPageWidgets.length - 1;
+    }
+    _pageController = PageController(initialPage: _currentIndex);
     super.initState();
   }
 
@@ -212,13 +216,20 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                             bloc: GetIt.I(),
                             buildWhen: (previous, current) =>
                                 previous.responseStatus !=
-                                    current.responseStatus,
+                                    current.responseStatus ||
+                                previous.categorySelected !=
+                                    current.categorySelected,
                             builder: (context, state) {
                               bool isLoading = state.responseStatus ==
                                   ResponseStatus.loading;
+                              //na revisão, só dá para continuar com a categoria selecionada
+                              bool isReview =
+                                  _currentIndex == _listPageWidgets.length - 1;
                               return PrimaryButton(
                                 text: 'Continuar',
                                 isLoading: isLoading,
+                                isDisabled:
+                                    isReview && state.categorySelected == null,
                                 onPressed: isLoading
                                     ? () {}
                                     : () async {

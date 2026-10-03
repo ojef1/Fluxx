@@ -66,6 +66,17 @@ String getMonthName(DateTime month, {bool withYear = false}){
   }
 }
 
+String capitalizeWordsPtBr(String text) {
+  const lowerWords = {'de', 'da', 'do', 'das', 'dos', 'e'};
+  final words = text.trim().toLowerCase().split(RegExp(r'\s+'));
+  return words.asMap().entries.map((entry) {
+    final word = entry.value;
+    if (word.isEmpty) return word;
+    if (entry.key != 0 && lowerWords.contains(word)) return word;
+    return word[0].toUpperCase() + word.substring(1);
+  }).join(' ');
+}
+
 String codeGenerate() {
   var code = const Uuid().v4();
   var shortCode = code.substring(0, 8);

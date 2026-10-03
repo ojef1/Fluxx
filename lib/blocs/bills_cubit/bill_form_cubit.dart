@@ -5,6 +5,7 @@ import 'package:Fluxx/data/tables.dart';
 import 'package:Fluxx/models/bill_model.dart';
 import 'package:Fluxx/models/category_model.dart';
 import 'package:Fluxx/models/month_model.dart';
+import 'package:Fluxx/models/nota_fiscal_data.dart';
 import 'package:Fluxx/models/revenue_model.dart';
 import 'package:Fluxx/services/bill_services.dart';
 import 'package:Fluxx/utils/helpers.dart';
@@ -248,6 +249,24 @@ class BillFormCubit extends Cubit<BillFormState> {
 
   void updateFormMode(BillFormMode billFormMode) {
     emit(state.copyWith(billFormMode: billFormMode));
+  }
+
+  /// Preenche o formulário com os dados lidos da nota fiscal (QR Code).
+  /// A categoria e a receita seguem para o usuário escolher na revisão.
+  Future<void> loadBillFromNota(NotaFiscalData nota) async {
+    //o formulário guarda a data sem horário, igual ao DateSelector
+    final date = DateTime(nota.date.year, nota.date.month, nota.date.day);
+    final month = await getMonthIdFromDate(date);
+
+    emit(state.copyWith(
+      name: capitalizeWordsPtBr(nota.emitente),
+      price: nota.total,
+      date: date.toString(),
+      desc: nota.itemsDescription(),
+      selectedMonth: month,
+      reviewReached: true,
+      startOnReview: true,
+    ));
   }
 
   void loadBillToEdit(BillModel bill) {

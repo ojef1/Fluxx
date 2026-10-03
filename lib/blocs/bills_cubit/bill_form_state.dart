@@ -21,6 +21,7 @@ class BillFormState extends Equatable {
   final BillFormMode billFormMode;
   final List<MonthModel> monthsWithoutBalance;
   final bool reviewReached; // true após o usuário chegar na tela de revisão
+  final bool startOnReview; // true quando o formulário abre direto na revisão
 
   const BillFormState({
     this.id = '',
@@ -39,6 +40,7 @@ class BillFormState extends Equatable {
     this.billFormMode = BillFormMode.adding,
     this.monthsWithoutBalance = const [],
     this.reviewReached = false,
+    this.startOnReview = false,
   });
 
   BillFormState copyWith({
@@ -58,6 +60,7 @@ class BillFormState extends Equatable {
     BillFormMode? billFormMode,
     List<MonthModel>? monthsWithoutBalance,
     bool? reviewReached,
+    bool? startOnReview,
   }) {
     return BillFormState(
       id: id ?? this.id,
@@ -76,6 +79,7 @@ class BillFormState extends Equatable {
       billFormMode: billFormMode ?? this.billFormMode,
       monthsWithoutBalance: monthsWithoutBalance ?? this.monthsWithoutBalance,
       reviewReached: reviewReached ?? this.reviewReached,
+      startOnReview: startOnReview ?? this.startOnReview,
     );
   }
 
@@ -97,5 +101,6 @@ class BillFormState extends Equatable {
         billFormMode,
         monthsWithoutBalance,
         reviewReached,
+        startOnReview,
       ];
 }

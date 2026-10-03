@@ -15,6 +15,7 @@ import 'package:Fluxx/pages/month_bills_page/detail_common_bill_page.dart';
 import 'package:Fluxx/pages/intro_page.dart';
 import 'package:Fluxx/pages/month_list_page.dart';
 import 'package:Fluxx/pages/profile_page.dart';
+import 'package:Fluxx/pages/qr_scan_page.dart';
 import 'package:Fluxx/pages/resume_page.dart';
 import 'package:Fluxx/pages/revenue_form_pageView/revenue_form_page_view.dart';
 import 'package:Fluxx/pages/revenue_list_page.dart';
@@ -83,6 +84,7 @@ class _MyAppState extends State<MyApp> {
         AppRoutes.categoryFormPage: (ctx) => const CategoryFormPageview(),
         AppRoutes.revenueFormPage: (ctx) => const RevenueFormPageview(),
         AppRoutes.profilePage: (ctx) => const ProfilePage(),
+        AppRoutes.qrScanPage: (ctx) => const QrScanPage(),
       },
     );
   }
