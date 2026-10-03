@@ -77,6 +77,15 @@ String capitalizeWordsPtBr(String text) {
   }).join(' ');
 }
 
+// Primeira letra do primeiro e do último nome (ex: "Jefferson Santos" -> "JS")
+String getInitials(String? name) {
+  final words = (name ?? '').trim().split(RegExp(r'\s+'));
+  if (words.first.isEmpty) return '?';
+  final first = words.first[0];
+  final last = words.length > 1 ? words.last[0] : '';
+  return (first + last).toUpperCase();
+}
+
 String codeGenerate() {
   var code = const Uuid().v4();
   var shortCode = code.substring(0, 8);

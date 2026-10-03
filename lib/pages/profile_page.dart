@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:Fluxx/blocs/user_cubit/user_cubit.dart';
 import 'package:Fluxx/blocs/user_cubit/user_state.dart';
 import 'package:Fluxx/components/app_bar.dart';
 import 'package:Fluxx/components/custom_text_field.dart';
+import 'package:Fluxx/components/user_avatar.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/constants.dart';
 import 'package:Fluxx/utils/helpers.dart';
@@ -23,7 +22,6 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController priceController = TextEditingController();
-  String? versao = '';
 
   late final String initialName;
 
@@ -64,8 +62,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _init() async {
     await GetIt.I<UserCubit>().getUserInfos();
-    var version = await getVersion();
-    GetIt.I<UserCubit>().udpateVersionApp(version);
     var state = GetIt.I<UserCubit>().state;
     nameController.text = state.user?.name ?? '';
     initialName = state.user?.name ?? '';
@@ -105,30 +101,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         GestureDetector(
                           onTap: _pickImage,
-                          child: Container(
-                            width: 150,
-                            height: 150,
-                            decoration: BoxDecoration(
-                                color: AppTheme.colors.grayD4,
-                                shape: BoxShape.circle),
-                            child: ClipOval(
-                              child: state.user?.picture ==
-                                      Constants.defaultPicture
-                                  ? Image.asset(
-                                      state.user?.picture ?? '',
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              Center(child: Text('$error')),
-                                    )
-                                  : Image.file(
-                                      File(state.user?.picture ?? ''),
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (context, error, stackTrace) =>
-                                              Center(child: Text('$error')),
-                                    ),
-                            ),
+                          child: UserAvatar(
+                            picture: state.user?.picture,
+                            name: state.user?.name,
+                            size: 150,
                           ),
                         ),
                         SizedBox(height: mediaQuery.height * .03),
@@ -160,24 +136,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.symmetric(
-                      vertical: mediaQuery.width * .05,
-                    ),
-                    height: 2,
-                    decoration: BoxDecoration(color: AppTheme.colors.grayD4),
-                  ),
-                  Expanded(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        'Versão : ${state.versionApp}',
-                        style: AppTheme.textStyles.bodyTextStyle,
-                      ),
-                      SizedBox(height: mediaQuery.height * .03),
-                    ],
-                  )),
                 ],
               );
             },

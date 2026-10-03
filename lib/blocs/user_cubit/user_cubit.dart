@@ -29,10 +29,6 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  void udpateVersionApp(String version) {
-    emit(state.copyWith(versionApp: version));
-  }
-
   Future<int> saveEdits() async {
     try {
       var result = await Db.updateUser(state.user!);
