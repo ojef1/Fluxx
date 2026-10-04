@@ -35,6 +35,8 @@ dependencies:
   html: ^0.15.7
   mobile_scanner: ^5.2.3
   permission_handler: ^11.4.0
+  in_app_update: ^4.2.5
+  shared_preferences: ^2.5.3
 
   
 flutter_native_splash:

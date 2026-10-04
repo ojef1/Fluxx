@@ -6,6 +6,8 @@ class Constants {
   static const defaultPicture = 'assets/images/default_user.jpeg';
   static const topMargin = 20.0;
   static const creditCardCategoryId = 'FIXO_00000001';
+  //dias até o aviso de atualização reaparecer depois de "Agora não"
+  static const updateReminderDays = 3;
 }
 
 class AppMonths {
