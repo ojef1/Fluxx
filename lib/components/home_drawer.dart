@@ -1,5 +1,7 @@
+import 'package:Fluxx/blocs/update_cubit/update_cubit.dart';
 import 'package:Fluxx/blocs/user_cubit/user_cubit.dart';
 import 'package:Fluxx/blocs/user_cubit/user_state.dart';
+import 'package:Fluxx/components/bottom_sheets/app_update_restart_bottomsheet.dart';
 import 'package:Fluxx/components/user_avatar.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
@@ -63,14 +65,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
             _DrawerItem(
               title: 'Cartões',
               icon: Icons.credit_card_rounded,
-              onTap: () =>
-                  _navigate(() => goToCardsListPage(context: context)),
+              onTap: () => _navigate(() => goToCardsListPage(context: context)),
             ),
             _DrawerItem(
               title: 'Meses',
               icon: Icons.calendar_month_rounded,
-              onTap: () =>
-                  _navigate(() => goToMonthListPage(context: context)),
+              onTap: () => _navigate(() => goToMonthListPage(context: context)),
             ),
             _DrawerItem(
               title: 'Categorias',
@@ -91,10 +91,23 @@ class _HomeDrawerState extends State<HomeDrawer> {
               color: AppTheme.colors.hintTextColor,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              child: Text(
-                'Versão : $_version',
-                style: AppTheme.textStyles.secondaryTextStyle,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Versão : $_version',
+                    style: AppTheme.textStyles.secondaryTextStyle,
+                  ),
+                  _UpdateButton(
+                    onUpdate: () => _navigate(
+                      () => GetIt.I<UpdateCubit>().startUpdate(),
+                    ),
+                    onRestart: () => _navigate(
+                      () => showAppUpdateRestartBottomsheet(context),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -144,6 +157,71 @@ class _Header extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+// Indicador de nova versão: caminho de reserva para quem dispensou o popup
+class _UpdateButton extends StatelessWidget {
+  final VoidCallback onUpdate;
+  final VoidCallback onRestart;
+  const _UpdateButton({required this.onUpdate, required this.onRestart});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<UpdateCubit, UpdateState>(
+      bloc: GetIt.I(),
+      builder: (context, state) {
+        final status = state.status;
+        if (status != UpdateStatus.available &&
+            status != UpdateStatus.downloading &&
+            status != UpdateStatus.downloaded) {
+          return const SizedBox.shrink();
+        }
+
+        final isDownloading = status == UpdateStatus.downloading;
+        final title = switch (status) {
+          UpdateStatus.downloading => 'Baixando...',
+          UpdateStatus.downloaded => 'Reiniciar para atualizar',
+          _ => 'Atualizar',
+        };
+
+        return Padding(
+          padding: const EdgeInsets.only(left: 12),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: isDownloading
+                ? null
+                : status == UpdateStatus.downloaded
+                    ? onRestart
+                    : onUpdate,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppTheme.colors.hintColor.withAlpha(50),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.system_update_rounded,
+                    size: 16,
+                    color: AppTheme.colors.hintColor,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    title,
+                    style: AppTheme.textStyles.secondaryTextStyle.copyWith(
+                      color: AppTheme.colors.hintColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
