@@ -1,6 +1,5 @@
 import 'package:Fluxx/blocs/update_cubit/update_cubit.dart';
 import 'package:Fluxx/components/primary_button.dart';
-import 'package:Fluxx/components/secondary_button.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:flutter/material.dart';
@@ -36,9 +35,9 @@ class AppUpdateBottomsheet extends StatelessWidget {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
       decoration: BoxDecoration(
-        color: AppTheme.colors.appBackgroundColor,
+        color: AppTheme.colors.itemBackgroundColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
@@ -48,27 +47,24 @@ class AppUpdateBottomsheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.system_update_rounded,
-                  color: AppTheme.colors.hintColor,
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Nova versão',
-                  style: AppTheme.textStyles.titleTextStyle,
-                ),
-              ],
+            Image.asset(
+              'assets/images/update_confirmation.png',
+              height: mediaQuery.height * .2,
+              fit: BoxFit.contain,
             ),
             const SizedBox(height: 20),
+            Text(
+              'Nova versão disponível',
+              style: AppTheme.textStyles.titleTextStyle,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
             Text(
               'Há uma nova versão do Fluxx disponível. Atualize para continuar com tudo em dia.',
               style: AppTheme.textStyles.subTileTextStyle,
               textAlign: TextAlign.center,
               softWrap: true,
+              overflow: TextOverflow.visible,
             ),
             const SizedBox(height: 24),
             PrimaryButton(
@@ -78,12 +74,17 @@ class AppUpdateBottomsheet extends StatelessWidget {
               color: AppTheme.colors.hintColor,
               textStyle: AppTheme.textStyles.bodyTextStyle,
             ),
-            const SizedBox(height: 5),
-            SizedBox(
-              width: mediaQuery.width * .85,
-              child: SecondaryButton(
-                title: 'Agora não',
-                onPressed: () => Navigator.pop(context, false),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => Navigator.pop(context, false),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                child: Text(
+                  'Agora não',
+                  style: AppTheme.textStyles.bodyTextStyle.copyWith(
+                    color: AppTheme.colors.hintTextColor,
+                  ),
+                ),
               ),
             ),
           ],

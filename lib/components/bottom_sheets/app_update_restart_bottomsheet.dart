@@ -1,6 +1,5 @@
 import 'package:Fluxx/blocs/update_cubit/update_cubit.dart';
 import 'package:Fluxx/components/primary_button.dart';
-import 'package:Fluxx/components/secondary_button.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -24,9 +23,9 @@ class AppUpdateRestartBottomsheet extends StatelessWidget {
   Widget build(BuildContext context) {
     var mediaQuery = MediaQuery.of(context).size;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
       decoration: BoxDecoration(
-        color: AppTheme.colors.appBackgroundColor,
+        color: AppTheme.colors.itemBackgroundColor,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
@@ -36,27 +35,24 @@ class AppUpdateRestartBottomsheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.check_circle_outline_rounded,
-                  color: AppTheme.colors.hintColor,
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Atualização pronta',
-                  style: AppTheme.textStyles.titleTextStyle,
-                ),
-              ],
+            Image.asset(
+              'assets/images/confirmation_check.png',
+              height: mediaQuery.height * .2,
+              fit: BoxFit.contain,
             ),
             const SizedBox(height: 20),
+            Text(
+              'Atualização pronta',
+              style: AppTheme.textStyles.titleTextStyle,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
             Text(
               'A nova versão foi baixada. O app será reiniciado para concluir a atualização.',
               style: AppTheme.textStyles.subTileTextStyle,
               textAlign: TextAlign.center,
               softWrap: true,
+              overflow: TextOverflow.visible,
             ),
             const SizedBox(height: 24),
             PrimaryButton(
@@ -66,12 +62,17 @@ class AppUpdateRestartBottomsheet extends StatelessWidget {
               color: AppTheme.colors.hintColor,
               textStyle: AppTheme.textStyles.bodyTextStyle,
             ),
-            const SizedBox(height: 5),
-            SizedBox(
-              width: mediaQuery.width * .85,
-              child: SecondaryButton(
-                title: 'Depois',
-                onPressed: () => Navigator.pop(context, false),
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => Navigator.pop(context, false),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                child: Text(
+                  'Depois',
+                  style: AppTheme.textStyles.bodyTextStyle.copyWith(
+                    color: AppTheme.colors.hintTextColor,
+                  ),
+                ),
               ),
             ),
           ],

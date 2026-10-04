@@ -182,7 +182,7 @@ class _UpdateButton extends StatelessWidget {
         final isDownloading = status == UpdateStatus.downloading;
         final title = switch (status) {
           UpdateStatus.downloading => 'Baixando...',
-          UpdateStatus.downloaded => 'Reiniciar para atualizar',
+          UpdateStatus.downloaded => 'Reiniciar',
           _ => 'Atualizar',
         };
 
