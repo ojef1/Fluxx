@@ -5,6 +5,7 @@ Um aplicativo completo de **gestão financeira pessoal**, focado em organizaçã
 ## 🚀 Funcionalidades
 
 - ✅ Cadastro, edição e remoção de **gastos** (contas comuns)
+- 📷 Adição de conta pela **leitura do QR Code da nota fiscal** (NFC-e): nome, valor, data e itens vêm da nota, e você só escolhe a categoria e a receita na revisão (disponível para notas de SP, requer internet)
 - 🔁 Repetição de contas por vários meses (parceladas ou recorrentes)
 - 📆 Organização de despesas e receitas por **mês** e **ano**
 - 📊 Visualização de **gastos por categoria** e uso de cada receita
@@ -15,6 +16,7 @@ Um aplicativo completo de **gestão financeira pessoal**, focado em organizaçã
 - 🛍️ Compras no cartão à vista ou parceladas, com lançamento automático na fatura correta de cada mês
 - 💵 Pagamento de fatura vinculado a uma receita disponível
 - 📈 Barra de progresso que mostra quanto da sua receita já foi utilizada, e o limite recomendado de uso do cartão
+- 🔔 Aviso de nova versão com **atualização dentro do app** (Android, via Play Store)
 
 ## 📸 Imagens (exemplos)
 
@@ -39,7 +41,11 @@ Um aplicativo completo de **gestão financeira pessoal**, focado em organizaçã
 - **flutter_bloc** (Cubit) para gerenciamento de estado
 - **get_it** para injeção de dependência
 - **sqflite** (SQLite) para persistência local
+- **shared_preferences** para preferências simples (data de dispensa do aviso de atualização)
 - **intl** para formatação de datas e valores (locale pt_BR)
+- **mobile_scanner** e **permission_handler** para a leitura do QR Code e a permissão da câmera
+- **http** e **html** para consultar e interpretar a nota fiscal no portal da SEFAZ
+- **in_app_update** para a atualização do app dentro da Play Store
 - **animated_toggle_switch**, **flashy_flushbar**, **loading_animation_widget**, **percent_indicator** para componentes de interface
 - **flutter_masked_text2** para máscaras de valores monetários
 - **image_picker** para foto de perfil
@@ -53,7 +59,7 @@ Você pode criar categorias e fontes de receita personalizadas para se adaptar �
 
 O sistema de progressão de uso da receita ajuda a visualizar quanto da sua receita já foi utilizada no mês, tanto em contas comuns quanto em faturas de cartão de crédito.
 
-Todos os dados ficam armazenados localmente no dispositivo — não há sincronização em nuvem nem backend.
+Todos os dados ficam armazenados localmente no dispositivo. Não há sincronização em nuvem nem backend. A única consulta externa é a da nota fiscal, feita ao ler o QR Code.
 
 📄 Licença
 Este projeto está licenciado sob a MIT License.
