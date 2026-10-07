@@ -1,11 +1,11 @@
 import 'package:Fluxx/blocs/bills_cubit/bill_list_cubit.dart';
 import 'package:Fluxx/components/bill_item.dart';
+import 'package:Fluxx/components/bottom_sheets/add_bill_options_bottomsheet.dart';
 import 'package:Fluxx/components/custom_loading.dart';
 import 'package:Fluxx/components/empty_list_placeholder/empty_bill_list.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/app_routes.dart';
 import 'package:Fluxx/utils/constants.dart';
-import 'package:Fluxx/utils/navigations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -70,7 +70,7 @@ class __CommonsBillsPageContentState extends State<_CommonsBillsPageContent> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: () => goToBillForm(context: context),
+                    onPressed: () => showAddBillOptions(context),
                     style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.colors.itemBackgroundColor,
                         minimumSize: const Size(50, 50),

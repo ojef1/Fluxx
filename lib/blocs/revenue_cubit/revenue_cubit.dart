@@ -25,8 +25,11 @@ class RevenueCubit extends Cubit<RevenueState> {
     try {
       final revenuesList = await service.getRevenues(monthId);
       emit(state.copyWith(revenuesList: revenuesList));
+      if(revenuesList.isNotEmpty){
+
       await _calculateAvailableValue(monthId, revenuesList);
       await calculateTotalRevenues();
+      }
       updateGetRevenueResponse(GetRevenueResponse.success);
     } catch (error) {
       debugPrint('$error');

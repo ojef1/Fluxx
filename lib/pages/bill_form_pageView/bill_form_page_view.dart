@@ -54,12 +54,16 @@ class _BillFormPageviewState extends State<BillFormPageview> {
 
   @override
   void initState() {
-    _pageController = PageController();
     _currentMonth = AppPeriodService().monthInFocus;
     //TODO trocar string por variável constante
     isDecember = _currentMonth.name == 'Dezembro';
     billFormMode = GetIt.I<BillFormCubit>().state.billFormMode;
     shouldShowRepeatPage = !isDecember && billFormMode != BillFormMode.editing;
+    //quando os dados vêm de uma nota fiscal, o formulário abre direto na revisão
+    if (GetIt.I<BillFormCubit>().state.startOnReview) {
+      _currentIndex = _listPageWidgets.length - 1;
+    }
+    _pageController = PageController(initialPage: _currentIndex);
     super.initState();
   }
 
@@ -114,6 +118,8 @@ class _BillFormPageviewState extends State<BillFormPageview> {
       CheckBillPage(
         registerValidator: _registerValidator,
         onError: (p0) => _showError(p0),
+        onEdit: (index) => _pageController.jumpToPage(index),
+        repeatPageIndex: shouldShowRepeatPage ? 6 : null,
       ),
     );
 
@@ -200,6 +206,9 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                             onPageChanged: (index) {
                               FocusManager.instance.primaryFocus?.unfocus();
                               setState(() => _currentIndex = index);
+                              if (index == _listPageWidgets.length - 1) {
+                                GetIt.I<BillFormCubit>().markReviewReached();
+                              }
                             },
                             children: _listPageWidgets,
                           ),
@@ -208,13 +217,20 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                             bloc: GetIt.I(),
                             buildWhen: (previous, current) =>
                                 previous.responseStatus !=
-                                    current.responseStatus,
+                                    current.responseStatus ||
+                                previous.categorySelected !=
+                                    current.categorySelected,
                             builder: (context, state) {
                               bool isLoading = state.responseStatus ==
                                   ResponseStatus.loading;
+                              //na revisão, só dá para continuar com a categoria selecionada
+                              bool isReview =
+                                  _currentIndex == _listPageWidgets.length - 1;
                               return PrimaryButton(
                                 text: 'Continuar',
                                 isLoading: isLoading,
+                                isDisabled:
+                                    isReview && state.categorySelected == null,
                                 onPressed: isLoading
                                     ? () {}
                                     : () async {
@@ -241,6 +257,26 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                                 textStyle: AppTheme.textStyles.bodyTextStyle,
                               );
                             }),
+                        BlocBuilder<BillFormCubit, BillFormState>(
+                            bloc: GetIt.I(),
+                            buildWhen: (previous, current) =>
+                                previous.reviewReached != current.reviewReached,
+                            builder: (context, state) {
+                              final isReview =
+                                  _currentIndex == _listPageWidgets.length - 1;
+                              if (!state.reviewReached || isReview) {
+                                return const SizedBox.shrink();
+                              }
+                              return TextButton(
+                                onPressed: _goToReview,
+                                child: Text(
+                                  'Ir para revisão',
+                                  style: AppTheme.textStyles.bodyTextStyle
+                                      .copyWith(
+                                          color: AppTheme.colors.hintColor),
+                                ),
+                              );
+                            }),
                         SizedBox(height: mediaQuery.height * .03),
                       ],
                     ),
@@ -248,6 +284,12 @@ class _BillFormPageviewState extends State<BillFormPageview> {
                 );
               }),
         ));
+  }
+
+  Future<void> _goToReview() async {
+    // valida (e salva no cubit) a página atual antes de pular para a revisão
+    if (_currentValidator == null || !await _currentValidator!()) return;
+    _pageController.jumpToPage(_listPageWidgets.length - 1);
   }
 
   void _showError(String msg) {

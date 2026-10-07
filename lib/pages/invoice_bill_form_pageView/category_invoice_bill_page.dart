@@ -54,9 +54,9 @@ class _CategoryBillPageState extends State<CategoryBillPage> {
           builder: (context, state) {
             if (state.categories.isEmpty) {
               return EmptyCategoryList(
-                onPressed: () => Navigator.pushNamed(
-                  context,
-                  AppRoutes.categoryFormPage,
+                onPressed: () => goToCategoryForm(
+                  context: context,
+                  month: GetIt.I<InvoiceBillFormCubit>().state.selectedMonth!,
                 ).then(
                   (value) => init(),
                 ),
@@ -108,9 +108,12 @@ class _CategoryBillPageState extends State<CategoryBillPage> {
                                           color: AppTheme.colors.hintColor),
                                   width: mediaQuery.width * .85,
                                   text: 'Adicionar mais categorias',
-                                  onPressed: () => Navigator.pushNamed(
-                                          context, AppRoutes.categoryFormPage)
-                                      .then(
+                                  onPressed: () => goToCategoryForm(
+                                    context: context,
+                                    month: GetIt.I<InvoiceBillFormCubit>()
+                                        .state
+                                        .selectedMonth!,
+                                  ).then(
                                     (value) => init(),
                                   ),
                                 ),

@@ -20,4 +20,5 @@ class AppRoutes {
   static const String categoryFormPage = '/category-form-page';
   static const String revenueFormPage = '/revenue-form-page';
   static const String profilePage = '/profile-page';
+  static const String qrScanPage = '/qr-scan-page';
 }

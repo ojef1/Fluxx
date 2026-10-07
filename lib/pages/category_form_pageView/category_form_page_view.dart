@@ -4,7 +4,6 @@ import 'package:Fluxx/components/bottom_sheets/category_delete_warning_bottomshe
 import 'package:Fluxx/components/custom_text_field.dart';
 import 'package:Fluxx/components/primary_button.dart';
 import 'package:Fluxx/models/month_model.dart';
-import 'package:Fluxx/services/app_period_service.dart';
 import 'package:Fluxx/themes/app_theme.dart';
 import 'package:Fluxx/utils/helpers.dart';
 import 'package:animated_toggle_switch/animated_toggle_switch.dart';
@@ -37,7 +36,8 @@ class _CategoryFormPageviewState extends State<CategoryFormPageview> {
   @override
   void initState() {
     _pageController = PageController();
-    _currentMonth = AppPeriodService().monthInFocus;
+    //o mês é definido por quem abre o formulário (goToCategoryForm)
+    _currentMonth = GetIt.I<CategoryFormCubit>().state.month!;
     categoryFormMode = GetIt.I<CategoryFormCubit>().state.categoryFormMode;
     isEditingMode = categoryFormMode == CategoryFormMode.editing;
     canDesactive = GetIt.I<CategoryFormCubit>().canDesactive(_currentMonth.id!);

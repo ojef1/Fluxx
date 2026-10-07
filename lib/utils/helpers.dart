@@ -66,6 +66,26 @@ String getMonthName(DateTime month, {bool withYear = false}){
   }
 }
 
+String capitalizeWordsPtBr(String text) {
+  const lowerWords = {'de', 'da', 'do', 'das', 'dos', 'e'};
+  final words = text.trim().toLowerCase().split(RegExp(r'\s+'));
+  return words.asMap().entries.map((entry) {
+    final word = entry.value;
+    if (word.isEmpty) return word;
+    if (entry.key != 0 && lowerWords.contains(word)) return word;
+    return word[0].toUpperCase() + word.substring(1);
+  }).join(' ');
+}
+
+// Primeira letra do primeiro e do último nome (ex: "Jefferson Santos" -> "JS")
+String getInitials(String? name) {
+  final words = (name ?? '').trim().split(RegExp(r'\s+'));
+  if (words.first.isEmpty) return '?';
+  final first = words.first[0];
+  final last = words.length > 1 ? words.last[0] : '';
+  return (first + last).toUpperCase();
+}
+
 String codeGenerate() {
   var code = const Uuid().v4();
   var shortCode = code.substring(0, 8);

@@ -46,7 +46,6 @@ class _MonthResumeDataState extends State<MonthResumeData> {
         onTap: () => goToBillStatsPage(context: context),
         child: Container(
           width: double.infinity,
-          margin: const EdgeInsets.only(top: Constants.topMargin),
           padding: EdgeInsets.symmetric(
             horizontal: mediaQuery.width * .05,
           ),

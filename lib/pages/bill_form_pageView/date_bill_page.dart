@@ -55,13 +55,16 @@ class DateSelector extends StatefulWidget {
 
 class _DateSelectorState extends State<DateSelector> {
   DateTime selectedDate = () {
-    DateTime? selectedDateFromState;
-    try {
-      selectedDateFromState =
-          DateFormat('dd/MM/yyyy').parse(GetIt.I<BillFormCubit>().state.date);
-    } catch (_) {
-      // Em caso de erro, só deixa null mesmo
-      selectedDateFromState = null;
+    final dateFromState = GetIt.I<BillFormCubit>().state.date;
+    //o cubit guarda a data como DateTime.toString(), o dd/MM/yyyy é só fallback
+    DateTime? selectedDateFromState = DateTime.tryParse(dateFromState);
+    if (selectedDateFromState == null) {
+      try {
+        selectedDateFromState = DateFormat('dd/MM/yyyy').parse(dateFromState);
+      } catch (_) {
+        // Em caso de erro, só deixa null mesmo
+        selectedDateFromState = null;
+      }
     }
     var selectedDate = selectedDateFromState ?? DateTime.now();    
     GetIt.I<BillFormCubit>().updateSelectedMonth(selectedDate);
