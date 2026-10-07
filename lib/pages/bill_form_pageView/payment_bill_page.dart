@@ -50,10 +50,11 @@ class _PaymentBillPageState extends State<PaymentBillPage> {
         BlocBuilder<RevenueCubit, RevenueState>(
           bloc: GetIt.I(),
           buildWhen: (previous, current) =>
-              previous.availableRevenues != current.availableRevenues,
+              previous.availableRevenues != current.availableRevenues ||
+              previous.getRevenueResponse != current.getRevenueResponse,
           builder: (context, state) {
             if (state.getRevenueResponse == GetRevenueResponse.loading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: CustomLoading());
             } else {
               if (state.availableRevenues.isEmpty) {
                 return EmptyRevenueList(

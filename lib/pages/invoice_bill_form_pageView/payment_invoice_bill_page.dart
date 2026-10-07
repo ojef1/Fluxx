@@ -62,10 +62,11 @@ class _PaymentInvoiceBillPageState extends State<PaymentInvoiceBillPage> {
           BlocBuilder<InvoiceBillFormCubit, InvoiceBillFormState>(
             bloc: GetIt.I(),
             buildWhen: (previous, current) =>
-                previous.cardsList != current.cardsList,
+                previous.cardsList != current.cardsList ||
+                previous.responseStatus != current.responseStatus,
             builder: (context, state) {
               if (state.responseStatus == ResponseStatus.loading) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(child: CustomLoading());
               } else {
                 if (state.cardsList.isEmpty) {
                   return EmptyRevenueList(
