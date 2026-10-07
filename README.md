@@ -19,7 +19,7 @@ Um aplicativo completo de **gestão financeira pessoal**, focado em organizaçã
 ## 📸 Imagens (exemplos)
 
 > ### Tela inicial
-<img src="assets/screenshots/tela_inicial.png" alt="Tela Inicial" width="250"/> <img src="assets/screenshots/opcoes_adicionar.png" alt="Opções de Adicionar" width="250"/> <img src="assets/screenshots/opcoes_listas.png" alt="Opções de Listas" width="250"/>
+<img src="assets/screenshots/tela_inicial.png" alt="Tela Inicial" width="250"/> <img src="assets/screenshots/tela_home_drawer.png" alt="Home Drawer" width="250"/> <img src="assets/screenshots/tela_home_bottomsheet_de_add_contas.png" alt="Opções de Adicionar contas" width="250"/>
 
 > ### Tela de Estatísticas
 <img src="assets/screenshots/tela_estatisticas.png" alt="Tela de Estatísticas" width="250"/>
@@ -32,15 +32,6 @@ Um aplicativo completo de **gestão financeira pessoal**, focado em organizaçã
 
 > ### Tela Detalhes da Conta
 <img src="assets/screenshots/tela_detalhes_conta.png" alt="Tela Detalhes da Conta" width="250"/>
-
-> ### Tela de Adicionar Conta
-<img src="assets/screenshots/tela_adicionar_conta.png" alt="Tela de Adicionar Conta" width="250"/> <img src="assets/screenshots/lista_categorias.png" alt="Tela para Escolher a Categoria da Conta" width="250"/> <img src="assets/screenshots/lista_receitas.png" alt="Tela para Escolher a Receita da Conta" width="250"/>
-
-> ### Tela de Adicionar Categoria
-<img src="assets/screenshots/tela_adicionar_categoria.png" alt="Tela de Adicionar Categoria" width="250"/>
-
-> ### Tela de Adicionar Receita
-<img src="assets/screenshots/tela_adicionar_receita.png" alt="Tela de Adicionar Receita" width="250"/> <img src="assets/screenshots/descricao_add_receita.png" alt="Descrição de como funciona a adição de receitas" width="250"/>
 
 ## 🛠️ Tecnologias Utilizadas
 
