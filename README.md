@@ -1,65 +1,65 @@
 # 💰 Fluxx
 
-Um aplicativo completo de **gestão financeira pessoal**, focado em organização de gastos mensais, controle por categoria, cartões de crédito e análise do uso da sua receita. Desenvolvido em **Flutter**, o app oferece uma experiência prática e intuitiva para acompanhar sua vida financeira com clareza, com todos os dados salvos localmente no dispositivo.
+A complete **personal finance management** app focused on organizing monthly expenses, tracking spending by category, managing credit cards, and analyzing how much of your income you have used. Built with **Flutter**, the app offers a practical and intuitive experience for keeping track of your financial life with clarity, with all data stored locally on the device.
 
-## 🚀 Funcionalidades
+## 🚀 Features
 
-- ✅ Cadastro, edição e remoção de **gastos** (contas comuns)
-- 📷 Adição de conta pela **leitura do QR Code da nota fiscal** (NFC-e): nome, valor, data e itens vêm da nota, e você só escolhe a categoria e a receita na revisão (disponível para notas de SP, requer internet)
-- 🔁 Repetição de contas por vários meses (parceladas ou recorrentes)
-- 📆 Organização de despesas e receitas por **mês** e **ano**
-- 📊 Visualização de **gastos por categoria** e uso de cada receita
-- 🧾 Registro de **categorias personalizadas**, mensais ou únicas
-- 💼 Gerenciamento de **fontes de receita**, mensais ou únicas
-- 🔄 Associação de despesas a fontes específicas de pagamento
-- 💳 Cadastro de **cartões de crédito**, com cálculo automático do ciclo de fatura por dia de fechamento
-- 🛍️ Compras no cartão à vista ou parceladas, com lançamento automático na fatura correta de cada mês
-- 💵 Pagamento de fatura vinculado a uma receita disponível
-- 📈 Barra de progresso que mostra quanto da sua receita já foi utilizada, e o limite recomendado de uso do cartão
-- 🔔 Aviso de nova versão com **atualização dentro do app** (Android, via Play Store)
+- ✅ Create, edit, and delete **expenses** (regular bills)
+- 📷 Add a bill by **scanning the QR Code on the receipt** (NFC-e): name, amount, date, and items come from the receipt, and you only choose the category and income source during review (available for São Paulo receipts, requires internet)
+- 🔁 Repeat bills over several months (installments or recurring)
+- 📆 Organize expenses and income by **month** and **year**
+- 📊 View **spending by category** and the usage of each income source
+- 🧾 Create **custom categories**, monthly or one-time
+- 💼 Manage **income sources**, monthly or one-time
+- 🔄 Link expenses to specific payment sources
+- 💳 Register **credit cards**, with automatic billing cycle calculation based on the closing day
+- 🛍️ Card purchases paid in full or in installments, automatically posted to the correct statement each month
+- 💵 Statement payment linked to an available income source
+- 📈 Progress bar showing how much of your income has been used, and the recommended card usage limit
+- 🔔 New version notice with **in-app update** (Android, via Play Store)
 
-## 📸 Imagens (exemplos)
+## 📸 Screenshots (examples)
 
-> ### Tela inicial
-<img src="assets/screenshots/tela_inicial.png" alt="Tela Inicial" width="250"/> <img src="assets/screenshots/tela_home_drawer.png" alt="Home Drawer" width="250"/> <img src="assets/screenshots/tela_home_bottomsheet_de_add_contas.png" alt="Opções de Adicionar contas" width="250"/>
+> ### Home Screen
+<img src="assets/screenshots/tela_inicial.png" alt="Home Screen" width="250"/> <img src="assets/screenshots/tela_home_drawer.png" alt="Home Drawer" width="250"/> <img src="assets/screenshots/tela_home_bottomsheet_de_add_contas.png" alt="Add Bill Options" width="250"/>
 
-> ### Tela de Estatísticas
-<img src="assets/screenshots/tela_estatisticas.png" alt="Tela de Estatísticas" width="250"/>
+> ### Statistics Screen
+<img src="assets/screenshots/tela_estatisticas.png" alt="Statistics Screen" width="250"/>
 
-> ### Tela de Lista de Meses
-<img src="assets/screenshots/lista_meses.png" alt="Tela de Lista de Meses" width="250"/>
+> ### Month List Screen
+<img src="assets/screenshots/lista_meses.png" alt="Month List Screen" width="250"/>
 
-> ### Tela de Contas
-<img src="assets/screenshots/lista_contas.png" alt="Tela de Contas" width="250"/>
+> ### Bills Screen
+<img src="assets/screenshots/lista_contas.png" alt="Bills Screen" width="250"/>
 
-> ### Tela Detalhes da Conta
-<img src="assets/screenshots/tela_detalhes_conta.png" alt="Tela Detalhes da Conta" width="250"/>
+> ### Bill Details Screen
+<img src="assets/screenshots/tela_detalhes_conta.png" alt="Bill Details Screen" width="250"/>
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Technologies Used
 
-- **Flutter** com Dart
-- **flutter_bloc** (Cubit) para gerenciamento de estado
-- **get_it** para injeção de dependência
-- **sqflite** (SQLite) para persistência local
-- **shared_preferences** para preferências simples (data de dispensa do aviso de atualização)
-- **intl** para formatação de datas e valores (locale pt_BR)
-- **mobile_scanner** e **permission_handler** para a leitura do QR Code e a permissão da câmera
-- **http** e **html** para consultar e interpretar a nota fiscal no portal da SEFAZ
-- **in_app_update** para a atualização do app dentro da Play Store
-- **animated_toggle_switch**, **flashy_flushbar**, **loading_animation_widget**, **percent_indicator** para componentes de interface
-- **flutter_masked_text2** para máscaras de valores monetários
-- **image_picker** para foto de perfil
-- **uuid** para geração de identificadores
+- **Flutter** with Dart
+- **flutter_bloc** (Cubit) for state management
+- **get_it** for dependency injection
+- **sqflite** (SQLite) for local persistence
+- **shared_preferences** for simple preferences (dismissal date of the update notice)
+- **intl** for date and value formatting (pt_BR locale)
+- **mobile_scanner** and **permission_handler** for QR Code scanning and camera permission
+- **http** and **html** to fetch and parse the receipt from the SEFAZ portal
+- **in_app_update** for in-app updates via the Play Store
+- **animated_toggle_switch**, **flashy_flushbar**, **loading_animation_widget**, **percent_indicator** for UI components
+- **flutter_masked_text2** for currency value masks
+- **image_picker** for profile picture
+- **uuid** for identifier generation
 
-## 📌 Observações
+## 📌 Notes
 
-O foco do app é no controle real de gastos, e não em simulações.
+The app focuses on real expense control, not on simulations.
 
-Você pode criar categorias e fontes de receita personalizadas para se adaptar à sua realidade.
+You can create custom categories and income sources to fit your reality.
 
-O sistema de progressão de uso da receita ajuda a visualizar quanto da sua receita já foi utilizada no mês, tanto em contas comuns quanto em faturas de cartão de crédito.
+The income usage progress system helps you see how much of your income has already been used in the month, both for regular bills and credit card statements.
 
-Todos os dados ficam armazenados localmente no dispositivo. Não há sincronização em nuvem nem backend. A única consulta externa é a da nota fiscal, feita ao ler o QR Code.
+All data is stored locally on the device. There is no cloud sync and no backend. The only external request is the receipt lookup, made when scanning the QR Code.
 
-📄 Licença
-Este projeto está licenciado sob a MIT License.
+📄 License
+This project is licensed under the MIT License.
